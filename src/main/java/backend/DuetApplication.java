@@ -1,13 +1,14 @@
-package com.example.demo;
+package backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DuEtApplication {
+public class DuetApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DuEtApplication.class, args);
+		SpringApplication.run(DuetApplication.class, args);
+		
 	}
 
 }
