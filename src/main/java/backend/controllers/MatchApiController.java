@@ -21,7 +21,7 @@ public class MatchApiController {
 	
 	@RequestMapping(
 		method = RequestMethod.GET,
-		path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/match",
+		path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "match",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary[] getAllMatches ()
 			 {

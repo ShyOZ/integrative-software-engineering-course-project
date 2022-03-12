@@ -21,7 +21,7 @@ public class MessageApiController {
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER+ "/" + DuetApplication.DOMAIN + "/Message/{instanceId}", 
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + DuetApplication.DOMAIN + "/Message/{instanceId}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary retrieveMessage(@PathVariable("instanceId") String instanceId) {
 
@@ -47,7 +47,7 @@ public class MessageApiController {
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER+ "/Message", 
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER+ "Message", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary[] getAllMessage() {
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
