@@ -23,12 +23,11 @@ public class MatchApiController {
 		method = RequestMethod.GET,
 		path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "match",
 		produces = MediaType.APPLICATION_JSON_VALUE)
-	public InstanceBoundary[] getAllMatches ()
-			 {
+	public InstanceBoundary[] getAllMatches () {
 		
-		Map<String, String> instanceId = new TreeMap<String, String>();
-		instanceId.put("Domain", DuetApplication.DOMAIN);
-		instanceId.put("ID", "42");
+		Map<String, String> instanceIdMap = new TreeMap<String, String>();
+		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
+		instanceIdMap.put("ID", "42");
 		
 		Map<String, Double> location = new TreeMap<String, Double>();
 		location.put("lat", 1.34343);
@@ -40,11 +39,37 @@ public class MatchApiController {
 		Map<String, UserId> userMap = new TreeMap<String, UserId>();
 		userMap.put("UserId" , new UserId("sorany123@gmail.com"));
 		
-		InstanceBoundary instace = new InstanceBoundary(
-				instanceId, "Match", "match_name", new Boolean(true),new Date(), userMap, location, match.getInstanceAttributes());
+		InstanceBoundary instanceBoundry = new InstanceBoundary(
+				instanceIdMap, "Match", "match_name", new Boolean(true),new Date(), userMap, location, match.getInstanceAttributes());
 		
 		
-		InstanceBoundary[] instanceboundry = {instace};
-		return instanceboundry;
+		InstanceBoundary[] instanceboundryArr = {instanceBoundry};
+		return instanceboundryArr;
 	}
+	
+	@RequestMapping(
+			method = RequestMethod.GET,
+			path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "match/{instanceId}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+		public InstanceBoundary retriveChat (@PathVariable("instanceId") String instanceId) {
+			
+			Map<String, String> instanceIdMap = new TreeMap<String, String>();
+			instanceIdMap.put("Domain", DuetApplication.DOMAIN);
+			instanceIdMap.put("ID", instanceId);
+			
+			Map<String, Double> location = new TreeMap<String, Double>();
+			location.put("lat", 1.34343);
+			location.put("lng", 45.7453);
+			
+			int[] test = {34,65};
+			Match match = new Match(new Date(),test);
+			
+			Map<String, UserId> userMap = new TreeMap<String, UserId>();
+			userMap.put("UserId" , new UserId("sorany123@gmail.com"));
+			
+			InstanceBoundary instanceBoundry = new InstanceBoundary(
+					instanceIdMap, "Match", "match_name", new Boolean(true),new Date(), userMap, location, match.getInstanceAttributes());	
+			
+			return instanceBoundry;
+		}
 }
