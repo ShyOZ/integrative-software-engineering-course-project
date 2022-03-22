@@ -55,7 +55,7 @@ public class ChatApiController {
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER+ "chat", 
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER+ "/chat", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary[] getAllChats() {
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();

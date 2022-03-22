@@ -1,6 +1,5 @@
 package backend.controllers;
 
-import java.nio.charset.*; // for generating random instance ID
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,7 +20,7 @@ public class MatchApiController {
 	
 	@RequestMapping(
 		method = RequestMethod.GET,
-		path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "match",
+		path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/match",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary[] getAllMatches () {
 		
@@ -49,7 +48,7 @@ public class MatchApiController {
 	
 	@RequestMapping(
 			method = RequestMethod.GET,
-			path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "match/{instanceId}",
+			path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/match/{instanceId}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 		public InstanceBoundary retriveChat (@PathVariable("instanceId") String instanceId) {
 			
