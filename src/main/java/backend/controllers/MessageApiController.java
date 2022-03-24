@@ -68,5 +68,4 @@ public class MessageApiController {
 		InstanceBoundary[] instanceboundry = { instance };
 		return instanceboundry;
 	}
-
 }
