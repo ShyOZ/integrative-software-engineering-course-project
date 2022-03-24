@@ -35,7 +35,7 @@ public class UsersController {
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.USERS_HEADER+ "login/{userDomain}/{userEmail}",
+			path = DuetApplication.API_PREFIX + DuetApplication.USERS_HEADER+ "/login/{userDomain}/{userEmail}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, 
 			@PathVariable("userEmail") String userEmail) {

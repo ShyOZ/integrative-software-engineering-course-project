@@ -3,6 +3,7 @@ package backend.controllers;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +49,7 @@ public class MessageApiController {
 		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
 		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
-		instanceIdMap.put("ID", "42");
+		instanceIdMap.put("ID", UUID.randomUUID().toString());
 
 		Map<String, Double> location = new TreeMap<String, Double>();
 		location.put("lat", 1.34343);
@@ -72,7 +73,7 @@ public class MessageApiController {
 		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
 		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
-		instanceIdMap.put("ID", "42");
+		instanceIdMap.put("ID", UUID.randomUUID().toString());
 
 		Map<String, Double> location = new TreeMap<String, Double>();
 		location.put("lat", 1.34343);
