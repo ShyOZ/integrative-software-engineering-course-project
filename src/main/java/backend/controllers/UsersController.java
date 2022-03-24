@@ -17,9 +17,13 @@ import backend.boundaries.UserBoundary;
 @RestController
 public class UsersController {
 
-	@RequestMapping(method = RequestMethod.POST, path = DuetApplication.API_PREFIX
-			+ DuetApplication.USERS_HEADER, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public UserBoundary addNewUser(@RequestBody NewUserBoundary newUser) {
+	@RequestMapping(
+			method = RequestMethod.POST, 
+			path = DuetApplication.API_PREFIX + DuetApplication.USERS_HEADER, 
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public UserBoundary createNewUser(@RequestBody NewUserBoundary newUser) {
+		// MOCKUP implementation
 		Map<String, String> userIdMap = new HashMap<String, String>();
 
 		userIdMap.put("domain", DuetApplication.DOMAIN.substring(1));
@@ -29,10 +33,13 @@ public class UsersController {
 		return user;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, path = DuetApplication.API_PREFIX + DuetApplication.USERS_HEADER
-			+ "/{userDomain}/{userEmail}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public UserBoundary login(@PathVariable("userDomain") String userDomain,
+	@RequestMapping(
+			method = RequestMethod.GET, 
+			path = DuetApplication.API_PREFIX + DuetApplication.USERS_HEADER+ "login/{userDomain}/{userEmail}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public UserBoundary login(@PathVariable("userDomain") String userDomain, 
 			@PathVariable("userEmail") String userEmail) {
+		// MOCKUP implementation
 		Map<String, String> userIdMap = new HashMap<String, String>();
 
 		userIdMap.put("domain", userDomain);
@@ -42,12 +49,13 @@ public class UsersController {
 		return user;
 	}
 
-	@RequestMapping(method = RequestMethod.PUT, path = DuetApplication.API_PREFIX + DuetApplication.USERS_HEADER
-			+ "/{userDomain}/{userEmail}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(
+			method = RequestMethod.PUT, 
+			path = DuetApplication.API_PREFIX + DuetApplication.USERS_HEADER+ "/{userDomain}/{userEmail}",
+			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateUser(@RequestBody UserBoundary user, @PathVariable("userDomain") String userDomain,
 			@PathVariable("userEmail") String userEmail) {
-
+		// MOCKUP implementation
 		System.err.println("userDomain: " + userDomain + "\nuserEmail: " + userEmail);
-
 	}
 }

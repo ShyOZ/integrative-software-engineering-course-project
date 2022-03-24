@@ -1,5 +1,6 @@
 package backend.controllers;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,19 +11,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import backend.DuetApplication;
 import backend.boundaries.InstanceBoundary;
+import backend.instances.Chat;
 import backend.instances.Message;
 import backend.instances.Profile;
 import backend.instances.UserId;
 
 @RestController
-public class MessageApiController {
+public class GeneralInstanceController {
 	
 	@RequestMapping(
 			method = RequestMethod.POST,
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER +"/message",
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER,
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary createInstance(@RequestBody InstanceBoundary boundary) {
@@ -33,18 +34,18 @@ public class MessageApiController {
 	
 	@RequestMapping(
 			method = RequestMethod.PUT,
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/message/{instanceDomain}/{instanceId}",
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/{instanceDomain}/{instanceId}",
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateInstance(@PathVariable("instanceDomain") String instanceDomain, 
 			@PathVariable("instanceId") String instanceId, @RequestBody InstanceBoundary boundary) {
 		// MOCKUP implementation
 	}
-
+	
 	@RequestMapping(
-			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/message/{instanceDomain}/{instanceId}", 
+			method = RequestMethod.GET,
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/{instanceDomain}/{instanceId}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public InstanceBoundary retrieveMessage(@PathVariable("instanceId") String instanceId) {
+	public InstanceBoundary retrieveInstance() {
 		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
 		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
@@ -58,17 +59,23 @@ public class MessageApiController {
 		userMap.put("UserId", new UserId("sorany123@gmail.com"));
 
 		Message m1 = new Message(new Profile(1), new Profile(2), "helloWorld");
+		Message m2 = new Message(new Profile(4), new Profile(5), "helloWorld2");
+		ArrayList<Message> lstMessages = new ArrayList<Message>();
+		lstMessages.add(m1);
+		lstMessages.add(m2);
+
+		Chat chat = new Chat(lstMessages);
 
 		InstanceBoundary instance = new InstanceBoundary(instanceIdMap, "txt", "txt_name", new Boolean(true),
-				new Date(), userMap, location, m1.getInstanceAttributes());
+				new Date(), userMap, location, chat.getInstanceAttributes());
 		return instance;
 	}
-
+	
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER+ "/message", 
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER, 
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public InstanceBoundary[] getAllMessage() {
+	public InstanceBoundary[] getAllInstances() {
 		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
 		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
@@ -82,10 +89,17 @@ public class MessageApiController {
 		userMap.put("UserId", new UserId("sorany123@gmail.com"));
 
 		Message m1 = new Message(new Profile(1), new Profile(2), "helloWorld");
+		Message m2 = new Message(new Profile(4), new Profile(5), "helloWorld2");
+		ArrayList<Message> lstMessages = new ArrayList<Message>();
+		lstMessages.add(m1);
+		lstMessages.add(m2);
+
+		Chat chat = new Chat(lstMessages);
 
 		InstanceBoundary instance = new InstanceBoundary(instanceIdMap, "txt", "txt_name", new Boolean(true),
-				new Date(), userMap, location, m1.getInstanceAttributes());
+				new Date(), userMap, location, chat.getInstanceAttributes());
 		InstanceBoundary[] instanceboundry = { instance };
 		return instanceboundry;
 	}
+	
 }

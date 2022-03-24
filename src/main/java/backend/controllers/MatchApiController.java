@@ -23,7 +23,7 @@ public class MatchApiController {
 		path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/match",
 		produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary[] getAllMatches () {
-		
+		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
 		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
 		instanceIdMap.put("ID", "42");
@@ -51,7 +51,7 @@ public class MatchApiController {
 			path= DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/match/{instanceId}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 		public InstanceBoundary retriveChat (@PathVariable("instanceId") String instanceId) {
-			
+		    // MOCKUP implementation
 			Map<String, String> instanceIdMap = new TreeMap<String, String>();
 			instanceIdMap.put("Domain", DuetApplication.DOMAIN);
 			instanceIdMap.put("ID", instanceId);

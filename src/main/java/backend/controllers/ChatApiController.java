@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,15 +21,33 @@ import backend.instances.UserId;
 
 @RestController
 public class ChatApiController {
+	
+	@RequestMapping(
+			method = RequestMethod.POST,
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER +"/chat",
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public InstanceBoundary createInstance(@RequestBody InstanceBoundary boundary) {
+		// MOCKUP implementation
+		boundary.setCreatedTimeStamp(new Date());
+		return boundary;
+	}
+	
+	@RequestMapping(
+			method = RequestMethod.PUT,
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/chat/{instanceDomain}/{instanceId}",
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void updateInstance(@PathVariable("instanceDomain") String instanceDomain, 
+			@PathVariable("instanceId") String instanceId, @RequestBody InstanceBoundary boundary) {
+		// MOCKUP implementation
+	}
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + DuetApplication.DOMAIN + "/chat/{instanceId}", 
+			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/chat/{instanceDomain}/{instanceId}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary retrieveChat(@PathVariable("instanceId") String instanceId) {
-
-		// add functionality to search by id
-
+		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
 		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
 		instanceIdMap.put("ID", "42");
@@ -58,6 +77,7 @@ public class ChatApiController {
 			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER+ "/chat", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary[] getAllChats() {
+		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
 		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
 		instanceIdMap.put("ID", "42");
