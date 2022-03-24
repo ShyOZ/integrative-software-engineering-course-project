@@ -12,6 +12,7 @@ public class DuetApplication {
 	public static final String INSTANCES_HEADER = "/instances";
 	public static final String USERS_HEADER = "/users";
 	public static final String DOMAIN = "/2022b.Yaeli.Bar.Gimelshtei";
+	public static final String ADMIN_HEADER = "/admin";
 
 	public static void main(String[] args) {
 		SpringApplication.run(DuetApplication.class, args);
