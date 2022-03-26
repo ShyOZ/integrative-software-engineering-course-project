@@ -58,7 +58,7 @@ public class MessageApiController {
 		Map<String, UserId> userMap = new TreeMap<String, UserId>();
 		userMap.put("UserId", new UserId("sorany123@gmail.com"));
 
-		Message m1 = new Message(new Profile(1), new Profile(2), "helloWorld");
+		Message m1 = new Message(new Profile(), new Profile(), "helloWorld");
 
 		InstanceBoundary instance = new InstanceBoundary(instanceIdMap, "txt", "txt_name", new Boolean(true),
 				new Date(), userMap, location, m1.getInstanceAttributes());
@@ -82,7 +82,7 @@ public class MessageApiController {
 		Map<String, UserId> userMap = new TreeMap<String, UserId>();
 		userMap.put("UserId", new UserId("sorany123@gmail.com"));
 
-		Message m1 = new Message(new Profile(1), new Profile(2), "helloWorld");
+		Message m1 = new Message(new Profile(), new Profile(), "helloWorld");
 
 		InstanceBoundary instance = new InstanceBoundary(instanceIdMap, "txt", "txt_name", new Boolean(true),
 				new Date(), userMap, location, m1.getInstanceAttributes());

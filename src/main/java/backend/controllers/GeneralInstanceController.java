@@ -63,8 +63,8 @@ public class GeneralInstanceController {
 		Map<String, UserId> userMap = new TreeMap<String, UserId>();
 		userMap.put("UserId", new UserId("sorany123@gmail.com"));
 
-		Message m1 = new Message(new Profile(1), new Profile(2), "helloWorld");
-		Message m2 = new Message(new Profile(4), new Profile(5), "helloWorld2");
+		Message m1 = new Message(new Profile(), new Profile(), "helloWorld");
+		Message m2 = new Message(new Profile(), new Profile(), "helloWorld2");
 		ArrayList<Message> lstMessages = new ArrayList<Message>();
 		lstMessages.add(m1);
 		lstMessages.add(m2);
@@ -91,10 +91,9 @@ public class GeneralInstanceController {
 		location.put("lng", 45.7453);
 
 		Map<String, UserId> userMap = new TreeMap<String, UserId>();
-		userMap.put("UserId", new UserId("sorany123@gmail.com"));
 
-		Message m1 = new Message(new Profile(1), new Profile(2), "helloWorld");
-		Message m2 = new Message(new Profile(4), new Profile(5), "helloWorld2");
+		Message m1 = new Message(new Profile(), new Profile(), "helloWorld");
+		Message m2 = new Message(new Profile(), new Profile(), "helloWorld2");
 		ArrayList<Message> lstMessages = new ArrayList<Message>();
 		lstMessages.add(m1);
 		lstMessages.add(m2);
