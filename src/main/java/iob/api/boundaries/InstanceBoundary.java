@@ -1,34 +1,38 @@
 package iob.api.boundaries;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import iob.api.instances.UserId;
 
 public class InstanceBoundary {
-	
+
 	private Map<String, String> instanceId;
 	private String type;
 	private String name;
 	private Boolean active;
-	private Date createdTimeStamp;
-	private Map<String, UserId> createdBy ;
+	private Date createdTimestamp;
+	private Map<String, UserId> createdBy;
 	private Map<String, Double> location;
 	private Map<String, Object> instanceAttributes;
-	
+
 	public InstanceBoundary() {
-		
+		this.instanceId = new HashMap<>();
+		this.createdBy = new HashMap<>();
+		this.location = new HashMap<>();
+		this.instanceAttributes = new HashMap<>();
 	}
-	
+
 	public InstanceBoundary(Map<String, String> instanceId, String type, String name, Boolean active,
-			Date createdTimeStamp, Map<String, UserId> createdBy, Map<String, Double> location,
+			Date createdTimestamp, Map<String, UserId> createdBy, Map<String, Double> location,
 			Map<String, Object> instanceAttributes) {
-		super();
+		this();
 		this.instanceId = instanceId;
 		this.type = type;
 		this.name = name;
 		this.active = active;
-		this.createdTimeStamp = createdTimeStamp;
+		this.createdTimestamp = createdTimestamp;
 		this.createdBy = createdBy;
 		this.location = location;
 		this.instanceAttributes = instanceAttributes;
@@ -66,12 +70,12 @@ public class InstanceBoundary {
 		this.active = active;
 	}
 
-	public Date getCreatedTimeStamp() {
-		return createdTimeStamp;
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public void setCreatedTimeStamp(Date createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp;
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
 	public Map<String, UserId> getCreatedBy() {
@@ -101,11 +105,8 @@ public class InstanceBoundary {
 	@Override
 	public String toString() {
 		return "InstanceBoundary [instanceId=" + instanceId + ", type=" + type + ", name=" + name + ", active=" + active
-				+ ", createdTimeStamp=" + createdTimeStamp + ", createdBy=" + createdBy + ", location=" + location
+				+ ", createdTimestamp=" + createdTimestamp + ", createdBy=" + createdBy + ", location=" + location
 				+ ", instanceAttributes=" + instanceAttributes + "]";
 	}
-	
-	
-	
-	
+
 }

@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MusicalTaste implements Instance{
-	
+public class MusicalTaste implements Instance {
+
 	private ArrayList<String> topArtists;
 	private ArrayList<String> topTracks;
 	private ArrayList<String> topPodcasts;
 	private ArrayList<String> topGenres;
-	
+
 	public MusicalTaste() {
-		
+
 	}
 
 	public MusicalTaste(ArrayList<String> topArtists, ArrayList<String> topTracks, ArrayList<String> topPodcasts,
@@ -24,11 +24,11 @@ public class MusicalTaste implements Instance{
 		this.topGenres = topGenres;
 	}
 
-	public ArrayList<String> gettopArtistss() {
+	public ArrayList<String> getTopArtists() {
 		return topArtists;
 	}
 
-	public void settopArtists(ArrayList<String> topArtists) {
+	public void setTopArtists(ArrayList<String> topArtists) {
 		this.topArtists = topArtists;
 	}
 
@@ -55,7 +55,7 @@ public class MusicalTaste implements Instance{
 	public void setTopGenres(ArrayList<String> topGenres) {
 		this.topGenres = topGenres;
 	}
-	
+
 	@Override
 	public Map<String, Object> getInstanceAttributes() {
 		Map<String, Object> attributes = new TreeMap<String, Object>();
@@ -71,6 +71,5 @@ public class MusicalTaste implements Instance{
 		return "MusicalTaste [topArtists=" + topArtists + ", topTracks=" + topTracks + ", topPodcasts=" + topPodcasts
 				+ ", topGenres=" + topGenres + "]";
 	}
-	
 
 }

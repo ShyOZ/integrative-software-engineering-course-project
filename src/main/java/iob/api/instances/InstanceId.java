@@ -1,13 +1,13 @@
 package iob.api.instances;
 
-import iob.DuetApplication;
+import org.springframework.beans.factory.annotation.Value;
 
 public class InstanceId {
-	private String domain = DuetApplication.DOMAIN;
+	private String domain;
 	private String id;
 
 	public InstanceId() {
-		
+
 	}
 
 	public InstanceId(String email) {
@@ -18,16 +18,17 @@ public class InstanceId {
 		return domain;
 	}
 
+	@Value("{spring.application.name}")
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
 
-	public String getEmail() {
+	public String getId() {
 		return id;
 	}
 
-	public void setEmail(String email) {
-		this.id = email;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Override

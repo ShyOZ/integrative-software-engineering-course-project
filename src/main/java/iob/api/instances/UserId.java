@@ -1,23 +1,29 @@
 package iob.api.instances;
 
-import iob.DuetApplication;
+import org.springframework.beans.factory.annotation.Value;
 
 public class UserId {
-	private String domain = DuetApplication.DOMAIN;
+	@Value("${spring.application.name}")
+	private String domain;
+	
 	private String email;
-
+	
+	
 	public UserId() {
 		
 	}
 
 	public UserId(String email) {
+		this();
 		this.email = email;
 	}
 
 	public String getDomain() {
 		return domain;
 	}
-
+	
+	
+	@Value("{spring.application.name}")
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
@@ -34,7 +40,5 @@ public class UserId {
 	public String toString() {
 		return "UserId [domain=" + domain + ", email=" + email + "]";
 	}
-	
-	
-}
 
+}

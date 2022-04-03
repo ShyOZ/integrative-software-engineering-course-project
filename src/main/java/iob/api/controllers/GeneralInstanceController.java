@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import iob.DuetApplication;
 import iob.api.boundaries.InstanceBoundary;
 import iob.api.instances.Chat;
 import iob.api.instances.Message;
@@ -22,40 +21,41 @@ import iob.api.instances.UserId;
 
 @RestController
 public class GeneralInstanceController {
-	
+
 	@RequestMapping(
-			method = RequestMethod.POST,
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER,
-			produces = MediaType.APPLICATION_JSON_VALUE,
+			method = RequestMethod.POST, 
+			path = "/iob/instances", 
+			produces = MediaType.APPLICATION_JSON_VALUE, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary createInstance(@RequestBody InstanceBoundary boundary) {
 		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
-		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
-		instanceIdMap.put("ID", UUID.randomUUID().toString());
+		instanceIdMap.put("domain", "2022b.Yaeli.Bar.Gimelshtei");
+		instanceIdMap.put("id", UUID.randomUUID().toString());
 		boundary.setInstanceId(instanceIdMap);
-		boundary.setCreatedTimeStamp(new Date());
+		boundary.setCreatedTimestamp(new Date());
 		return boundary;
 	}
-	
+
 	@RequestMapping(
-			method = RequestMethod.PUT,
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/{instanceDomain}/{instanceId}",
+			method = RequestMethod.PUT, 
+			path = "/iob/instances/{instanceDomain}/{instanceId}", 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void updateInstance(@PathVariable("instanceDomain") String instanceDomain, 
+	public void updateInstance(@PathVariable("instanceDomain") String instanceDomain,
 			@PathVariable("instanceId") String instanceId, @RequestBody InstanceBoundary boundary) {
 		// MOCKUP implementation
 	}
-	
+
 	@RequestMapping(
-			method = RequestMethod.GET,
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER + "/{instanceDomain}/{instanceId}",
+			method = RequestMethod.GET, 
+			path = "/iob/instances/{instanceDomain}/{instanceId}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public InstanceBoundary retrieveInstance() {
+	public InstanceBoundary retrieveInstance(@PathVariable("instanceDomain") String instanceDomain,
+			@PathVariable("instanceId") String instanceId) {
 		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
-		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
-		instanceIdMap.put("ID", UUID.randomUUID().toString());
+		instanceIdMap.put("domain", instanceDomain);
+		instanceIdMap.put("id", instanceId);
 
 		Map<String, Double> location = new TreeMap<String, Double>();
 		location.put("lat", 1.34343);
@@ -76,16 +76,16 @@ public class GeneralInstanceController {
 				new Date(), userMap, location, chat.getInstanceAttributes());
 		return instance;
 	}
-	
+
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = DuetApplication.API_PREFIX + DuetApplication.INSTANCES_HEADER, 
+			path = "/iob/instances", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public InstanceBoundary[] getAllInstances() {
 		// MOCKUP implementation
 		Map<String, String> instanceIdMap = new TreeMap<String, String>();
-		instanceIdMap.put("Domain", DuetApplication.DOMAIN);
-		instanceIdMap.put("ID", UUID.randomUUID().toString());
+		instanceIdMap.put("domain", "2022b.Yaeli.Bar.Gimelshtei");
+		instanceIdMap.put("id", UUID.randomUUID().toString());
 
 		Map<String, Double> location = new TreeMap<String, Double>();
 		location.put("lat", 1.34343);
@@ -106,5 +106,5 @@ public class GeneralInstanceController {
 		InstanceBoundary[] instanceboundry = { instance };
 		return instanceboundry;
 	}
-	
+
 }

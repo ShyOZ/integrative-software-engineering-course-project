@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Profile implements Instance{
+public class Profile implements Instance {
 	private Name name;
 	private LocalDate dob;
 	private Gender gender;
@@ -13,12 +13,13 @@ public class Profile implements Instance{
 	private String bio;
 	private MusicalTaste musicalTaste;
 	private HashMap<Profile, Chat> chats;
-	
+
 	public Profile() {
 		chats = new HashMap<Profile, Chat>();
 	}
-	
-	public Profile(Name name, LocalDate dob, Gender gender, Residence residence, String bio, MusicalTaste musicalTaste) {
+
+	public Profile(Name name, LocalDate dob, Gender gender, Residence residence, String bio,
+			MusicalTaste musicalTaste) {
 		this();
 		this.name = name;
 		this.dob = dob;
@@ -102,5 +103,5 @@ public class Profile implements Instance{
 		return "Profile [name=" + name + ", dob=" + dob + ", gender=" + gender + ", residence=" + residence + ", bio="
 				+ bio + ", musicalTaste=" + musicalTaste + ", chats=" + chats + "]";
 	}
-	
+
 }

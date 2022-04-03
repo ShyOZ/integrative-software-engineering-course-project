@@ -7,11 +7,11 @@ public class Message implements Instance {
 	private Profile sender;
 	private Profile reciver;
 	private String text;
-	
+
 	public Message() {
-		
+
 	}
-	
+
 	public Message(Profile sender, Profile reciver, String text) {
 		this.sender = sender;
 		this.reciver = reciver;

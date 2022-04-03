@@ -1,38 +1,41 @@
 package iob.api.activities;
 
-import iob.DuetApplication;
+import org.springframework.beans.factory.annotation.Value;
 
 public class ActivityId {
-	private String domain = DuetApplication.DOMAIN;
+
+	@Value("${spring.application.name}")
+	private String domain;
 	private String id;
 
 	public ActivityId() {
-		
 	}
 
-	public ActivityId(String email) {
-		this.id = email;
+	public ActivityId(String domain, String id) {
+		this();
+		this.domain = domain;
+		this.id = id;
 	}
 
 	public String getDomain() {
 		return domain;
 	}
 
+	@Value("${spring.application.name}")
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
 
-	public String getEmail() {
+	public String getId() {
 		return id;
 	}
 
-	public void setEmail(String email) {
-		this.id = email;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Override
 	public String toString() {
-		return "ActivityId [domain=" + domain + ", id=" + id + "]";
+		return String.format("ActivityId [domain=%s, id=%s]", domain, id);
 	}
-	
 }

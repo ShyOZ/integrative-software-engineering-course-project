@@ -1,6 +1,7 @@
 package iob.api.boundaries;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import iob.api.activities.ActivityId;
@@ -8,27 +9,29 @@ import iob.api.instances.Instance;
 import iob.api.instances.UserId;
 
 public class ActivityBoundary {
-	
+
 	private ActivityId activityId;
 	private String type;
 	private Map<String, Instance> instance;
-	private Date createdTimeStamp;
+	private Date createdTimestamp;
 	private Map<String, UserId> invokedBy;
-	private Map<String, Object> activityAtributes;
-	
+	private Map<String, Object> activityAttributes;
+
 	public ActivityBoundary() {
-		
+		this.instance = new HashMap<>();
+		this.invokedBy = new HashMap<>();
+		this.activityAttributes = new HashMap<>();
 	}
 
-	public ActivityBoundary(ActivityId activityId, String type, Map<String, Instance> instance, Date createdTimeStamp,
-			Map<String, UserId> invokedBy, Map<String, Object> activityAtributes) {
-		super();
+	public ActivityBoundary(ActivityId activityId, String type, Map<String, Instance> instance, Date createdTimestamp,
+			Map<String, UserId> invokedBy, Map<String, Object> activityAttributes) {
+		this();
 		this.activityId = activityId;
 		this.type = type;
 		this.instance = instance;
-		this.createdTimeStamp = createdTimeStamp;
+		this.createdTimestamp = createdTimestamp;
 		this.invokedBy = invokedBy;
-		this.activityAtributes = activityAtributes;
+		this.activityAttributes = activityAttributes;
 	}
 
 	public ActivityId getActivityId() {
@@ -55,12 +58,12 @@ public class ActivityBoundary {
 		this.instance = instance;
 	}
 
-	public Date getCreatedTimeStamp() {
-		return createdTimeStamp;
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public void setCreatedTimeStamp(Date createdTimeStamp) {
-		this.createdTimeStamp = createdTimeStamp;
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
 	public Map<String, UserId> getInvokedBy() {
@@ -71,20 +74,19 @@ public class ActivityBoundary {
 		this.invokedBy = invokedBy;
 	}
 
-	public Map<String, Object> getActivityAtributes() {
-		return activityAtributes;
+	public Map<String, Object> getActivityAttributes() {
+		return activityAttributes;
 	}
 
-	public void setActivityAtributes(Map<String, Object> activityAtributes) {
-		this.activityAtributes = activityAtributes;
+	public void setActivityAttributes(Map<String, Object> activityAttributes) {
+		this.activityAttributes = activityAttributes;
 	}
 
 	@Override
 	public String toString() {
-		return "ActivityBoundary [activityId=" + activityId + ", type=" + type + ", instance=" + instance
-				+ ", createdTimeStamp=" + createdTimeStamp + ", invokedBy=" + invokedBy + ", activityAtributes="
-				+ activityAtributes + "]";
+		return String.format(
+				"ActivityBoundary [activityId=%s, type=%s, instance=%s, createdTimestamp=%s, invokedBy=%s, activityAttributes=%s]",
+				activityId, type, instance, createdTimestamp, invokedBy, activityAttributes);
 	}
-	
-	
+
 }

@@ -3,9 +3,9 @@ package iob.api.instances;
 public class Residence {
 	private String state;
 	private String city;
-	
+
 	public Residence() {
-		
+
 	}
 
 	public Residence(String state, String city) {
@@ -33,5 +33,5 @@ public class Residence {
 	public String toString() {
 		return "Residence [state=" + state + ", city=" + city + "]";
 	}
-	
+
 }

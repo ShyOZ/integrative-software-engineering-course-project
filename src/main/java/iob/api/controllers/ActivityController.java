@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import iob.DuetApplication;
 import iob.api.boundaries.ActivityBoundary;
 
 @RestController
@@ -16,14 +15,14 @@ public class ActivityController {
 
 	@RequestMapping(
 			method = RequestMethod.POST,
-			path = DuetApplication.API_PREFIX + DuetApplication.ACTIVITIES_HEADER,
+			path = "/iob/activities",
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	
 	public Object createInstance(@RequestBody ActivityBoundary boundary) {
 		// MOCKUP implementation
 		boundary.setActivityId(null);
-		boundary.setCreatedTimeStamp(new Date());
+		boundary.setCreatedTimestamp(new Date());
 		return boundary;
 	}
 }
