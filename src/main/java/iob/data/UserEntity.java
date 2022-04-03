@@ -37,7 +37,6 @@ public class UserEntity {
 
 	public UserEntity(String userId, String firstName, String lastName, String email, String password, Date birthDate,
 			UserGender gender, UserGender interestedIn, String phoneNum, String address) {
-		super();
 		this.userId = userId;
 		this.firstName = firstName;
 		this.lastName = lastName;

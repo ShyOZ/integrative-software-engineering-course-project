@@ -16,6 +16,10 @@ public class ActivityId {
 		this.domain = domain;
 		this.id = id;
 	}
+	
+	public ActivityId(ActivityId other) {
+		this(other.domain, other.id);
+	}
 
 	public String getDomain() {
 		return domain;
