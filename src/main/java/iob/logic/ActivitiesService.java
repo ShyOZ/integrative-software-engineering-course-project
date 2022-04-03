@@ -1,5 +1,11 @@
 package iob.logic;
 
+import java.util.List;
+
+import iob.api.boundaries.ActivityBoundary;
+
 public interface ActivitiesService {
-	//TODO add required methods
-}
+	public Object invokeActivity(ActivityBoundary activity);
+	public List<ActivityBoundary> getAllActivities();
+	public void deleteAllActivities();
+} 

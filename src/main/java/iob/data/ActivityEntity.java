@@ -1,13 +1,11 @@
 package iob.data;
 
-import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import iob.api.activities.ActivityId;
 
 /*
  * Activity Table
