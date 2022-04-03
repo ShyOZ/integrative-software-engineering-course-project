@@ -3,12 +3,10 @@ package iob.api.controllers;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import iob.api.activities.ActivityId;
 import iob.api.boundaries.ActivityBoundary;
 import iob.api.boundaries.UserBoundary;
@@ -43,16 +41,10 @@ public class AdminController {
 			path = "/iob/admin/users", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary[] exportAllUsers() {
-		HashMap<String, String> userId1 = new HashMap<>();
-		userId1.put("domain", "2022b.Yaeli.Bar.Gimelstei");
-		userId1.put("email", "hello_world@iob123");
-
+		UserId userId1 = new UserId("2022b.Yaeli.Bar.Gimelstei", "hello_world@iob123");
 		UserBoundary ub1 = new UserBoundary(userId1, "ADMIN", "ShyOZ", "OZ");
 
-		HashMap<String, String> userId2 = new HashMap<>();
-		userId2.put("domain", "2022b.Yaeli.Bar.Gimelstei");
-		userId2.put("email", "goodbye_world@iob321");
-
+		UserId userId2 = new UserId("2022b.Yaeli.Bar.Gimelstei", "goodbye_world@iob321");
 		UserBoundary ub2 = new UserBoundary(userId2, "PLAYER", "NOTShyOZ", "N");
 
 		return new UserBoundary[] { ub1, ub2 };
@@ -69,7 +61,7 @@ public class AdminController {
 		ab.setCreatedTimestamp(new Date());
 		ab.setInstance(null);
 
-		UserId uid = new UserId("ShyOZ@iob.com");
+		UserId uid = new UserId("2022b.Yaeli.Bar.Gimelstei", "ShyOZ@iob.com");
 		uid.setDomain("2022b.Yaeli.Bar.Gimelstei");
 		Map<String, UserId> invoker = new HashMap<>();
 		invoker.put("userId", uid);

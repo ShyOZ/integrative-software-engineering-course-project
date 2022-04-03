@@ -62,7 +62,7 @@ public class GeneralInstanceController {
 		location.put("lng", 45.7453);
 
 		Map<String, UserId> userMap = new TreeMap<String, UserId>();
-		userMap.put("UserId", new UserId("sorany123@gmail.com"));
+		userMap.put("UserId", new UserId("2022b.Yaeli.Bar.Gimelstei", "sorany123@gmail.com"));
 
 		Message m1 = new Message(new Profile(), new Profile(), "helloWorld");
 		Message m2 = new Message(new Profile(), new Profile(), "helloWorld2");

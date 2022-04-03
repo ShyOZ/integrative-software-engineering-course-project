@@ -1,7 +1,5 @@
 package iob.api.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import iob.api.boundaries.NewUserBoundary;
 import iob.api.boundaries.UserBoundary;
+import iob.api.instances.UserId;
 
 @RestController
 public class UsersController {
@@ -23,11 +22,7 @@ public class UsersController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary createNewUser(@RequestBody NewUserBoundary newUser) {
 		// MOCKUP implementation
-		Map<String, String> userIdMap = new HashMap<String, String>();
-
-		userIdMap.put("domain", "2022b.Yaeli.Bar.Gimelshtei");
-		userIdMap.put("email", newUser.getEmail());
-
+		UserId userIdMap = new UserId("2022b.Yaeli.Bar.Gimelshtei",newUser.getEmail());
 		UserBoundary user = new UserBoundary(userIdMap, newUser.getRole(), newUser.getUsername(), newUser.getAvatar());
 		return user;
 	}
@@ -39,11 +34,7 @@ public class UsersController {
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, 
 			@PathVariable("userEmail") String userEmail) {
 		// MOCKUP implementation
-		Map<String, String> userIdMap = new HashMap<String, String>();
-
-		userIdMap.put("domain", userDomain);
-		userIdMap.put("email", userEmail);
-
+		UserId userIdMap = new UserId(userDomain,userEmail);
 		UserBoundary user = new UserBoundary(userIdMap, "TESTER", "Shy_Ohev_Zion", "ShyOZ");
 		return user;
 	}

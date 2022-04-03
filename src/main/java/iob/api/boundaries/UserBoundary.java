@@ -3,30 +3,31 @@ package iob.api.boundaries;
 import java.util.HashMap;
 import java.util.Map;
 
+import iob.api.instances.UserId;
+
 public class UserBoundary {
 	
-	private Map<String, String> userId;
+	private UserId userId;
 	private String role;
 	private String username;
 	private String avatar;
 	
 	public UserBoundary() {
-		userId = new HashMap<>();
+		
 	}
 
-	public UserBoundary(Map<String, String> userId, String role, String username, String avatar) {
-		this();
+	public UserBoundary(UserId userId, String role, String username, String avatar) {
 		this.userId = userId;
 		this.role = role;
 		this.username = username;
 		this.avatar = avatar;
 	}
 
-	public Map<String, String> getUserId() {
+	public UserId getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Map<String, String> userId) {
+	public void setUserId(UserId userId) {
 		this.userId = userId;
 	}
 

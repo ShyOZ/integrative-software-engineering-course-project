@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 public class UserId {
 	@Value("${spring.application.name}")
 	private String domain;
-	
 	private String email;
 	
 	
@@ -13,9 +12,9 @@ public class UserId {
 		
 	}
 
-	public UserId(String email) {
-		this();
+	public UserId(String email, String domain) {
 		this.email = email;
+		this.domain = domain;
 	}
 
 	public String getDomain() {
