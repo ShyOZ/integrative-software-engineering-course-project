@@ -1,30 +1,12 @@
-package iob.data;
+package iob.logic.users;
 
 import java.util.Date;
+import iob.data.UserGender;
+import iob.data.UserRole;
+import iob.logic.instances.UserId;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-/*
- * USER Table
- * ------------
- * User ID      | First name   | Last name    | Email        | Password     | Birth date | Gender | 
- * VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | DATE       | ENUM   | 
- * 
- * Interested in | Phone number | Address      |  Role | User Name | Avatar | Domain
- * ENUM          | VARCHAR(255) | VARCHAR(255) |  ENUM | String    | String | String
- * */ 
-
-@Entity
-@Table(name = "USERS_TABLE")
-public class UserEntity {
-	private String userId;
+public class User {
+	private UserId userId;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -39,14 +21,15 @@ public class UserEntity {
 	private String avatar;
 	private String domain;
 	
-	public UserEntity() {
+	
+	public User() {
 		
 	}
 
-	
-	public UserEntity(String userId, String firstName, String lastName, String email, String password, Date birthDate,
-			UserGender gender, UserGender interestedIn, String phoneNum, String address, UserRole role, String userName,
+	public User(UserId userId, String firstName, String lastName, String email, String password, Date birthDate,
+			UserGender gender, UserGender interestedIn, String phoneNum, String address, UserRole role, String username,
 			String avatar, String domain) {
+		super();
 		this.userId = userId;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -58,21 +41,19 @@ public class UserEntity {
 		this.phoneNum = phoneNum;
 		this.address = address;
 		this.role = role;
-		this.username = userName;
+		this.username = username;
 		this.avatar = avatar;
 		this.domain = domain;
 	}
-	
-	@Id
-	public String getUserId() {
+
+	public UserId getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(UserId userId) {
 		this.userId = userId;
 	}
 
-	@Column(name = "First_name")
 	public String getFirstName() {
 		return firstName;
 	}
@@ -81,7 +62,6 @@ public class UserEntity {
 		this.firstName = firstName;
 	}
 
-	@Column(name="Last_name")
 	public String getLastName() {
 		return lastName;
 	}
@@ -90,7 +70,6 @@ public class UserEntity {
 		this.lastName = lastName;
 	}
 
-	@Column(name="Email")
 	public String getEmail() {
 		return email;
 	}
@@ -99,7 +78,6 @@ public class UserEntity {
 		this.email = email;
 	}
 
-	@Column(name="Password")
 	public String getPassword() {
 		return password;
 	}
@@ -108,8 +86,6 @@ public class UserEntity {
 		this.password = password;
 	}
 
-	@Temporal(TemporalType.DATE)
-	@Column(name="Birth_date")
 	public Date getBirthDate() {
 		return birthDate;
 	}
@@ -118,8 +94,6 @@ public class UserEntity {
 		this.birthDate = birthDate;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="Gender")
 	public UserGender getGender() {
 		return gender;
 	}
@@ -128,8 +102,6 @@ public class UserEntity {
 		this.gender = gender;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="Interested_in")
 	public UserGender getInterestedIn() {
 		return interestedIn;
 	}
@@ -138,7 +110,6 @@ public class UserEntity {
 		this.interestedIn = interestedIn;
 	}
 
-	@Column(name="Phone_number")
 	public String getPhoneNum() {
 		return phoneNum;
 	}
@@ -147,7 +118,6 @@ public class UserEntity {
 		this.phoneNum = phoneNum;
 	}
 
-	@Column(name="Address")
 	public String getAddress() {
 		return address;
 	}
@@ -156,7 +126,6 @@ public class UserEntity {
 		this.address = address;
 	}
 
-	@Column(name="User_Role")
 	public UserRole getRole() {
 		return role;
 	}
@@ -165,16 +134,14 @@ public class UserEntity {
 		this.role = role;
 	}
 
-	@Column(name="User_Name")
-	public String getUserName() {
+	public String getUsername() {
 		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.username = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	@Column(name="Avatar")
 	public String getAvatar() {
 		return avatar;
 	}
@@ -183,12 +150,19 @@ public class UserEntity {
 		this.avatar = avatar;
 	}
 
-	@Column(name="Domain")
 	public String getDomain() {
 		return domain;
 	}
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", password=" + password + ", birthDate=" + birthDate + ", gender=" + gender + ", interestedIn="
+				+ interestedIn + ", phoneNum=" + phoneNum + ", address=" + address + ", role=" + role + ", username="
+				+ username + ", avatar=" + avatar + ", domain=" + domain + "]";
 	}
 }

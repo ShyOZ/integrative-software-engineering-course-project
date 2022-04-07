@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import iob.logic.activities.ActivityBoundary;
 import iob.logic.activities.ActivityId;
 import iob.logic.instances.UserId;
+import iob.logic.users.User;
 import iob.logic.users.UserBoundary;
 
 @RestController
@@ -42,12 +43,9 @@ public class AdminController {
 			path = "/iob/admin/users", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary[] exportAllUsers() {
-		UserId userId1 = new UserId("2022b.Yaeli.Bar.Gimelstei", "hello_world@iob123");
-		UserBoundary ub1 = new UserBoundary(userId1, "ADMIN", "ShyOZ", "OZ");
-
-		UserId userId2 = new UserId("2022b.Yaeli.Bar.Gimelstei", "goodbye_world@iob321");
-		UserBoundary ub2 = new UserBoundary(userId2, "PLAYER", "NOTShyOZ", "N");
-
+		User mock = new User();
+		UserBoundary ub1 = new UserBoundary(mock);
+		UserBoundary ub2 = new UserBoundary(mock);
 		return new UserBoundary[] { ub1, ub2 };
 	}
 

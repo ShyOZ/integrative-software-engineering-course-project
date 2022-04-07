@@ -1,61 +1,30 @@
 package iob.logic.users;
 
+import iob.data.UserRole;
 import iob.logic.instances.UserId;
 
 public class UserBoundary {
-	
-	private UserId userId;
-	private String role;
-	private String username;
-	private String avatar;
+	private User user;
+
 	
 	public UserBoundary() {
 		
 	}
 
-	public UserBoundary(UserId userId, String role, String username, String avatar) {
-		this.userId = userId;
-		this.role = role;
-		this.username = username;
-		this.avatar = avatar;
+	public UserBoundary(User user) {
+		this.user = user;
 	}
 
-	public UserId getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(UserId userId) {
-		this.userId = userId;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getAvatar() {
-		return avatar;
-	}
-
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	@Override
 	public String toString() {
-		return "UserBoundary [userId=" + userId + ", role=" + role + ", username=" + username + ", avatar=" + avatar
-				+ "]";
+		return "UserBoundary [user=" + user.toString() + "]";
 	}
-	
 }

@@ -12,10 +12,7 @@ public class UsersServiceJPA implements UsersService {
 	@Override
 	public UserBoundary createUser(NewUserBoundary user) {
 		UserBoundary newUser = new UserBoundary();
-		newUser.setUsername(user.getUsername());
-		newUser.setAvatar(user.getAvatar());
-		newUser.setRole(user.getRole());
-		newUser.setUserId(new UserId("2022b.Yaeli.Bar.Gimelstei", "yaeli@gmail.com"));
+		
 		
 		//add user to data base
 		
@@ -31,10 +28,7 @@ public class UsersServiceJPA implements UsersService {
 	@Override
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
 		UserBoundary newUser = new UserBoundary();
-		newUser.setUsername(update.getUsername());
-		newUser.setAvatar(update.getAvatar());
-		newUser.setRole(update.getRole());
-		newUser.setUserId(new UserId(userDomain, userEmail));
+		
 		//add user to data base
 		return newUser;
 	}
