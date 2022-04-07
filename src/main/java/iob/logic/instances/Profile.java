@@ -9,7 +9,6 @@ import iob.data.UserGender;
 import iob.logic.users.User;
 
 public class Profile implements Instance {
-	private User user;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -25,19 +24,6 @@ public class Profile implements Instance {
 	public Profile() {
 		chats = new HashMap<Profile, Chat>();
 	}
-
-	
-
-	public User getUser() {
-		return user;
-	}
-
-
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 
 
 	public String getFirstName() {
@@ -175,7 +161,6 @@ public class Profile implements Instance {
 	@Override
 	public Map<String, Object> getInstanceAttributes() {
 		Map<String, Object> attributes = new TreeMap<String, Object>();
-		attributes.put("user", this.user);
 		attributes.put("first name", this.firstName);
 		attributes.put("last name", this.lastName);
 		attributes.put("email", this.email);
@@ -194,7 +179,7 @@ public class Profile implements Instance {
 
 	@Override
 	public String toString() {
-		return "Profile [user=" + user.toString() + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+		return "Profile [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", password=" + password + ", birthDate=" + birthDate + ", gender=" + gender + ", interestedIn="
 				+ interestedIn + ", phoneNum=" + phoneNum + ", address=" + address + ", musicalTaste=" + musicalTaste
 				+ ", chats=" + chats + "]";
