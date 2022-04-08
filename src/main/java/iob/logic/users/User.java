@@ -1,11 +1,10 @@
 package iob.logic.users;
 
-import iob.data.UserRole;
 import iob.logic.instances.UserId;
 
 public class User {
 	private UserId userId;
-	private UserRole role;
+	private UserRoleLogic role;
 	private String username;
 	private String avatar;
 	
@@ -15,7 +14,7 @@ public class User {
 	}
 
 
-	public User(UserId userId, UserRole role, String username, String avatar) {
+	public User(UserId userId, UserRoleLogic role, String username, String avatar) {
 		this.userId = userId;
 		this.role = role;
 		this.username = username;
@@ -33,12 +32,12 @@ public class User {
 	}
 
 
-	public UserRole getRole() {
+	public UserRoleLogic getRole() {
 		return role;
 	}
 
 
-	public void setRole(UserRole role) {
+	public void setRole(UserRoleLogic role) {
 		this.role = role;
 	}
 

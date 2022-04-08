@@ -4,9 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
 import iob.data.UserGender;
-import iob.logic.users.User;
+
 
 public class Profile implements Instance {
 	private String firstName;

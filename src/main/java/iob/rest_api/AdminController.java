@@ -7,13 +7,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import iob.data.UserRole;
 import iob.logic.activities.ActivityBoundary;
 import iob.logic.activities.ActivityId;
 import iob.logic.instances.UserId;
-import iob.logic.users.User;
 import iob.logic.users.UserBoundary;
+import iob.logic.users.UserRoleLogic;
 
 @RestController
 public class AdminController {
@@ -45,9 +43,9 @@ public class AdminController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary[] exportAllUsers() {
 		UserBoundary ub1 = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
-				UserRole.ADMIN, "user name check", "cool avatr");
+				UserRoleLogic.ADMIN, "user name check", "cool avatr");
 		UserBoundary ub2 = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
-				UserRole.ADMIN, "user name check", "cool avatr");
+				UserRoleLogic.ADMIN, "user name check", "cool avatr");
 		return new UserBoundary[] { ub1, ub2 };
 	}
 

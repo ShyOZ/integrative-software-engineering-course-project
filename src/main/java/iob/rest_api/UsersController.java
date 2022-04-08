@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import iob.data.UserRole;
 import iob.logic.instances.UserId;
 import iob.logic.users.NewUserBoundary;
-import iob.logic.users.User;
 import iob.logic.users.UserBoundary;
+import iob.logic.users.UserRoleLogic;
 
 @RestController
 public class UsersController {
@@ -25,7 +23,7 @@ public class UsersController {
 	public UserBoundary createNewUser(@RequestBody NewUserBoundary newUser) {
 		// MOCKUP implementation
 		UserBoundary userBoundary = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
-				UserRole.ADMIN, "user name check", "cool avatr");
+				UserRoleLogic.ADMIN, "user name check", "cool avatr");
 		return userBoundary;
 	}
 
@@ -37,7 +35,7 @@ public class UsersController {
 			@PathVariable("userEmail") String userEmail) {
 		// MOCKUP implementation
 		UserBoundary userBoundary = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
-				UserRole.ADMIN, "user name check", "cool avatr");
+				UserRoleLogic.ADMIN, "user name check", "cool avatr");
 		return userBoundary;
 	}
 
