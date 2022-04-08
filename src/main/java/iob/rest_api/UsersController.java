@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import iob.data.UserRole;
+import iob.logic.instances.UserId;
 import iob.logic.users.NewUserBoundary;
 import iob.logic.users.User;
 import iob.logic.users.UserBoundary;
@@ -21,8 +24,8 @@ public class UsersController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary createNewUser(@RequestBody NewUserBoundary newUser) {
 		// MOCKUP implementation
-		User mockUser = new User();
-		UserBoundary userBoundary = new UserBoundary(mockUser);
+		UserBoundary userBoundary = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
+				UserRole.ADMIN, "user name check", "cool avatr");
 		return userBoundary;
 	}
 
@@ -33,8 +36,8 @@ public class UsersController {
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, 
 			@PathVariable("userEmail") String userEmail) {
 		// MOCKUP implementation
-		User mockUser = new User();
-		UserBoundary userBoundary = new UserBoundary(mockUser);
+		UserBoundary userBoundary = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
+				UserRole.ADMIN, "user name check", "cool avatr");
 		return userBoundary;
 	}
 
