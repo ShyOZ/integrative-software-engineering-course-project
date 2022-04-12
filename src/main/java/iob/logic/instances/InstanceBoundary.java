@@ -16,10 +16,7 @@ public class InstanceBoundary {
 	private Map<String, Object> instanceAttributes;
 
 	public InstanceBoundary() {
-		this.instanceId = new HashMap<>();
-		this.createdBy = new HashMap<>();
-		this.location = new HashMap<>();
-		this.instanceAttributes = new HashMap<>();
+		
 	}
 
 	public InstanceBoundary(Map<String, String> instanceId, String type, String name, Boolean active,

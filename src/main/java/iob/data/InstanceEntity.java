@@ -1,35 +1,50 @@
 package iob.data;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /*
- * Activity Table
+ * INSTANCE_TABLE
  * 
- * Instance ID | Type         | Attributes
- * InstaceId   | VARCHAR(255) | Map
+ * INSTANCE_ID  | TYPE         | NAME         | ACTIVE  | CREATED_TS | CREATED_BY_DOMAIN | CREATED_BY_EMAIL | LAT    | LNG    | ATTRIBUTES  
+ * VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | boolean |            | VARCHAR(255)      | VARCHAR(255)     | double | double | CLOB
  * */
 
 @Entity
-@Table(name = "INSTANCES_TABLE")
+@Table(name = "INSTANCE_TABLE")
 public class InstanceEntity {
 	private String instanceId;
 	private String type;
-	//private Map<String, Object> attributes
-	//private InstanceId instanceId
+	private String name;
+	private boolean active;
+	private Date createdTimestamp;
+	private String createdByDomain;
+	private String createdByEmail;
+	private double lat;
+	private double lng;
+	private String attributes;
 
 	public InstanceEntity() {
 
 	}
-	
-	public InstanceEntity(String instanceId, String type) {
-		this.instanceId = instanceId;
-		this.type = type;
+
+	@Id
+	public String getInstanceId() {
+		return instanceId;
 	}
 
-	@Column(name="Type")
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
+	}
+
 	public String getType() {
 		return type;
 	}
@@ -38,12 +53,71 @@ public class InstanceEntity {
 		this.type = type;
 	}
 
-	@Id
-	public String getinstanceId() {
-		return instanceId;
+	public String getName() {
+		return name;
 	}
 
-	public void setinstanceId(String instanceId) {
-		this.instanceId = instanceId;
+	public void setName(String name) {
+		this.name = name;
 	}
+
+	public boolean getActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "CREATED_TS")
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
+	}
+
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
+	}
+
+	public String getCreatedByDomain() {
+		return createdByDomain;
+	}
+
+	public void setCreatedByDomain(String createdByDomain) {
+		this.createdByDomain = createdByDomain;
+	}
+
+	public String getCreatedByEmail() {
+		return createdByEmail;
+	}
+
+	public void setCreatedByEmail(String createdByEmail) {
+		this.createdByEmail = createdByEmail;
+	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public double getLng() {
+		return lng;
+	}
+
+	public void setLng(double lng) {
+		this.lng = lng;
+	}
+
+	@Lob
+	public String getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(String attributes) {
+		this.attributes = attributes;
+	}
+
 }

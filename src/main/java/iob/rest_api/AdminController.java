@@ -3,18 +3,27 @@ package iob.rest_api;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import iob.logic.activities.ActivityBoundary;
 import iob.logic.activities.ActivityId;
+import iob.logic.instances.InstancesService;
 import iob.logic.instances.UserId;
 import iob.logic.users.UserBoundary;
 import iob.logic.users.UserRoleLogic;
 
 @RestController
 public class AdminController {
+	private InstancesService instanceService;
+	
+	@Autowired
+	public void setInstanceService(InstancesService instanceService) {
+		this.instanceService = instanceService;
+	}
 
 	@RequestMapping(
 			method = RequestMethod.DELETE, 
@@ -27,7 +36,7 @@ public class AdminController {
 			method = RequestMethod.DELETE, 
 			path = "/iob/admin/instances")
 	public void deleteAllInstances() {
-		// MOCKUP implementation
+		instanceService.deleteAllInstances();
 	}
 
 	@RequestMapping(
