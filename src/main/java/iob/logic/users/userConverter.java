@@ -22,7 +22,7 @@ public class userConverter {
 	
 	public UserEntity toEntity(User boundary) {
 		UserEntity entity = new UserEntity();
-		entity.setUserId(toEntity(boundary.getUserId()));
+		entity.setUserId(toEntity(boundary.getUserId().getDomain(), boundary.getUserId().getEmail()));
 		entity.setAvatar(boundary.getAvatar());
 		entity.setUserName(boundary.getUsername());
 		entity.setRole(toEntity(boundary.getRole()));
@@ -31,7 +31,7 @@ public class userConverter {
 	
 	public UserEntity toEntity(NewUserBoundary user) {
 		UserEntity entity = new UserEntity();
-		entity.setUserId(UUID.randomUUID().toString());
+		entity.setUserId(toEntity("2022b.Yaeli.Bar.Gimelshtei", UUID.randomUUID().toString()));
 		entity.setAvatar(user.getAvatar());
 		entity.setUserName(user.getUsername());
 		entity.setRole(UserRole.player);
@@ -48,10 +48,12 @@ public class userConverter {
 		return boundary;
 	}
 	
+	public String toEntity(UserId id) {
+		return toEntity(id.getDomain(), id.getEmail());
+	}
 	
-	
-	public String toEntity (UserId boundaryId) {
-		return boundaryId.getDomain() + "/" + boundaryId.getEmail();
+	public String toEntity (String domain, String email) {
+		return domain + "/" + email;
 	}
 	
 	public UserRole toEntity(UserRoleLogic boundaryRole) {
