@@ -44,13 +44,13 @@ public class UsersServiceJPA implements UsersService {
 
 	@Override
 	public UserBoundary login(String userDomain, String userEmail) {
-		UserEntity logged = getMessageEntityById(this.userConverter.toEntity(new UserId(userDomain, userEmail)));
+		UserEntity logged = getUserEntityById(this.userConverter.toEntity(new UserId(userDomain, userEmail)));
 		return this.userConverter.toBoundary(logged);
 	}
 
 	@Override
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-		UserEntity entity = getMessageEntityById(this.userConverter.toEntity(new UserId(userDomain, userEmail)));
+		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(userDomain, userEmail)));
 		entity.setAvatar(update.getAvatar());
 		entity.setUserName(update.getUsername());
 		entity.setRole(this.userConverter.toEntity(update.getRole()));
@@ -75,7 +75,7 @@ public class UsersServiceJPA implements UsersService {
 		this.userCrud.deleteAll();	
 	}
 	
-	private UserEntity getMessageEntityById(String id) {
+	private UserEntity getUserEntityById(String id) {
 		Optional<UserEntity> op = this.userCrud.findById(id);
 
 		if (op.isPresent()) {
