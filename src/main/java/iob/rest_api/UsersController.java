@@ -1,19 +1,25 @@
 package iob.rest_api;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import iob.logic.instances.UserId;
 import iob.logic.users.NewUserBoundary;
 import iob.logic.users.UserBoundary;
-import iob.logic.users.UserRoleLogic;
+import iob.logic.users.UsersService;
 
 @RestController
 public class UsersController {
+	private UsersService service;
+	
+	@Autowired
+	public void setUserService(UsersService userService) {
+		this.service = userService;
+	}
 
 	@RequestMapping(
 			method = RequestMethod.POST, 
@@ -21,10 +27,7 @@ public class UsersController {
 			consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary createNewUser(@RequestBody NewUserBoundary newUser) {
-		// MOCKUP implementation
-		UserBoundary userBoundary = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
-				UserRoleLogic.ADMIN, "user name check", "cool avatr");
-		return userBoundary;
+		return service.createUser(newUser);
 	}
 
 	@RequestMapping(
@@ -33,10 +36,7 @@ public class UsersController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, 
 			@PathVariable("userEmail") String userEmail) {
-		// MOCKUP implementation
-		UserBoundary userBoundary = new UserBoundary(new UserId("2022b.Yaeli.bar.gimelshtei", "email@gmail.com"),
-				UserRoleLogic.ADMIN, "user name check", "cool avatr");
-		return userBoundary;
+		return service.login(userDomain, userEmail);
 	}
 
 	@RequestMapping(
@@ -45,7 +45,6 @@ public class UsersController {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateUser(@RequestBody UserBoundary user, @PathVariable("userDomain") String userDomain,
 			@PathVariable("userEmail") String userEmail) {
-		// MOCKUP implementation
-		System.err.println("userDomain: " + userDomain + "\nuserEmail: " + userEmail);
+		service.updateUser(userDomain, userEmail, user);
 	}
 }
