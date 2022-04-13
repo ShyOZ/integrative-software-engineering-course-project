@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import iob.data.UserEntity;
-import iob.logic.MessageNotFoundException;
 import iob.logic.instances.UserId;
 
 @Service
@@ -63,8 +62,8 @@ public class UsersServiceJPA implements UsersService {
 	public List<UserBoundary> getAllUsers() {
 		Iterable<UserEntity> iter = this.userCrud.findAll();
 		List<UserBoundary> rv = new ArrayList<>();
-		for (UserEntity msg : iter) {
-			rv.add(this.userConverter.toBoundary(msg));
+		for (UserEntity usr : iter) {
+			rv.add(this.userConverter.toBoundary(usr));
 		}
 		return rv;
 	}
@@ -82,7 +81,7 @@ public class UsersServiceJPA implements UsersService {
 			UserEntity entity = op.get();
 			return entity;
 		} else {
-			throw new MessageNotFoundException("could not find message by id: " + id);
+			throw new UserNotFoundException("could not find message by id: " + id);
 		}
 	}
 	

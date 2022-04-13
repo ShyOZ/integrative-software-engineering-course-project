@@ -31,7 +31,7 @@ public class InstancesServiceJPA implements InstancesService {
 	}
 	
 	@Value("${configurable.instance.text:Default instance}")
-	public void setConfigurableUser(String configurableInstance) {
+	public void setConfigurableInstance(String configurableInstance) {
 		this.configurableInstance = configurableInstance;
 	}
 

@@ -16,7 +16,7 @@ public class ActivityController {
 	private ActivitiesService activitiesSrevice;
 	
 	@Autowired
-	public void setInstanceService(ActivitiesService activitiesSrevice ) {
+	public void setActivityService(ActivitiesService activitiesSrevice ) {
 		this.activitiesSrevice = activitiesSrevice;
 	}
 
@@ -26,7 +26,7 @@ public class ActivityController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	
-	public Object createInstance(@RequestBody ActivityBoundary boundary) {
+	public Object createActivityInstance(@RequestBody ActivityBoundary boundary) {
 		return this.activitiesSrevice.invokeActivity(boundary);
 	}
 }

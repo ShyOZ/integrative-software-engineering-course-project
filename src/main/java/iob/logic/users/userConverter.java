@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iob.data.UserEntity;
 import iob.data.UserRole;
+import iob.logic.activities.ActivityId;
 import iob.logic.instances.UserId;
 
 
@@ -50,12 +51,7 @@ public class userConverter {
 	
 	
 	public String toEntity (UserId boundaryId) {
-		try {
-			return this.jackson
-				.writeValueAsString(boundaryId);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return boundaryId.getDomain() + "/" + boundaryId.getEmail();
 	}
 	
 	public UserRole toEntity(UserRoleLogic boundaryRole) {
@@ -77,10 +73,7 @@ public class userConverter {
 	}
 	
 	public UserId toBoundaryFromJsonString (String json){
-		try {
-			return this.jackson.readValue(json, UserId.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		String[] domainId = json.split("/");
+		return new UserId(domainId[0], domainId[1]);
 	}
 }

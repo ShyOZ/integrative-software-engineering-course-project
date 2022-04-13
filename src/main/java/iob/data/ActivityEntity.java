@@ -1,6 +1,8 @@
 package iob.data;
 
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,7 +12,7 @@ import javax.persistence.Table;
 /*
  * Activity Table
  * Activity ID | Type         | Performer    | Receiver     | Attributes
- * ActivityId  | VARCHAR(255) | UserEntityId | UserEntityId | Map
+ * String      | VARCHAR(255) | UserEntityId | UserEntityId | Map
  * 
  * 
  * */
@@ -20,22 +22,23 @@ import javax.persistence.Table;
 public class ActivityEntity {
 	private String activityId;
 	private String type;
-	private String performerId;
-	private String receiverId;
-//	private Map<String, Object> attributes;
-//	private ActivityId activityId
+	private String instance;
+	private Date createdTimestamp;
+	private String invokedBy;
+	private String attributes;
 	
 	public ActivityEntity() {
 		
 	}
 
-	public ActivityEntity(String activityId, String type, String performer, String receiver
-			/*, Map<String, Object> attributes*/) {
+	public ActivityEntity(String activityId, String type, String instance, Date createdTimestamp,
+			String invokedBy, String attributes) {
 		this.activityId = activityId;
 		this.type = type;
-		this.performerId = performer;
-		this.receiverId = receiver;
-//		this.attributes = attributes;
+		this.instance = instance;
+		this.createdTimestamp = createdTimestamp;
+		this.invokedBy = invokedBy;
+		this.attributes = attributes;
 	}
 
 	@Column(name="Type")
@@ -47,32 +50,23 @@ public class ActivityEntity {
 		this.type = type;
 	}
 
-	@Column(name="Performer")
-	public String getPerformerId() {
-		return performerId;
+	@Column(name="Invoked_By")
+	public String getInvokedBy() {
+		return invokedBy;
 	}
 
-	public void setPerformerId(String performer) {
-		this.performerId = performer;
+	public void setInvokedBy(String invokedBy) {
+		this.invokedBy = invokedBy;
 	}
 
-	@Column(name="Receiver")
-	public String getReceiverId() {
-		return receiverId;
+	@Column(name="Attributes")
+	public String getAttributes() {
+		return attributes;
 	}
 
-	public void setReceiverId(String receiver) {
-		this.receiverId = receiver;
+	public void setAttributes(String attributes) {
+		this.attributes = attributes;
 	}
-
-//	@Column(name="Attributes")
-//	public Map<String, Object> getAttributes() {
-//		return attributes;
-//	}
-//
-//	public void setAttributes(Map<String, Object> attributes) {
-//		this.attributes = attributes;
-//	}
 
 	@Id
 	public String getactivityId() {
@@ -81,6 +75,24 @@ public class ActivityEntity {
 
 	public void setactivityId(String activityId) {
 		this.activityId = activityId;
+	}
+	
+	@Column(name="Instance")
+	public String getInstance() {
+		return instance;
+	}
+
+	public void setInstance(String instance) {
+		this.instance = instance;
+	}
+
+	@Column(name="Created_Timestamp")
+	public Date getCreatedTimestamp() {
+		return createdTimestamp;
+	}
+
+	public void setCreatedTimestamp(Date createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
 }
