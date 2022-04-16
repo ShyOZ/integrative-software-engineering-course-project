@@ -1,7 +1,5 @@
 package iob.logic.users;
 
-import iob.logic.instances.UserId;
-
 public class User {
 	private UserId userId;
 	private UserRoleLogic role;

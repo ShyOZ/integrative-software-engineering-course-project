@@ -7,12 +7,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iob.data.UserEntity;
 import iob.data.UserRole;
-import iob.logic.activities.ActivityId;
-import iob.logic.instances.UserId;
 
 
 @Component
-public class userConverter {
+public class UserConverter {
 	private ObjectMapper jackson;
 	
 	@PostConstruct

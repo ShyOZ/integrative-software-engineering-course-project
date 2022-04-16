@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iob.data.InstanceEntity;
+import iob.logic.users.UserId;
 
 @Component
 public class InstanceConverter {

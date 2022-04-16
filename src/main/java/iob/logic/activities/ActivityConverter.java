@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iob.data.ActivityEntity;
 import iob.logic.instances.Instance;
-import iob.logic.instances.UserId;
+import iob.logic.users.UserId;
 
 @Component
 public class ActivityConverter {

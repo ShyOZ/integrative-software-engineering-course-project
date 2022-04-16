@@ -1,7 +1,5 @@
 package iob.logic.users;
 
-import iob.logic.instances.UserId;
-
 public class UserBoundary {
 	private UserId userId;
 	private UserRoleLogic role;

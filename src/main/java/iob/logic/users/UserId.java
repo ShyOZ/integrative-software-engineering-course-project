@@ -1,4 +1,4 @@
-package iob.logic.instances;
+package iob.logic.users;
 
 import org.springframework.beans.factory.annotation.Value;
 

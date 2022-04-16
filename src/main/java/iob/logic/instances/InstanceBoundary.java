@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import iob.logic.users.UserId;
+
 public class InstanceBoundary {
 
 	private Map<String, String> instanceId;

@@ -8,16 +8,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import iob.logic.users.ExtendedUsersService;
 import iob.logic.users.NewUserBoundary;
 import iob.logic.users.UserBoundary;
-import iob.logic.users.UsersService;
+
 
 @RestController
 public class UsersController {
-	private UsersService service;
+	private ExtendedUsersService service;
 	
 	@Autowired
-	public void setUserService(UsersService userService) {
+	public void setUserService(ExtendedUsersService userService) {
 		this.service = userService;
 	}
 

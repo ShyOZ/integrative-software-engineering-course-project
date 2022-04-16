@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import iob.logic.instances.Instance;
-import iob.logic.instances.UserId;
+import iob.logic.users.UserId;
 
 public class ActivityBoundary {
 

@@ -3,7 +3,6 @@ package iob.data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 
 
@@ -23,6 +22,7 @@ public class UserEntity {
 	private String username;
 	private String avatar;
 	private String domain;
+	private int version;
 	
 	public UserEntity() {
 		
@@ -79,5 +79,14 @@ public class UserEntity {
 	
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+	
+	@Column(name="THE_VERSION")
+ 	public int getVersion() {
+ 		return version;
+ 	}
+	
+	public void setVersion(int version) {
+		this.version = version;
 	}
 }
