@@ -1,6 +1,5 @@
 package iob.rest_api;
 
-
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -39,15 +38,19 @@ public class AdminController {
 
 	@RequestMapping(
 			method = RequestMethod.DELETE, 
-			path = "/iob/admin/instances")
-	public void deleteAllInstances() {
+			path = "/iob/admin/instances?userDomain={domain}&userEmail={email}")
+	public void deleteAllInstances(
+			@PathVariable("domain") String domain,
+			@PathVariable("email") String email) {
 		this.instanceService.deleteAllInstances();
 	}
 
 	@RequestMapping(
 			method = RequestMethod.DELETE, 
-			path = "/iob/admin/activities")
-	public void deleteAllActivities() {
+			path = "/iob/admin/activities?userDomain={domain}&userEmail={email}")
+	public void deleteAllActivities(
+			@PathVariable("domain") String domain,
+			@PathVariable("email") String email) {
 		this.activitiesSrevice.deleteAllActivities();
 	}
 
@@ -65,9 +68,13 @@ public class AdminController {
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = "/iob/admin/activities", 
+			path = "/iob/admin/activities?userDomain={domain}&userEmail={email}&size={size}&page={page}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<ActivityBoundary> exportAllActivities() {
+	public List<ActivityBoundary> exportAllActivities(
+			@PathVariable("domain") String domain,
+			@PathVariable("email") String email,
+			@PathVariable(name="size", required = false, value = "10") int size,
+			@PathVariable(name="page", required = false, value = "0") int page) {
 		return this.activitiesSrevice.getAllActivities();
 	}
 }
