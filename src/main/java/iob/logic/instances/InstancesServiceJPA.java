@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.InstanceEntity;
+import iob.logic.InstancesService;
 
 @Service
 public class InstancesServiceJPA implements InstancesService {

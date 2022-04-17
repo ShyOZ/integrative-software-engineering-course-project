@@ -1,6 +1,8 @@
-package iob.logic.activities;
+package iob.logic;
 
 import java.util.List;
+
+import iob.logic.activities.ActivityBoundary;
 
 public interface ActivitiesService {
 		

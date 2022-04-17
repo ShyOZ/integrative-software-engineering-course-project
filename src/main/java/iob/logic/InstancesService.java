@@ -1,6 +1,8 @@
-package iob.logic.instances;
+package iob.logic;
 
 import java.util.List;
+
+import iob.logic.instances.InstanceBoundary;
 
 public interface InstancesService {
 	

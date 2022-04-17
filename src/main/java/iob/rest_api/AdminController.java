@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import iob.logic.activities.ActivitiesService;
+
+import iob.logic.ActivitiesService;
+import iob.logic.ExtendedUsersService;
+import iob.logic.InstancesService;
 import iob.logic.activities.ActivityBoundary;
-import iob.logic.instances.InstancesService;
-import iob.logic.users.ExtendedUsersService;
 import iob.logic.users.UserBoundary;
 
 @RestController

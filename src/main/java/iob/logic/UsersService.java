@@ -1,6 +1,9 @@
-package iob.logic.users;
+package iob.logic;
 
 import java.util.List;
+
+import iob.logic.users.NewUserBoundary;
+import iob.logic.users.UserBoundary;
 
 public interface UsersService {
 	public UserBoundary createUser(NewUserBoundary user);

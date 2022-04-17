@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import iob.logic.InstancesService;
 import iob.logic.instances.InstanceBoundary;
-import iob.logic.instances.InstancesService;
 
 @RestController
 public class GeneralInstanceController {
