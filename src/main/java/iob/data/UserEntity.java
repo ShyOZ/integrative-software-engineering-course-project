@@ -21,19 +21,17 @@ public class UserEntity {
 	private UserRole role;
 	private String username;
 	private String avatar;
-	private String domain;
 	private int version;
 	
 	public UserEntity() {
 		
 	}	
 	
-	public UserEntity(String userId, UserRole role, String username, String avatar, String domain) {
+	public UserEntity(String userId, UserRole role, String username, String avatar) {
 		this.userId = userId;
 		this.role = role;
 		this.username = username;
 		this.avatar = avatar;
-		this.domain = domain;
 	}
 
 	@Id
@@ -70,15 +68,6 @@ public class UserEntity {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
-	}
-	
-	@Column(name="Domain")
-	public String getDomain() {
-		return domain;
-	}
-	
-	public void setDomain(String domain) {
-		this.domain = domain;
 	}
 	
 	@Column(name="THE_VERSION")

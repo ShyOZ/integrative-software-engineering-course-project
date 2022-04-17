@@ -1,8 +1,10 @@
 package iob.logic.users;
 
+import iob.data.UserRole;
+
 public class UserBoundary {
 	private UserId userId;
-	private UserRoleLogic role;
+	private UserRole role;
 	private String username;
 	private String avatar;
 	
@@ -11,7 +13,7 @@ public class UserBoundary {
 		
 	}
 	
-	public UserBoundary(UserId userId, UserRoleLogic role, String username, String avatar) {
+	public UserBoundary(UserId userId, UserRole role, String username, String avatar) {
 		this.userId = userId;
 		this.role = role;
 		this.username = username;
@@ -28,12 +30,12 @@ public class UserBoundary {
 	}
 
 
-	public UserRoleLogic getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
 
-	public void setRole(UserRoleLogic role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 
