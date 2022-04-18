@@ -1,6 +1,5 @@
 package iob.logic.instances;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,35 +11,34 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.InstanceEntity;
 import iob.logic.InstancesService;
+import iob.logic.utility.ConfigProperties;
 
 @Service
 public class InstancesServiceJPA implements InstancesService {
-	private String configurableInstance;
+	private InstanceBoundary defaultInstanceBoundary;
 	private InstancesCrud instanceCrud;
 	private InstanceConverter instanceConverter;
+	private ConfigProperties configProperties;
 
 	@Autowired
-	public InstancesServiceJPA(InstancesCrud instanceCrud, InstanceConverter instanceConverter) {
+	public InstancesServiceJPA(InstancesCrud instanceCrud, InstanceConverter instanceConverter,
+			ConfigProperties configProperties) {
 		this.instanceCrud = instanceCrud;
 		this.instanceConverter = instanceConverter;
-	}
-	
-	@Value("${configurable.instance.text:Default instance}")
-	public void setConfigurableInstance(String configurableInstance) {
-		this.configurableInstance = configurableInstance;
+		this.configProperties = configProperties;
 	}
 
 	@PostConstruct
-	public void init (){
-		System.err.println("configurableInstance: " + configurableInstance);
+	public void init() {
+		this.defaultInstanceBoundary = configProperties.defaultInstanceBoundary();
+		System.err.println("default Instance Boundary: " + this.defaultInstanceBoundary);
 	}
-	
+
 	@Override
 	@Transactional
 	public InstanceBoundary createInstance(InstanceBoundary instance) {
@@ -48,85 +46,85 @@ public class InstancesServiceJPA implements InstancesService {
 		instanceIdMap.put("domain", "2022b.Yaeli.Bar.Gimelshtei");
 		instanceIdMap.put("id", UUID.randomUUID().toString());
 		instance.setInstanceId(instanceIdMap);
-		
+
 		instance.setCreatedTimestamp(new Date());
-		
+
 		if (instance.getActive() == null) {
 			instance.setActive(true);
 		}
-		
+
 		if (instance.getLocation() == null) {
 			Map<String, Double> location = new HashMap<>();
 			location.put("lat", 0.0);
 			location.put("lng", 0.0);
 			instance.setLocation(location);
 		}
-		
+
 		InstanceEntity entity = instanceConverter.toEntity(instance);
 		entity = instanceCrud.save(entity);
 		return instanceConverter.toBoundary(entity);
 	}
-	
+
 	@Override
 	public InstanceBoundary updateInstance(String instanceDomain, String instanceId, InstanceBoundary update) {
 		InstanceEntity entity = getInstanceEntityById(instanceDomain, instanceId);
-		
+
 		if (update.getInstanceId() != null) {
 			// do nothing
 		}
-		
+
 		if (update.getType() != null) {
 			entity.setType(update.getType());
 		}
-			
+
 		if (update.getName() != null) {
 			entity.setName(update.getName());
 		}
-		
+
 		if (update.getActive() != null) {
 			entity.setActive(update.getActive());
 		}
-		
+
 		if (update.getCreatedTimestamp() != null) {
 			// do nothing
 		}
-		
+
 		if (update.getCreatedBy() != null) {
 			String domain = update.getCreatedBy().get("UserId").getDomain();
 			if (domain != null) {
 				entity.setCreatedByDomain(domain);
 			}
-			
+
 			String email = update.getCreatedBy().get("UserId").getEmail();
 			if (email != null) {
 				entity.setCreatedByEmail(email);
 			}
 		}
-		
+
 		if (update.getLocation() != null) {
 			Double lat = update.getLocation().get("lat");
 			if (lat != null) {
 				entity.setLat(lat);
 			}
-			
+
 			Double lng = update.getLocation().get("lng");
 			if (lng != null) {
 				entity.setLng(lng);
 			}
 		}
-		
+
 		if (update.getInstanceAttributes() != null) {
 			entity.setAttributes(instanceConverter.toEntity(update.getInstanceAttributes()));
 		}
-	
+
 		entity = instanceCrud.save(entity);
-		
+
 		return instanceConverter.toBoundary(entity);
 	}
 
 	private InstanceEntity getInstanceEntityById(String instanceDomain, String instanceId) {
-		Optional<InstanceEntity> op = instanceCrud.findById(instanceConverter.toEntity(instanceDomain, instanceId)); 
-			
+		Optional<InstanceEntity> op = instanceCrud.findById(instanceConverter.toEntity(instanceDomain, instanceId));
+
 		if (op.isPresent()) {
 			InstanceEntity entity = op.get();
 			return entity;
@@ -145,15 +143,15 @@ public class InstancesServiceJPA implements InstancesService {
 		Iterable<InstanceEntity> iter = instanceCrud.findAll();
 		List<InstanceBoundary> rv = new ArrayList<>();
 		for (InstanceEntity entity : iter) {
-				rv.add(instanceConverter.toBoundary(entity));
+			rv.add(instanceConverter.toBoundary(entity));
 		}
-		
+
 		return rv;
 	}
 
 	@Override
 	public void deleteAllInstances() {
-		instanceCrud.deleteAll();	
+		instanceCrud.deleteAll();
 	}
 
 }

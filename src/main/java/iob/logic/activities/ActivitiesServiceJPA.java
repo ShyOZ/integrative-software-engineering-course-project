@@ -8,49 +8,54 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.ActivityEntity;
 import iob.logic.ActivitiesService;
+import iob.logic.utility.ConfigProperties;
 
 @Service
 public class ActivitiesServiceJPA implements ActivitiesService {
-	private String configurableActivity;
+
+	private ActivityBoundary defaultActivityBoundary;
 	private ActivitiesCrud activityCrud;
 	private ActivityConverter activityConverter;
-	
+	private ConfigProperties configProperties;
+
 	@Autowired
-	public ActivitiesServiceJPA(ActivitiesCrud activityCrud, ActivityConverter activityConverter) {
-		this.activityConverter = activityConverter;
+	public ActivitiesServiceJPA(ActivitiesCrud activityCrud, ActivityConverter activityConverter,
+			ConfigProperties configProperties) {
 		this.activityCrud = activityCrud;
+		this.activityConverter = activityConverter;
+		this.configProperties=configProperties;
 	}
-	
-	@Value("${configurable.activity.text:Default activity}")
-	public void setConfigurableActivity(String configurableActivity) {
-		this.configurableActivity = configurableActivity;
-	}
-	
+
 	@PostConstruct
 	public void init() {
-		System.err.println("configurableActivity: " + configurableActivity);
-	}
-	
-	@Override
-	public Object invokeActivity(ActivityBoundary activity) {
-		activity.setCreatedTimestamp(new Date());
-		activity.setActivityId(new ActivityId("2022b.Yaeli.Bar.Gimelshtei", UUID.randomUUID().toString()));
-		ActivityEntity entity = this.activityCrud.save(this.activityConverter.toEntity(activity));
-		return activityCrud.save(entity);
+		this.defaultActivityBoundary = configProperties.defaultActivityBoundary();
+		System.err.println("Default Activity Boundary: " + this.defaultActivityBoundary);
 	}
 
 	@Override
+	@Transactional
+	public Object invokeActivity(ActivityBoundary activity) {
+		activity.setCreatedTimestamp(new Date());
+		activity.setActivityId(
+				new ActivityId(
+						this.defaultActivityBoundary.getActivityId().getDomain(), 
+						UUID.randomUUID().toString()));
+		ActivityEntity entity = this.activityCrud.save(this.activityConverter.toEntity(activity));
+		return this.activityConverter.toBoundary(entity);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public List<ActivityBoundary> getAllActivities() {
 		Iterable<ActivityEntity> iter = this.activityCrud.findAll();
 		List<ActivityBoundary> rv = new ArrayList<>();
-		for (ActivityEntity act : iter) {
-			rv.add(this.activityConverter.toBoundary(act));
+		for (ActivityEntity activity : iter) {
+			rv.add(this.activityConverter.toBoundary(activity));
 		}
 		return rv;
 	}

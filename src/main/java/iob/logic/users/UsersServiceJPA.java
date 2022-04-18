@@ -4,47 +4,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import iob.data.UserEntity;
 import iob.data.UserRole;
 import iob.logic.ExtendedUsersService;
+import iob.logic.utility.ConfigProperties;
 
 @Service
 public class UsersServiceJPA implements ExtendedUsersService {
-	private String configurableUser;
-	private User configurable;
+	private UserBoundary defaultUserBoundary;
 	private UsersCrud userCrud;
 	private UserConverter userConverter;
 	private String domain;
+	private ConfigProperties configProperties;
 
 	@Autowired
 	public UsersServiceJPA(UsersCrud messageCrud, UserConverter messageConverter,
-			@Value("${spring.application.name}") String domain) {
+			@Value("${spring.application.name}") String domain, ConfigProperties configProperties) {
 		this.userCrud = messageCrud;
 		this.userConverter = messageConverter;
 		this.domain = domain;
-	}
-	
-	@Value("${configurable.user.text:Default user}")
-	public void setConfigurableUser(String configurableUser) {
-		this.configurableUser = configurableUser;
-		this.configurable = toUser(this.configurableUser);
-	}
-	
-	private User toUser(String configurableUser) {
-		String[] userStr = configurableUser.split("/");
-		return new User(new UserId(userStr[0],this.domain), UserRole.valueOf(userStr[1]), userStr[2], userStr[3]);
+		this.configProperties = configProperties;
 	}
 
 	@PostConstruct
 	public void init (){
-		System.err.println("configurableUser: " + this.configurableUser);
+		this.defaultUserBoundary = configProperties.defaultUserBoundary();
+		System.err.println("Default User Boundary: " + this.defaultUserBoundary);
 	}
 
 	@Override
@@ -56,22 +51,22 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		if(user.getAvatar() != null) 
 			entity.setAvatar(user.getAvatar());
 		else 
-			entity.setAvatar(this.configurable.getAvatar());
+			entity.setAvatar(this.defaultUserBoundary.getAvatar());
 		
 		if(user.getUsername() != null) 
 			entity.setUserName(user.getUsername());
 		else 
-			entity.setUserName(this.configurable.getUsername());
+			entity.setUserName(this.defaultUserBoundary.getUsername());
 		
 		if(user.getRole() != null) 
 			entity.setRole(UserRole.valueOf(user.getRole()));
 		else 
-			entity.setRole(this.configurable.getRole());
+			entity.setRole(this.defaultUserBoundary.getRole());
 		
 		if(user.getEmail() != null)
 			entity.setUserId(this.userConverter.toEntity(new UserId(user.getEmail(), this.domain)));
 		else
-			entity.setUserId(this.userConverter.toEntity(this.configurable.getUserId()));
+			entity.setUserId(this.userConverter.toEntity(this.defaultUserBoundary.getUserId()));
 		
 		entity = this.userCrud.save(entity);
 		return this.userConverter.toBoundary(entity);

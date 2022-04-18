@@ -4,14 +4,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import iob.logic.instances.Instance;
+import iob.logic.instances.InstanceId;
 import iob.logic.users.UserId;
 
 public class ActivityBoundary {
 
 	private ActivityId activityId;
 	private String type;
-	private Map<String, Instance> instance;
+	private Map<String, InstanceId> instance;
 	private Date createdTimestamp;
 	private Map<String, UserId> invokedBy;
 	private Map<String, Object> activityAttributes;
@@ -22,7 +22,7 @@ public class ActivityBoundary {
 		this.activityAttributes = new HashMap<>();
 	}
 
-	public ActivityBoundary(ActivityId activityId, String type, Map<String, Instance> instance, Date createdTimestamp,
+	public ActivityBoundary(ActivityId activityId, String type, Map<String, InstanceId> instance, Date createdTimestamp,
 			Map<String, UserId> invokedBy, Map<String, Object> activityAttributes) {
 		this();
 		this.activityId = activityId;
@@ -49,11 +49,11 @@ public class ActivityBoundary {
 		this.type = type;
 	}
 
-	public Map<String, Instance> getInstance() {
+	public Map<String, InstanceId> getInstance() {
 		return instance;
 	}
 
-	public void setInstance(Map<String, Instance> instance) {
+	public void setInstance(Map<String, InstanceId> instance) {
 		this.instance = instance;
 	}
 
@@ -87,5 +87,4 @@ public class ActivityBoundary {
 				"ActivityBoundary [activityId=%s, type=%s, instance=%s, createdTimestamp=%s, invokedBy=%s, activityAttributes=%s]",
 				activityId, type, instance, createdTimestamp, invokedBy, activityAttributes);
 	}
-
 }
