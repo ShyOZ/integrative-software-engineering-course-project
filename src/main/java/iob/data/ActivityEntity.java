@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,23 +21,11 @@ VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | TIMESTAMP   | CLOB
 @Entity
 @Table(name = "ACTIVITIES_TABLE")
 public class ActivityEntity {
-	@Id
 	private String activityId;
-
-	@Column(name = "TYPE")
 	private String type;
-
-	@Column(name = "INSTANCE")
 	private String instance;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "ACTIVITY_TS")
 	private Date createdTimestamp;
-
-	@Column(name = "INVOKED_BY")
 	private String invokedBy;
-
-	@Column(name = "ATTRIBUTES")
 	private String attributes;
 
 	public ActivityEntity() {
@@ -53,6 +42,7 @@ public class ActivityEntity {
 		this.attributes = attributes;
 	}
 
+	@Id
 	public String getactivityId() {
 		return activityId;
 	}
@@ -61,10 +51,13 @@ public class ActivityEntity {
 		this.activityId = activityId;
 	}
 
+	@Column(name = "TYPE")
 	public String getType() {
 		return type;
 	}
 
+	@Lob
+	@Column(name = "INSTANCE")
 	public String getInstance() {
 		return instance;
 	}
@@ -73,6 +66,8 @@ public class ActivityEntity {
 		this.instance = instance;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "ACTIVITY_TS")
 	public Date getCreatedTimestamp() {
 		return createdTimestamp;
 	}
@@ -85,6 +80,8 @@ public class ActivityEntity {
 		this.type = type;
 	}
 
+	@Lob
+	@Column(name = "INVOKED_BY")
 	public String getInvokedBy() {
 		return invokedBy;
 	}
@@ -93,6 +90,8 @@ public class ActivityEntity {
 		this.invokedBy = invokedBy;
 	}
 
+	@Lob
+	@Column(name = "ATTRIBUTES")
 	public String getAttributes() {
 		return attributes;
 	}

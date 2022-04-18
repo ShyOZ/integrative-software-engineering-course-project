@@ -45,6 +45,7 @@ public class InstanceEntity {
 		this.instanceId = instanceId;
 	}
 
+	@Column(name = "TYPE")
 	public String getType() {
 		return type;
 	}
@@ -53,6 +54,7 @@ public class InstanceEntity {
 		this.type = type;
 	}
 
+	@Column(name = "NAME")
 	public String getName() {
 		return name;
 	}
@@ -61,6 +63,7 @@ public class InstanceEntity {
 		this.name = name;
 	}
 
+	@Column(name = "ACTIVITY")
 	public boolean getActive() {
 		return active;
 	}
@@ -79,6 +82,7 @@ public class InstanceEntity {
 		this.createdTimestamp = createdTimestamp;
 	}
 
+	@Column(name = "CRATED_BY_DOMAIN")
 	public String getCreatedByDomain() {
 		return createdByDomain;
 	}
@@ -87,6 +91,7 @@ public class InstanceEntity {
 		this.createdByDomain = createdByDomain;
 	}
 
+	@Column(name = "CREATED_BY_EMAIL")
 	public String getCreatedByEmail() {
 		return createdByEmail;
 	}
@@ -95,6 +100,7 @@ public class InstanceEntity {
 		this.createdByEmail = createdByEmail;
 	}
 
+	@Column(name = "LAT")
 	public double getLat() {
 		return lat;
 	}
@@ -103,6 +109,7 @@ public class InstanceEntity {
 		this.lat = lat;
 	}
 
+	@Column(name = "LNG")
 	public double getLng() {
 		return lng;
 	}
@@ -112,6 +119,7 @@ public class InstanceEntity {
 	}
 
 	@Lob
+	@Column(name = "ATTRIBUTES")
 	public String getAttributes() {
 		return attributes;
 	}

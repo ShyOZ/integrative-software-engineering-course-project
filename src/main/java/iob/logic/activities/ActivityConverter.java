@@ -22,24 +22,6 @@ public class ActivityConverter {
 		this.jackson = new ObjectMapper();
 	}
 
-	public ActivityEntity toEntity(ActivityBoundary boundary) {
-		ActivityEntity entity = new ActivityEntity();
-
-		entity.setactivityId(toEntity(boundary.getActivityId().getDomain(), boundary.getActivityId().getId()));
-		if (boundary.getInvokedBy() != null)
-			entity.setInvokedBy(toEntity(boundary.getInvokedBy()));
-		if (boundary.getType() != null)
-			entity.setType(boundary.getType());
-		if (boundary.getInstance() != null)
-			entity.setInstance(toEntity(boundary.getInstance()));
-		if (boundary.getCreatedTimestamp() != null)
-			entity.setCreatedTimestamp(boundary.getCreatedTimestamp());
-		if (boundary.getActivityAttributes() != null)
-			entity.setAttributes(toEntity(boundary.getActivityAttributes()));
-
-		return entity;
-	}
-
 	public String toEntity(String activityDomain, String activityId) {
 		return activityDomain + "/" + activityId;
 	}
@@ -47,14 +29,6 @@ public class ActivityConverter {
 	public String toEntity(Map<String, ?> m) {
 		try {
 			return this.jackson.writeValueAsString(m);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public String toEntity(InstanceId instance) {
-		try {
-			return this.jackson.writeValueAsString(instance);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
