@@ -14,11 +14,11 @@ import iob.logic.activities.ActivityBoundary;
 
 @RestController
 public class ActivityController {
-	private ActivitiesService activitiesSrevice;
+	private ActivitiesService activitiesService;
 	
 	@Autowired
-	public void setActivityService(ActivitiesService activitiesSrevice ) {
-		this.activitiesSrevice = activitiesSrevice;
+	public void setActivityService(ActivitiesService activitiesService ) {
+		this.activitiesService = activitiesService;
 	}
 
 	@RequestMapping(
@@ -28,6 +28,6 @@ public class ActivityController {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	
 	public Object createActivityInstance(@RequestBody ActivityBoundary boundary) {
-		return this.activitiesSrevice.invokeActivity(boundary);
+		return this.activitiesService.invokeActivity(boundary);
 	}
 }

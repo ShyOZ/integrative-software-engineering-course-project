@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import iob.logic.ActivitiesService;
@@ -30,52 +31,52 @@ public class AdminController {
 
 	@RequestMapping(
 			method = RequestMethod.DELETE, 
-			path = "/iob/admin/users?userDomain={domain}&userEmail={email}")
+			path = "/iob/admin/users")
 	public void deleteAllUsers(
-			@PathVariable("domain") String domain,
-			@PathVariable("email") String email) {
+			@RequestParam("userDomain") String domain,
+			@RequestParam("userEmail") String email) {
 		this.userService.deleteAllUsers(domain, email);
 	}
 
 	@RequestMapping(
 			method = RequestMethod.DELETE, 
-			path = "/iob/admin/instances?userDomain={domain}&userEmail={email}")
+			path = "/iob/admin/instances")
 	public void deleteAllInstances(
-			@PathVariable("domain") String domain,
-			@PathVariable("email") String email) {
+			@RequestParam("userDomain") String domain,
+			@RequestParam("userEmail") String email) {
 		this.instanceService.deleteAllInstances();
 	}
 
 	@RequestMapping(
 			method = RequestMethod.DELETE, 
-			path = "/iob/admin/activities?userDomain={domain}&userEmail={email}")
+			path = "/iob/admin/activities")
 	public void deleteAllActivities(
-			@PathVariable("domain") String domain,
-			@PathVariable("email") String email) {
+			@RequestParam("userDomain") String domain,
+			@RequestParam("userEmail") String email) {
 		this.activitiesSrevice.deleteAllActivities();
 	}
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = "/iob/admin/users?userDomain={domain}&userEmail={email}&size={size}&page={page}", 
+			path = "/iob/admin/users", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<UserBoundary> exportAllUsers(
-			@PathVariable("domain") String domain,
-			@PathVariable("email") String email,
-			@PathVariable(name="size", required = false, value = "10") int size,
-			@PathVariable(name="page", required = false, value = "0") int page) {
+			@RequestParam("userDomain") String domain,
+			@RequestParam("userEmail") String email,
+			@RequestParam(name="size", required = false, value = "10") int size,
+			@RequestParam(name="page", required = false, value = "0") int page) {
 		return this.userService.getAllUsers(size,page, domain, email);
 	}
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = "/iob/admin/activities?userDomain={domain}&userEmail={email}&size={size}&page={page}", 
+			path = "/iob/admin/activities", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<ActivityBoundary> exportAllActivities(
-			@PathVariable("domain") String domain,
-			@PathVariable("email") String email,
-			@PathVariable(name="size", required = false, value = "10") int size,
-			@PathVariable(name="page", required = false, value = "0") int page) {
+			@RequestParam("userDomain") String domain,
+			@RequestParam("userEmail") String email,
+			@RequestParam(name="size", required = false, value = "10") int size,
+			@RequestParam(name="page", required = false, value = "0") int page) {
 		return this.activitiesSrevice.getAllActivities();
 	}
 }

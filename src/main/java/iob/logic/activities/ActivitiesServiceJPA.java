@@ -3,6 +3,7 @@ package iob.logic.activities;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -27,7 +28,7 @@ public class ActivitiesServiceJPA implements ActivitiesService {
 			ConfigProperties configProperties) {
 		this.activityCrud = activityCrud;
 		this.activityConverter = activityConverter;
-		this.configProperties=configProperties;
+		this.configProperties = configProperties;
 	}
 
 	@PostConstruct
@@ -40,30 +41,31 @@ public class ActivitiesServiceJPA implements ActivitiesService {
 	@Transactional
 	public Object invokeActivity(ActivityBoundary activity) {
 		ActivityEntity entity = new ActivityEntity();
-		
+
 		entity.setCreatedTimestamp(new Date());
-		entity.setactivityId(this.activityConverter.toEntity(activity.getActivityId().getDomain(), activity.getActivityId().getId()));
-		
-		if(activity.getType() != null) 
+		entity.setactivityId(this.activityConverter
+				.toEntity(new ActivityId(configProperties.getApplicationDomain(), UUID.randomUUID().toString())));
+
+		if (activity.getType() != null)
 			entity.setType(activity.getType());
 		else
 			entity.setType(this.defaultActivityBoundary.getType());
-		
-		if(activity.getInstance() != null) 
+
+		if (activity.getInstance() != null)
 			entity.setInstance(this.activityConverter.toEntity(activity.getInstance()));
 		else
 			entity.setInstance(this.activityConverter.toEntity(this.defaultActivityBoundary.getInstance()));
-		
-		if(activity.getInvokedBy() != null) 
+
+		if (activity.getInvokedBy() != null)
 			entity.setInvokedBy(this.activityConverter.toEntity(activity.getInvokedBy()));
 		else
 			entity.setInvokedBy(this.activityConverter.toEntity(this.defaultActivityBoundary.getInvokedBy()));
-		
-		if(activity.getActivityAttributes() != null) 
+
+		if (activity.getActivityAttributes() != null)
 			entity.setAttributes(this.activityConverter.toEntity(activity.getActivityAttributes()));
 		else
 			entity.setAttributes(this.activityConverter.toEntity(this.defaultActivityBoundary.getActivityAttributes()));
-		
+
 		return this.activityCrud.save(entity);
 	}
 

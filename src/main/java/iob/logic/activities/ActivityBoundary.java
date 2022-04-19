@@ -4,26 +4,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import iob.logic.instances.InstanceId;
-import iob.logic.users.UserId;
-
 public class ActivityBoundary {
 
 	private ActivityId activityId;
 	private String type;
-	private Map<String, InstanceId> instance;
+	private ActivityInstance instance;
 	private Date createdTimestamp;
-	private Map<String, UserId> invokedBy;
+	private ActivityInvoker invokedBy;
 	private Map<String, Object> activityAttributes;
 
 	public ActivityBoundary() {
-		this.instance = new HashMap<>();
-		this.invokedBy = new HashMap<>();
 		this.activityAttributes = new HashMap<>();
 	}
 
-	public ActivityBoundary(ActivityId activityId, String type, Map<String, InstanceId> instance, Date createdTimestamp,
-			Map<String, UserId> invokedBy, Map<String, Object> activityAttributes) {
+	public ActivityBoundary(ActivityId activityId, String type, ActivityInstance instance, Date createdTimestamp,
+			ActivityInvoker invokedBy, Map<String, Object> activityAttributes) {
 		this();
 		this.activityId = activityId;
 		this.type = type;
@@ -49,11 +44,11 @@ public class ActivityBoundary {
 		this.type = type;
 	}
 
-	public Map<String, InstanceId> getInstance() {
+	public ActivityInstance getInstance() {
 		return instance;
 	}
 
-	public void setInstance(Map<String, InstanceId> instance) {
+	public void setInstance(ActivityInstance instance) {
 		this.instance = instance;
 	}
 
@@ -65,11 +60,11 @@ public class ActivityBoundary {
 		this.createdTimestamp = createdTimestamp;
 	}
 
-	public Map<String, UserId> getInvokedBy() {
+	public ActivityInvoker getInvokedBy() {
 		return invokedBy;
 	}
 
-	public void setInvokedBy(Map<String, UserId> invokedBy) {
+	public void setInvokedBy(ActivityInvoker invokedBy) {
 		this.invokedBy = invokedBy;
 	}
 

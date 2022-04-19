@@ -25,7 +25,6 @@ public class ActivityId {
 		return domain;
 	}
 
-	@Value("${spring.application.name}")
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
