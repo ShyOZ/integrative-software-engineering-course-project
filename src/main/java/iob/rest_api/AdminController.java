@@ -63,8 +63,8 @@ public class AdminController {
 	public List<UserBoundary> exportAllUsers(
 			@RequestParam("userDomain") String domain,
 			@RequestParam("userEmail") String email,
-			@RequestParam(name="size", required = false, value = "10") int size,
-			@RequestParam(name="page", required = false, value = "0") int page) {
+			@RequestParam(name="size", required = false, defaultValue = "10") int size,
+			@RequestParam(name="page", required = false, defaultValue = "0") int page) {
 		return this.userService.getAllUsers(size,page, domain, email);
 	}
 
@@ -75,8 +75,8 @@ public class AdminController {
 	public List<ActivityBoundary> exportAllActivities(
 			@RequestParam("userDomain") String domain,
 			@RequestParam("userEmail") String email,
-			@RequestParam(name="size", required = false, value = "10") int size,
-			@RequestParam(name="page", required = false, value = "0") int page) {
+			@RequestParam(name="size", required = false, defaultValue = "10") int size,
+			@RequestParam(name="page", required = false, defaultValue = "0") int page) {
 		return this.activitiesSrevice.getAllActivities();
 	}
 }
