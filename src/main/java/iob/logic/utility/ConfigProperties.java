@@ -1,23 +1,18 @@
 package iob.logic.utility;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import iob.logic.activities.ActivityBoundary;
 import iob.logic.instances.InstanceBoundary;
-import iob.logic.users.User;
 import iob.logic.users.UserBoundary;
 
 @Configuration
 public class ConfigProperties {
-
-	@Value("${spring.application.name}")
-	public String applicationDomain;
-
+	@Bean
+	@ConfigurationProperties(prefix = "spring.application.name")
 	public String getApplicationDomain() {
-		return applicationDomain;
+		return new String();
 	}
 
 	@Bean
@@ -37,4 +32,6 @@ public class ConfigProperties {
 	public InstanceBoundary defaultInstanceBoundary() {
 		return new InstanceBoundary();
 	}
+	
+	
 }

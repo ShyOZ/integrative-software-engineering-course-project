@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import iob.data.UserEntity;
 import iob.data.UserRole;
 import iob.logic.ExtendedUsersService;
@@ -29,11 +25,11 @@ public class UsersServiceJPA implements ExtendedUsersService {
 
 	@Autowired
 	public UsersServiceJPA(UsersCrud messageCrud, UserConverter messageConverter,
-			@Value("${spring.application.name}") String domain, ConfigProperties configProperties) {
+			 ConfigProperties configProperties) {
 		this.userCrud = messageCrud;
 		this.userConverter = messageConverter;
-		this.domain = domain;
 		this.configProperties = configProperties;
+		this.domain = this.configProperties.getApplicationDomain();
 	}
 
 	@PostConstruct
