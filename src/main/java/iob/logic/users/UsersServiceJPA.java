@@ -101,7 +101,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Transactional
 	public void deleteAllUsers(String userDomain, String userEmail) {
 		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(userDomain, userEmail)));
-		if(entity.getRole().toString().equals(UserRole.ADMIN.toString())) {
+		if(entity.getRole().equals(UserRole.ADMIN)) {
 			this.userCrud.deleteAll();	
 		}
 	}
@@ -121,7 +121,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers(int size, int page, String domain, String email) {
 		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(domain, email)));
-		if(entity.getRole().toString().equals(UserRole.ADMIN.toString())) {
+		if(entity.getRole().equals(UserRole.ADMIN)) {
 			return this.userCrud
 					.findAll(PageRequest.of(page, size, Direction.ASC, "userId"))
 					.stream() // Stream<MessageEntity>
