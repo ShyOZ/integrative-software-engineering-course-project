@@ -40,3 +40,6 @@ configurable:
     invokedBy: 
       userId: 
         <<: *config_userId
+        
+spring.data.mongodb:  
+      uri: mongodb+srv://Duet:Duet2000@duetcluster.keglv.mongodb.net/duetDB?retryWrites=true&w=majority

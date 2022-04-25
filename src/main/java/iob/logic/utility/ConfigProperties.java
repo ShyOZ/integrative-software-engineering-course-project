@@ -1,5 +1,6 @@
 package iob.logic.utility;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,10 +10,12 @@ import iob.logic.users.UserBoundary;
 
 @Configuration
 public class ConfigProperties {
-	@Bean
-	@ConfigurationProperties(prefix = "spring.application.name")
+	
+	@Value("${spring.application.name}")
+	public String applicationDomain;
+
 	public String getApplicationDomain() {
-		return new String();
+		return applicationDomain;
 	}
 
 	@Bean

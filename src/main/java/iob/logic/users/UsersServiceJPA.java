@@ -14,22 +14,23 @@ import iob.data.UserEntity;
 import iob.data.UserRole;
 import iob.logic.ExtendedUsersService;
 import iob.logic.utility.ConfigProperties;
+import iob.mongo_repository.UserRepository;
 
 @Service
 public class UsersServiceJPA implements ExtendedUsersService {
 	private UserBoundary defaultUserBoundary;
-	private UsersCrud userCrud;
 	private UserConverter userConverter;
 	private String domain;
 	private ConfigProperties configProperties;
+	private UserRepository userRepo;
 
 	@Autowired
-	public UsersServiceJPA(UsersCrud messageCrud, UserConverter messageConverter,
-			 ConfigProperties configProperties) {
-		this.userCrud = messageCrud;
-		this.userConverter = messageConverter;
+	public UsersServiceJPA(UserConverter userConverter,
+			 ConfigProperties configProperties, UserRepository userRepo) {
+		this.userConverter = userConverter;
 		this.configProperties = configProperties;
 		this.domain = this.configProperties.getApplicationDomain();
+		this.userRepo = userRepo;
 	}
 
 	@PostConstruct
@@ -42,7 +43,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Transactional
 	public UserBoundary createUser(NewUserBoundary user) {
 		UserEntity entity = new UserEntity();
-		entity.setUserId(this.userConverter.toEntity(domain, user.getEmail()));
+		entity.setUserId(this.userConverter.toEntity(this.domain, user.getEmail()));
 		
 		if(user.getAvatar() != null) 
 			entity.setAvatar(user.getAvatar());
@@ -51,7 +52,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		
 		if(user.getUsername() != null) 
 			entity.setUserName(user.getUsername());
-		else 
+		else
 			entity.setUserName(this.defaultUserBoundary.getUsername());
 		
 		if(user.getRole() != null) 
@@ -64,7 +65,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		else
 			entity.setUserId(this.userConverter.toEntity(this.defaultUserBoundary.getUserId()));
 		
-		entity = this.userCrud.save(entity);
+		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
 	}
 
@@ -88,7 +89,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		if (update.getRole() != null) {
 			entity.setRole(update.getRole());
 		}
-		entity = this.userCrud.save(entity);
+		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
 	}
 
@@ -100,14 +101,15 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional
 	public void deleteAllUsers(String userDomain, String userEmail) {
-		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(userDomain, userEmail)));
+		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(userEmail, userDomain)));
+		System.out.println(entity.toString());
 		if(entity.getRole().equals(UserRole.ADMIN)) {
-			this.userCrud.deleteAll();	
+			this.userRepo.deleteAll();
 		}
 	}
 	
 	private UserEntity getUserEntityById(String id) {
-		Optional<UserEntity> op = this.userCrud.findById(id);
+		Optional<UserEntity> op = this.userRepo.findById(id);
 
 		if (op.isPresent()) {
 			UserEntity entity = op.get();
@@ -122,7 +124,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	public List<UserBoundary> getAllUsers(int size, int page, String domain, String email) {
 		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(domain, email)));
 		if(entity.getRole().equals(UserRole.ADMIN)) {
-			return this.userCrud
+			return this.userRepo
 					.findAll(PageRequest.of(page, size, Direction.ASC, "userId"))
 					.stream() // Stream<MessageEntity>
 					.map(this.userConverter::toBoundary) // Stream<Message>
@@ -136,7 +138,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserBoundary> getUsersByVersion(int version, int size, int page) {
-		return this.userCrud
+		return this.userRepo
 				.findAllByVersion(version, PageRequest.of(page, size, Direction.ASC, "userId"))
 				.stream()
 				.map(this.userConverter::toBoundary)

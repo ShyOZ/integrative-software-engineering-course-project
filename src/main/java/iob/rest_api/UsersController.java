@@ -14,9 +14,11 @@ import iob.logic.users.NewUserBoundary;
 import iob.logic.users.UserBoundary;
 
 
+
 @RestController
 public class UsersController {
 	private ExtendedUsersService service;
+	
 	
 	@Autowired
 	public void setUserService(ExtendedUsersService userService) {
@@ -49,4 +51,5 @@ public class UsersController {
 			@PathVariable("userEmail") String userEmail) {
 		service.updateUser(userDomain, userEmail, user);
 	}
+	
 }

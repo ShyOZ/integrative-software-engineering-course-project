@@ -1,22 +1,12 @@
 package iob.data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-
-/*
- * USER Table
- * ------------
- * User ID      | Role | User Name | Avatar | Domain
- * VARCHAR(255) | ENUM | String    | String | String
- * 
- * */ 
-
-@Entity
-@Table(name = "USERS_TABLE")
-public class UserEntity {
+@Document(collection="users")
+public class UserEntity{
+	
+	@Id
 	private String userId;
 	private UserRole role;
 	private String username;
@@ -29,21 +19,20 @@ public class UserEntity {
 	
 	public UserEntity(String userId, UserRole role, String username, String avatar) {
 		this.userId = userId;
-		this.role = role;
 		this.username = username;
+		this.role = role;
 		this.avatar = avatar;
 	}
 
-	@Id
-	public String getUserId() {
-		return userId;
+	
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	@Column(name="User_Role")
 	public UserRole getRole() {
 		return role;
 	}
@@ -52,7 +41,15 @@ public class UserEntity {
 		this.role = role;
 	}
 
-	@Column(name="User_Name")
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+
 	public String getUserName() {
 		return username;
 	}
@@ -61,7 +58,6 @@ public class UserEntity {
 		this.username = userName;
 	}
 
-	@Column(name="Avatar")
 	public String getAvatar() {
 		return avatar;
 	}
@@ -70,7 +66,6 @@ public class UserEntity {
 		this.avatar = avatar;
 	}
 	
-	@Column(name="THE_VERSION")
  	public int getVersion() {
  		return version;
  	}
@@ -78,4 +73,5 @@ public class UserEntity {
 	public void setVersion(int version) {
 		this.version = version;
 	}
+
 }
