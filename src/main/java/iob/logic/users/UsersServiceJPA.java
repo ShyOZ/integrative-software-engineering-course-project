@@ -48,22 +48,22 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		if(user.getAvatar() != null) 
 			entity.setAvatar(user.getAvatar());
 		else 
-			entity.setAvatar(this.defaultUserBoundary.getAvatar());
+			throw new UserNotFoundException("avatar is missing");
 		
 		if(user.getUsername() != null) 
 			entity.setUserName(user.getUsername());
 		else
-			entity.setUserName(this.defaultUserBoundary.getUsername());
+			throw new UserNotFoundException("user name is missing");
 		
 		if(user.getRole() != null) 
 			entity.setRole(UserRole.valueOf(user.getRole()));
 		else 
-			entity.setRole(this.defaultUserBoundary.getRole());
+			throw new UserNotFoundException("role is missing");
 		
 		if(user.getEmail() != null)
 			entity.setUserId(this.userConverter.toEntity(new UserId(user.getEmail(), this.domain)));
 		else
-			entity.setUserId(this.userConverter.toEntity(this.defaultUserBoundary.getUserId()));
+			throw new UserNotFoundException("email is missing");
 		
 		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
