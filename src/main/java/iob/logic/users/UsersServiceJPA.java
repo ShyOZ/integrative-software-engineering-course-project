@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import iob.data.UserEntity;
 import iob.data.UserRole;
+import iob.logic.BadRequestException;
 import iob.logic.ExtendedUsersService;
 import iob.logic.utility.ConfigProperties;
 import iob.mongo_repository.UserRepository;
@@ -48,22 +49,22 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		if(user.getAvatar() != null) 
 			entity.setAvatar(user.getAvatar());
 		else 
-			throw new UserNotFoundException("avatar is missing");
+			throw new BadRequestException("avatar is missing");
 		
 		if(user.getUsername() != null) 
 			entity.setUserName(user.getUsername());
 		else
-			throw new UserNotFoundException("user name is missing");
+			throw new BadRequestException("user name is missing");
 		
 		if(user.getRole() != null) 
 			entity.setRole(UserRole.valueOf(user.getRole()));
 		else 
-			throw new UserNotFoundException("role is missing");
+			throw new BadRequestException("role is missing");
 		
 		if(user.getEmail() != null)
 			entity.setUserId(this.userConverter.toEntity(new UserId(user.getEmail(), this.domain)));
 		else
-			throw new UserNotFoundException("email is missing");
+			throw new BadRequestException("email is missing");
 		
 		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
