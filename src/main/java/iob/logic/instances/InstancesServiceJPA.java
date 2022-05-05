@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.InstanceEntity;
 import iob.logic.InstancesService;
+import iob.logic.users.UserId;
 import iob.logic.utility.ConfigProperties;
 
 @Service
@@ -42,12 +43,14 @@ public class InstancesServiceJPA implements InstancesService {
 	@Override
 	@Transactional
 	public InstanceBoundary createInstance(InstanceBoundary instance) {
+		instance.setCreatedTimestamp(new Date());
+		
 		Map<String, String> instanceIdMap = new HashMap<String, String>();
-		instanceIdMap.put("domain", "2022b.Yaeli.Bar.Gimelshtei");
+		instanceIdMap.put("domain", configProperties.getApplicationDomain());
 		instanceIdMap.put("id", UUID.randomUUID().toString());
 		instance.setInstanceId(instanceIdMap);
 
-		instance.setCreatedTimestamp(new Date());
+		
 
 		if (instance.getActive() == null) {
 			instance.setActive(true);
@@ -66,6 +69,7 @@ public class InstancesServiceJPA implements InstancesService {
 	}
 
 	@Override
+	@Transactional
 	public InstanceBoundary updateInstance(String instanceDomain, String instanceId, InstanceBoundary update) {
 		InstanceEntity entity = getInstanceEntityById(instanceDomain, instanceId);
 
@@ -88,16 +92,20 @@ public class InstancesServiceJPA implements InstancesService {
 		if (update.getCreatedTimestamp() != null) {
 			// do nothing
 		}
-
+		
+		Map<String, UserId> createdBy = update.getCreatedBy();
 		if (update.getCreatedBy() != null) {
-			String domain = update.getCreatedBy().get("UserId").getDomain();
-			if (domain != null) {
-				entity.setCreatedByDomain(domain);
-			}
-
-			String email = update.getCreatedBy().get("UserId").getEmail();
-			if (email != null) {
-				entity.setCreatedByEmail(email);
+			UserId userId = createdBy.get("userId");
+			if (userId != null) {
+				String domain = userId.getDomain();
+				if (domain != null) {
+					entity.setCreatedByDomain(domain);
+				}
+	
+				String email = userId.getEmail();
+				if (email != null) {
+					entity.setCreatedByEmail(email);
+				}
 			}
 		}
 
@@ -134,11 +142,13 @@ public class InstancesServiceJPA implements InstancesService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public InstanceBoundary getSpecificInstance(String instanceDomain, String instanceId) {
 		return instanceConverter.toBoundary(getInstanceEntityById(instanceDomain, instanceId));
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<InstanceBoundary> getAllInstances() {
 		Iterable<InstanceEntity> iter = instanceCrud.findAll();
 		List<InstanceBoundary> rv = new ArrayList<>();
@@ -150,6 +160,7 @@ public class InstancesServiceJPA implements InstancesService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteAllInstances() {
 		instanceCrud.deleteAll();
 	}

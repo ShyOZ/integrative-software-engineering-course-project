@@ -41,14 +41,17 @@ public class InstanceConverter {
 		entity.setCreatedTimestamp(boundary.getCreatedTimestamp());
 
 		if (boundary.getCreatedBy() != null) {
-			String domain = boundary.getCreatedBy().get("id").getDomain();
-			if (domain != null) {
-				entity.setCreatedByDomain(domain);
-			}
-
-			String email = boundary.getCreatedBy().get("id").getEmail();
-			if (email != null) {
-				entity.setCreatedByEmail(email);
+			UserId userId = boundary.getCreatedBy().get("userId");
+			if (userId != null) {
+				String domain = userId.getDomain();
+				if (domain != null) {
+					entity.setCreatedByDomain(domain);
+				}
+	
+				String email = userId.getEmail();
+				if (email != null) {
+					entity.setCreatedByEmail(email);
+				}
 			}
 		}
 
@@ -110,7 +113,7 @@ public class InstanceConverter {
 
 	private Map<String, UserId> toBoundary(String createdByDomain, String createdByEmail) {
 		Map<String, UserId> userMap = new HashMap<String, UserId>();
-		userMap.put("UserId", new UserId(createdByDomain, createdByEmail));
+		userMap.put("userId", new UserId(createdByEmail, createdByDomain));
 		
 		return userMap;
 	}
