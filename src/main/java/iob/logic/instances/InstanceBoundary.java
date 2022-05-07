@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import iob.logic.users.UserId;
+import iob.logic.utility.Location;
 
 public class InstanceBoundary {
 
@@ -14,17 +15,17 @@ public class InstanceBoundary {
 	private Boolean active;
 	private Date createdTimestamp;
 	private Map<String, UserId> createdBy;
-	private Map<String, Double> location;
+	private Location location;
 	private Map<String, Object> instanceAttributes;
 
 	public InstanceBoundary() {
 		this.createdBy = new HashMap<>();
-		this.location = new HashMap<>();
+		this.location = new Location(0.,0.);
 		this.instanceAttributes = new HashMap<>();
 	}
 
 	public InstanceBoundary(Map<String, String> instanceId, String type, String name, Boolean active,
-			Date createdTimestamp, Map<String, UserId> createdBy, Map<String, Double> location,
+			Date createdTimestamp, Map<String, UserId> createdBy, Location location,
 			Map<String, Object> instanceAttributes) {
 		this();
 		this.instanceId = instanceId;
@@ -85,11 +86,11 @@ public class InstanceBoundary {
 		this.createdBy = createdBy;
 	}
 
-	public Map<String, Double> getLocation() {
+	public Location getLocation() {
 		return location;
 	}
 
-	public void setLocation(Map<String, Double> location) {
+	public void setLocation(Location location) {
 		this.location = location;
 	}
 

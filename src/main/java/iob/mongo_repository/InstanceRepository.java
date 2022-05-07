@@ -1,15 +1,17 @@
-package iob.logic.instances;
+package iob.mongo_repository;
 
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import iob.data.InstanceEntity;
 
-public interface InstancesCrud extends PagingAndSortingRepository<InstanceEntity, String> {
-
+@Repository
+public interface InstanceRepository extends MongoRepository<InstanceEntity, String> {
 	
 	public List<InstanceEntity> findAllByName(
 			@Param("name") String name,
@@ -33,7 +35,17 @@ public interface InstancesCrud extends PagingAndSortingRepository<InstanceEntity
 			@Param("active") boolean active, 
 			Pageable pageable);
 	
+	@Query("{location: { $near: ?0, $maxDistance: ?1 }}")
+	public List<InstanceEntity> findAllNear(
+			double[] location,
+			double radius,
+			Pageable pageable);
+	
+	@Query("{location: { $near: ?0, $maxDistance: ?1 }, active: ?2}")
+	public List<InstanceEntity> findAllNearAndActive(
+			double[] location,
+			double radius,
+			boolean active,
+			Pageable pageable);
+
 }
-
-
-

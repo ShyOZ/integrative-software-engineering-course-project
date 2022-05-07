@@ -43,3 +43,10 @@ configurable:
         
 spring.data.mongodb:  
       uri: mongodb+srv://Duet:Duet2000@duetcluster.keglv.mongodb.net/duetDB?retryWrites=true&w=majority
+      auto-index-creation: true
+      
+
+logging.level.org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+
+      

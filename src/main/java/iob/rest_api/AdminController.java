@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import iob.logic.ActivitiesService;
+import iob.logic.ExtendedInstancesService;
 import iob.logic.ExtendedUsersService;
-import iob.logic.InstancesService;
 import iob.logic.activities.ActivityBoundary;
 import iob.logic.users.UserBoundary;
 
 @RestController
 public class AdminController {
-	private InstancesService instanceService;
+	private ExtendedInstancesService instanceService;
 	private ExtendedUsersService userService;
 	private ActivitiesService activitiesSrevice;
 	
 	@Autowired
-	public void setInstanceService(InstancesService instanceService, 
+	public void setInstanceService(ExtendedInstancesService instanceService, 
 			ExtendedUsersService userService, ActivitiesService activitiesSrevice ) {
 		this.instanceService = instanceService;
 		this.userService = userService;
@@ -40,9 +40,9 @@ public class AdminController {
 			method = RequestMethod.DELETE, 
 			path = "/iob/admin/instances")
 	public void deleteAllInstances(
-			@RequestParam("userDomain") String domain,
-			@RequestParam("userEmail") String email) {
-		this.instanceService.deleteAllInstances();
+			@RequestParam(name = "userDomain") String domain,
+			@RequestParam(name = "userEmail") String email) {
+		this.instanceService.deleteAllInstances(domain, email);
 	}
 
 	@RequestMapping(

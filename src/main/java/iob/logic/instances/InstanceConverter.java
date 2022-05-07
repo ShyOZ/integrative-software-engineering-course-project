@@ -3,23 +3,15 @@ package iob.logic.instances;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import iob.data.InstanceEntity;
 import iob.logic.users.UserId;
+import iob.logic.utility.Location;
 
 @Component
 public class InstanceConverter {
-	private ObjectMapper jackson;
-
-	@PostConstruct
-	public void init() {
-		this.jackson = new ObjectMapper();
-	}
 
 	public InstanceEntity toEntity(InstanceBoundary boundary) {
 		InstanceEntity entity = new InstanceEntity();
@@ -56,35 +48,24 @@ public class InstanceConverter {
 		}
 
 		if (boundary.getLocation() != null) {
-			Double lat = boundary.getLocation().get("lat");
-			if (lat != null) {
-				entity.setLat(lat);
-			}
-
-			Double lng = boundary.getLocation().get("lng");
-			if (lng != null) {
-				entity.setLng(lng);
-			}
+			entity.setLocation(toEntity(boundary.getLocation()));
 		}
 
 		if (boundary.getInstanceAttributes() != null) {
-			entity.setAttributes(toEntity(boundary.getInstanceAttributes()));
+			entity.setAttributes(boundary.getInstanceAttributes());
 		}
 
 		return entity;
+	}
+
+	public double[] toEntity(Location location) {
+		return new double[] { location.getLng(), location.getLat() };
 	}
 
 	public String toEntity(String instanceDomain, String instanceId) {
 		return instanceDomain + "/" + instanceId;
 	}
 
-	public String toEntity(Map<String, Object> instanceAttributes) {
-		try {
-			return this.jackson.writeValueAsString(instanceAttributes);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	public InstanceBoundary toBoundary(InstanceEntity entity) {
 		InstanceBoundary boundary = new InstanceBoundary();
@@ -95,20 +76,16 @@ public class InstanceConverter {
 		boundary.setActive(entity.getActive());
 		boundary.setCreatedTimestamp(entity.getCreatedTimestamp());
 		boundary.setCreatedBy(toBoundary(entity.getCreatedByDomain(), entity.getCreatedByEmail()));
-		boundary.setLocation(toBoundary(entity.getLat(), entity.getLng()));
+		boundary.setLocation(toBoundary(entity.getLocation()));
 		if (entity.getAttributes() != null) {
-			boundary.setInstanceAttributes(toBoundaryFromJsonString(entity.getAttributes()));
+			boundary.setInstanceAttributes(entity.getAttributes());
 		}
 		
 		return boundary;
 	}
 	
-	private Map<String, Double> toBoundary(double lat, double lng) {
-		Map<String, Double> location = new HashMap<String, Double>();
-		location.put("lat", lat);
-		location.put("lng", lng);
-		
-		return location;
+	private Location toBoundary(double[] location) {
+		return new Location(location[0], location[1]);
 	}
 
 	private Map<String, UserId> toBoundary(String createdByDomain, String createdByEmail) {
@@ -126,14 +103,6 @@ public class InstanceConverter {
 		instanceIdMap.put("id", domainId[1]);
 		
 		return instanceIdMap;
-	}
-	
-	public Map<String, Object> toBoundaryFromJsonString(String json){
-		try {
-			return this.jackson.readValue(json, Map.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

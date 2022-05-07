@@ -1,42 +1,36 @@
 package iob.data;
 
 import java.util.Date;
+import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /*
  * INSTANCE_TABLE
  * 
- * INSTANCE_ID  | TYPE         | NAME         | ACTIVE  | CREATED_TS | CREATED_BY_DOMAIN | CREATED_BY_EMAIL | LAT    | LNG    | ATTRIBUTES  
- * VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | boolean |            | VARCHAR(255)      | VARCHAR(255)     | double | double | CLOB
+ * INSTANCE_ID  | TYPE         | NAME         | ACTIVE  | CREATED_TS | CREATED_BY_DOMAIN | CREATED_BY_EMAIL | LOCATION | ATTRIBUTES  
+ * VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | boolean |            | VARCHAR(255)      | VARCHAR(255)     | CLOB     | CLOB
  * */
 
-@Entity
-@Table(name = "INSTANCE_TABLE")
+@Document(collection = "instances")
 public class InstanceEntity {
-	private String instanceId;
+	private @Id String instanceId;
 	private String type;
-	private String name;
-	private boolean active;
-	private Date createdTimestamp;
+	private @Indexed String name;
+	private @Indexed boolean active;
+	private @Indexed Date createdTimestamp;
 	private String createdByDomain;
 	private String createdByEmail;
-	private double lat;
-	private double lng;
-	private String attributes;
+	private @GeoSpatialIndexed double[] location;
+	private Map<String, Object> attributes;
 
 	public InstanceEntity() {
 
 	}
 
-	@Id
 	public String getInstanceId() {
 		return instanceId;
 	}
@@ -45,7 +39,6 @@ public class InstanceEntity {
 		this.instanceId = instanceId;
 	}
 
-	@Column(name = "TYPE")
 	public String getType() {
 		return type;
 	}
@@ -54,7 +47,6 @@ public class InstanceEntity {
 		this.type = type;
 	}
 
-	@Column(name = "NAME")
 	public String getName() {
 		return name;
 	}
@@ -63,7 +55,6 @@ public class InstanceEntity {
 		this.name = name;
 	}
 
-	@Column(name = "ACTIVITY")
 	public boolean getActive() {
 		return active;
 	}
@@ -72,8 +63,6 @@ public class InstanceEntity {
 		this.active = active;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "CREATED_TS")
 	public Date getCreatedTimestamp() {
 		return createdTimestamp;
 	}
@@ -81,8 +70,7 @@ public class InstanceEntity {
 	public void setCreatedTimestamp(Date createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
-
-	@Column(name = "CRATED_BY_DOMAIN")
+	
 	public String getCreatedByDomain() {
 		return createdByDomain;
 	}
@@ -91,7 +79,6 @@ public class InstanceEntity {
 		this.createdByDomain = createdByDomain;
 	}
 
-	@Column(name = "CREATED_BY_EMAIL")
 	public String getCreatedByEmail() {
 		return createdByEmail;
 	}
@@ -99,32 +86,20 @@ public class InstanceEntity {
 	public void setCreatedByEmail(String createdByEmail) {
 		this.createdByEmail = createdByEmail;
 	}
-
-	@Column(name = "LAT")
-	public double getLat() {
-		return lat;
+	
+	public double[] getLocation() {
+		return location;
 	}
 
-	public void setLat(double lat) {
-		this.lat = lat;
+	public void setLocation(double[] location) {
+		this.location = location;
 	}
 
-	@Column(name = "LNG")
-	public double getLng() {
-		return lng;
-	}
-
-	public void setLng(double lng) {
-		this.lng = lng;
-	}
-
-	@Lob
-	@Column(name = "ATTRIBUTES")
-	public String getAttributes() {
+	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(String attributes) {
+	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
 
