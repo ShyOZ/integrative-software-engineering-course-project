@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import iob.data.UserEntity;
+import iob.data.UserEntityId;
 import iob.data.UserRole;
 import iob.logic.BadRequestException;
 import iob.logic.ExtendedUsersService;
@@ -26,46 +27,39 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	private UserRepository userRepo;
 
 	@Autowired
-	public UsersServiceJPA(UserConverter userConverter,
-			 ConfigProperties configProperties, UserRepository userRepo) {
+	public UsersServiceJPA(UserConverter userConverter, ConfigProperties configProperties, UserRepository userRepo) {
 		this.userConverter = userConverter;
 		this.configProperties = configProperties;
 		this.domain = this.configProperties.getApplicationDomain();
 		this.userRepo = userRepo;
 	}
 
-	@PostConstruct
-	public void init (){
-		this.defaultUserBoundary = configProperties.defaultUserBoundary();
-		System.err.println("Default User Boundary: " + this.defaultUserBoundary);
-	}
-
 	@Override
 	@Transactional
 	public UserBoundary createUser(NewUserBoundary user) {
 		UserEntity entity = new UserEntity();
-		entity.setUserId(this.userConverter.toEntity(this.domain, user.getEmail()));
-		
-		if(user.getAvatar() != null) 
+		entity.setUserId(this.userConverter.toEntity(user.getEmail(), this.domain));
+
+		if (user.getAvatar() != null)
 			entity.setAvatar(user.getAvatar());
-		else 
+		else
 			throw new BadRequestException("avatar is missing");
-		
-		if(user.getUsername() != null) 
+
+		if (user.getUsername() != null)
 			entity.setUserName(user.getUsername());
 		else
-			throw new BadRequestException("user name is missing");
-		
-		if(user.getRole() != null) 
+			throw new BadRequestException("username is missing");
+
+		if (user.getRole() != null)
 			entity.setRole(UserRole.valueOf(user.getRole()));
-		else 
+		else
 			throw new BadRequestException("role is missing");
-		
-		if(user.getEmail() != null)
+
+		if (user.getEmail() != null)
 			entity.setUserId(this.userConverter.toEntity(new UserId(user.getEmail(), this.domain)));
 		else
 			throw new BadRequestException("email is missing");
-		
+
 		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
 	}
@@ -73,14 +67,14 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional(readOnly = true)
 	public UserBoundary login(String userDomain, String userEmail) {
-		UserEntity logged = getUserEntityById(this.userConverter.toEntity(new UserId(userEmail, userDomain)));
+		UserEntity logged = getUserEntityById(new UserEntityId(userEmail, userDomain));
 		return this.userConverter.toBoundary(logged);
 	}
 
 	@Override
 	@Transactional
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(userEmail, userDomain)));
+		UserEntity entity = getUserEntityById(new UserEntityId(userEmail, userDomain));
 		if (update.getAvatar() != null) {
 			entity.setAvatar(update.getAvatar());
 		}
@@ -102,14 +96,14 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional
 	public void deleteAllUsers(String userDomain, String userEmail) {
-		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(userEmail, userDomain)));
+		UserEntity entity = getUserEntityById(new UserEntityId(userEmail, userDomain));
 		System.out.println(entity.toString());
-		if(entity.getRole().equals(UserRole.ADMIN)) {
+		if (entity.getRole().equals(UserRole.ADMIN)) {
 			this.userRepo.deleteAll();
 		}
 	}
-	
-	private UserEntity getUserEntityById(String id) {
+
+	private UserEntity getUserEntityById(UserEntityId id) {
 		Optional<UserEntity> op = this.userRepo.findById(id);
 
 		if (op.isPresent()) {
@@ -123,15 +117,13 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers(int size, int page, String domain, String email) {
-		UserEntity entity = getUserEntityById(this.userConverter.toEntity(new UserId(domain, email)));
-		if(entity.getRole().equals(UserRole.ADMIN)) {
-			return this.userRepo
-					.findAll(PageRequest.of(page, size, Direction.ASC, "userId"))
-					.stream() // Stream<MessageEntity>
+		UserEntity entity = getUserEntityById(new UserEntityId(email, domain));
+		if (entity.getRole().equals(UserRole.ADMIN)) {
+			return this.userRepo.findAll(PageRequest.of(page, size, Direction.ASC, "userId")).stream() // Stream<MessageEntity>
 					.map(this.userConverter::toBoundary) // Stream<Message>
 					.collect(Collectors.toList()); // List<Message>
-		}
-		else {
+		} else {
+			// TODO: throw UNAUTHORIZED
 			return new ArrayList<>();
 		}
 	}
@@ -139,10 +131,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserBoundary> getUsersByVersion(int version, int size, int page) {
-		return this.userRepo
-				.findAllByVersion(version, PageRequest.of(page, size, Direction.ASC, "userId"))
-				.stream()
-				.map(this.userConverter::toBoundary)
-				.collect(Collectors.toList());
+		return this.userRepo.findAllByVersion(version, PageRequest.of(page, size, Direction.ASC, "userId")).stream()
+				.map(this.userConverter::toBoundary).collect(Collectors.toList());
 	}
 }

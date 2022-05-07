@@ -6,10 +6,9 @@ public class UserId {
 	@Value("${spring.application.name}")
 	private String domain;
 	private String email;
-	
-	
+
 	public UserId() {
-		
+
 	}
 
 	public UserId(String email, String domain) {
@@ -20,8 +19,7 @@ public class UserId {
 	public String getDomain() {
 		return domain;
 	}
-	
-	
+
 	@Value("{spring.application.name}")
 	public void setDomain(String domain) {
 		this.domain = domain;

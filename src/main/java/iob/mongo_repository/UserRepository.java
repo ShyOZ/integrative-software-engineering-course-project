@@ -1,26 +1,17 @@
 package iob.mongo_repository;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import iob.data.UserEntity;
+import iob.data.UserEntityId;
 
 @Repository
-public interface UserRepository extends MongoRepository<UserEntity, String> {
-	
-	@Query("{version: ?0}")
-	Optional<UserEntity> findUserByVersion(int version);
-	
-	@Query("{_id: ?0}")
-	Optional<UserEntity> findById(String id);
+public interface UserRepository extends MongoRepository<UserEntity, UserEntityId> {
 
 	public List<UserEntity> findAllByVersion(
 		@Param("version") int version, 

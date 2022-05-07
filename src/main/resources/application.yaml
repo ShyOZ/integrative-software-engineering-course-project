@@ -2,51 +2,15 @@ spring.application.name: &domain 2022b.Yaeli.Bar.Gimelshtei
 server.port: 8085
 
 logging.level.org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
-spring.jpa.hibernate.ddl-auto: create-drop
-spring.jpa.show-sql: true
-spring.jpa.properties.hibernate.format_sql: true
-logging.level.org.hibernate.type.descriptor.sql: trace
-  
-configurable:
-  user:
-      userId: &config_userId 
-            domain : *domain
-            email : default@user.com
-      role: PLAYER
-      username: defaultUsername
-      avatar: defaultAvatar
-
-  instance:
-    instanceId: &config_instanceId
-      domain: *domain
-      id: -1
-    type: dummyType
-    name: demo instance
-    active: false
-    createdTimestamp: &timestamp 1970-01-01 00:00:00+0000
-    createdBy:
-      userId: 
-        <<: *config_userId
-    location:
-      lat: 0
-      lng: 0
-      
-  activity:
-    type: dummyType
-    instance: 
-      instanceId: 
-        <<: *config_instanceId
-    createdTimestamp: *timestamp
-    invokedBy: 
-      userId: 
-        <<: *config_userId
-        
+logging.level.org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+spring.jpa.hibernate.ddl-auto: create-drop #to be removed
+spring.jpa.show-sql: true #to be removed
+spring.jpa.properties.hibernate.format_sql: true #to be removed
+logging.level.org.hibernate.type.descriptor.sql: trace #to be removed
+server.error.include-message: always
+   
 spring.data.mongodb:  
       uri: mongodb+srv://Duet:Duet2000@duetcluster.keglv.mongodb.net/duetDB?retryWrites=true&w=majority
       auto-index-creation: true
       
-
-logging.level.org.springframework.data.mongodb.core.MongoTemplate: DEBUG
-
-
-      
+spring.mongodb.embedded.version: 3.4.5

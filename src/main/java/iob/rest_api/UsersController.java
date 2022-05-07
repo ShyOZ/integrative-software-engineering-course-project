@@ -19,7 +19,6 @@ import iob.logic.users.UserBoundary;
 public class UsersController {
 	private ExtendedUsersService service;
 	
-	
 	@Autowired
 	public void setUserService(ExtendedUsersService userService) {
 		this.service = userService;
@@ -51,5 +50,4 @@ public class UsersController {
 			@PathVariable("userEmail") String userEmail) {
 		service.updateUser(userDomain, userEmail, user);
 	}
-	
 }

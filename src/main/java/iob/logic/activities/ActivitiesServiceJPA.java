@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +27,6 @@ public class ActivitiesServiceJPA implements ActivitiesService {
 		this.activityCrud = activityCrud;
 		this.activityConverter = activityConverter;
 		this.configProperties = configProperties;
-	}
-
-	@PostConstruct
-	public void init() {
-		this.defaultActivityBoundary = configProperties.defaultActivityBoundary();
-		System.err.println("Default Activity Boundary: " + this.defaultActivityBoundary);
 	}
 
 	@Override
