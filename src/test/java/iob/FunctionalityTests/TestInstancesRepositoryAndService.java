@@ -1,4 +1,4 @@
-package iob.RepositoryFunctionalityTests;
+package iob.FunctionalityTests;
 
 public class TestInstancesRepositoryAndService {
 

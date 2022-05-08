@@ -26,7 +26,7 @@ public class UsersController {
 
 	@RequestMapping(
 			method = RequestMethod.POST, 
-			path = "iob/users", 
+			path = "/iob/users", 
 			consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary createNewUser(@RequestBody NewUserBoundary newUser) {
@@ -35,7 +35,7 @@ public class UsersController {
 
 	@RequestMapping(
 			method = RequestMethod.GET, 
-			path = "iob/users/login/{userDomain}/{userEmail}",
+			path = "/iob/users/login/{userDomain}/{userEmail}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserBoundary login(@PathVariable("userDomain") String userDomain, 
 			@PathVariable("userEmail") String userEmail) {
@@ -44,7 +44,7 @@ public class UsersController {
 
 	@RequestMapping(
 			method = RequestMethod.PUT, 
-			path = "iob/users/{userDomain}/{userEmail}",
+			path = "/iob/users/{userDomain}/{userEmail}",
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateUser(@RequestBody UserBoundary user, @PathVariable("userDomain") String userDomain,
 			@PathVariable("userEmail") String userEmail) {

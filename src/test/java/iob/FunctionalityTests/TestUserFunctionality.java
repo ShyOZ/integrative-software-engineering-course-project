@@ -1,9 +1,8 @@
-package iob.RepositoryFunctionalityTests;
+package iob.FunctionalityTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -19,36 +18,36 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
+import org.springframework.web.client.RestTemplate;
 
 import iob.data.UserEntity;
 import iob.data.UserEntityId;
-import iob.logic.customExceptions.EntityNotFoundException;
+import iob.data.UserRole;
 import iob.logic.users.NewUserBoundary;
 import iob.logic.users.UserBoundary;
 import iob.logic.users.UserConverter;
-import iob.logic.users.UsersServiceJPA;
+import iob.logic.users.UserId;
 import iob.mongo_repository.UserRepository;
 import iob.utility.TestProperties;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class TestUsersRepositoryAndService {
+public class TestUserFunctionality {
 
 	private @LocalServerPort int port;
 	private String url;
 	private RestTemplate restTemplate;
 	private @Autowired TestProperties testProperties;
 	private @Autowired UserConverter userConverter;
-	private UserBoundary admin;
+	private UserBoundary admin, player;
 	private NewUserBoundary newPlayer;
-	private @Autowired UsersServiceJPA userService;
 	private @Autowired UserRepository userRepository;
 
 	@PostConstruct
 	public void init() {
 		admin = testProperties.getAdminUser();
+		player = testProperties.getPlayerUser();
 		newPlayer = testProperties.getNewPlayer();
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + this.port;
@@ -72,39 +71,69 @@ public class TestUsersRepositoryAndService {
 			NewUserBoundary newUser = new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
 					newPlayer.getUsername(), newPlayer.getAvatar());
 			return newUser;
-		}).map(newUser -> userService.createUser(newUser)).map(user -> {
-			System.err.println(user);
-			return user;
-		}).
-
-				collect(Collectors.toList());
-
-		assertThat(userService.login("test-domain", "entity" + 3 + "@test")).isNotNull();
+		}).map(newUser -> restTemplate.postForObject(url + "/iob/users", newUser, UserBoundary.class))
+				.collect(Collectors.toList());
+		UserBoundary rv = restTemplate.getForObject(url + "/iob/users/login/{userDomain}/{userEmail}",
+				UserBoundary.class, "test-domain", "entity" + 3 + "@test");
+		UserBoundary expected = new UserBoundary(new UserId("entity" + 3 + "@test", "test-domain"), player.getRole(),
+				player.getUsername(), player.getAvatar());
+		assertThat(rv).isNotNull().usingRecursiveComparison().isEqualTo(expected);
 	}
 
 	@Test
-	void testIfUserDoesNotExistThenLoginThrowsEntityNotFoundException() {
+	void ifUserDoesNotExist_ThenLoginThrowsNotFoundWithCouldNotFindUserMessage() {
 		IntStream.range(0, 5).mapToObj(i -> {
 			NewUserBoundary newUser = new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
 					newPlayer.getUsername(), newPlayer.getAvatar());
 			return newUser;
-		}).map(newUser -> userService.createUser(newUser)).collect(Collectors.toList());
+		}).map(newUser -> this.restTemplate.postForObject(this.url + "/iob/users", newUser, UserBoundary.class))
+				.collect(Collectors.toList());
 
-		assertThrows(NotFound.class,
+		assertThat(assertThrows(NotFound.class,
 				() -> restTemplate.getForObject(this.url + "/iob/users/login/{userDomain}/{userEmail}",
-						UserBoundary.class, "test-domain", "entity" + 10 + "@test"));
+						UserBoundary.class, "test-domain", "entity" + 10 + "@test"))
+				.getMessage()).contains("could not find user");
 	}
 
 	@Test
-	void testIfUserDoesNotExistThenUpdateThrowsEntityNotFoundException() {
+	void ifUserDoesNotExist_ThenUpdateThrowsNotFoundWithCouldNotFindUserMessage() {
 		IntStream.range(0, 5).mapToObj(i -> {
 			NewUserBoundary newUser = new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
 					newPlayer.getUsername(), newPlayer.getAvatar());
 			return newUser;
-		}).map(newUser -> userService.createUser(newUser)).collect(Collectors.toList());
+		}).map(newUser -> this.restTemplate.postForObject(this.url + "/iob/users", newUser, UserBoundary.class))
+				.collect(Collectors.toList());
 
-		assertThrows(NotFound.class,
-				() -> userService.updateUser("test-domain", "entity" + 10 + "@test", new UserBoundary()));
+		assertThat(assertThrows(NotFound.class, () -> restTemplate.put(url + "/iob/users/{userDomain}/{userEmail}",
+				new UserBoundary(), "test-domain", "entity" + 10 + "@test")).getMessage())
+				.contains("could not find user");
+	}
+
+	void testUpdateUser() {
+		restTemplate.postForObject(url + "/iob/users", newPlayer, UserBoundary.class);
+
+		UserBoundary updatedPlayer = new UserBoundary(player.getUserId(), UserRole.MANAGER,
+				"updated " + player.getUsername(), "updated " + player.getAvatar());
+
+		restTemplate.put(url + "iob/users/{userDomain}/{userEmail}", updatedPlayer, player.getUserId().getDomain(),
+				player.getUserId().getEmail());
+
+		assertThat(userRepository.findById(userConverter.toEntity(player.getUserId()))).isPresent().get()
+				.usingRecursiveComparison().isEqualTo(userConverter.toEntity(updatedPlayer));
+	}
+
+	@Test
+	void testGetAllUsers() {
+		IntStream.range(0, 5).mapToObj(i -> new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
+				newPlayer.getUsername() + i, newPlayer.getAvatar() + i)
+
+		).map(user -> restTemplate.postForObject(this.url + "/iob/users", user, UserBoundary.class))
+				.collect(Collectors.toList());
+
+		UserEntity[] actual = restTemplate.getForObject(
+				url + "/iob/admin/users?userDomain={userDomain}&userEmail={userEmail}&page={page}&size={size}",
+				UserEntity[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, 10);
+		assertThat(actual).hasSize(5 + 1); // 5 inserted users + admin
 	}
 
 	@Test
@@ -196,4 +225,5 @@ public class TestUsersRepositoryAndService {
 				() -> this.restTemplate.postForObject(this.url + "/iob/users", playerWithoutAvatar, UserBoundary.class))
 				.getMessage()).contains("avatar is missing");
 	}
+
 }

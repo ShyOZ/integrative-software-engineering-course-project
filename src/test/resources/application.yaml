@@ -7,16 +7,16 @@ server.error.include-message: always
 
   
 test-objects:
-  admin-user:
-    userId:
-      domain : *domain
-      email : &admin-email admin-user@test-domain.com
+  new-admin:
+    email : &admin-email admin-user@test-domain.com
     role: ADMIN
     username: &admin-username test-admin
     avatar: &admin-avater TA
-    
-  new-admin:
-    email : *admin-email
+  
+  admin-user:
+    userId:
+      domain : *domain
+      email : *admin-email
     role: ADMIN
     username: *admin-username
     avatar: *admin-avater
@@ -28,20 +28,21 @@ test-objects:
     role: MANAGER
     username: test-manager
     avatar: TM
-
-  player-user:
-    userId: 
-      domain : *domain
-      email : &player-email player-user@test-domain.com
+  
+  new-player:
+    email : &player-email player-user@test-domain.com
     role: PLAYER
     username: &player-username test-player
     avatar: &player-avater TP
   
-  new-player:
-    email : *player-email
+  player-user:
+    userId: 
+      domain : *domain
+      email : *player-email
     role: PLAYER
     username: *player-username
     avatar: *player-avater
+
   
 #  instance:
 #    instanceId: &config_instanceId

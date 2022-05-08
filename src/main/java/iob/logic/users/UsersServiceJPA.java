@@ -111,7 +111,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 			UserEntity entity = op.get();
 			return entity;
 		} else {
-			throw new EntityNotFoundException("could not find User with id: " + id);
+			throw new EntityNotFoundException("could not find user with id: " + id);
 		}
 	}
 
