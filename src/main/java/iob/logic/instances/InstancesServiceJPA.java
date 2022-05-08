@@ -17,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import iob.data.InstanceEntity;
 import iob.data.UserRole;
 import iob.logic.ExtendedInstancesService;
-import iob.logic.UnauthorizedUserException;
+import iob.logic.customExceptions.EntityNotFoundException;
+import iob.logic.customExceptions.UnauthorizedRequestException;
 import iob.logic.users.UserId;
 import iob.logic.utility.ConfigProperties;
 import iob.mongo_repository.InstanceRepository;
@@ -68,7 +69,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 			InstanceEntity entity = op.get();
 			return entity;
 		} else {
-			throw new InstanceNotFoundException("could not find instance by id: " + instanceDomain + ", " + instanceId);
+			throw new EntityNotFoundException("could not find instance by id: " + instanceDomain + ", " + instanceId);
 		}
 	}
 
@@ -110,7 +111,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 					.findAllByNameAndActive(name, true, PageRequest.of(page, size, Direction.ASC, "name")).stream()
 					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
-			throw new UnauthorizedUserException();
+			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
 		}
 	}
 
@@ -129,7 +130,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 					.findAllByTypeAndActive(type, true, PageRequest.of(page, size, Direction.DESC, "type")).stream()
 					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
-			throw new UnauthorizedUserException();
+			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
 		}
 	}
 
@@ -151,7 +152,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 							PageRequest.of(page, size, Direction.ASC, "instanceId"))
 					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
-			throw new UnauthorizedUserException();
+			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
 		}
 
 	}
@@ -213,7 +214,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 			return instanceConverter.toBoundary(entity);
 
 		} else {
-			throw new UnauthorizedUserException();
+			throw new UnauthorizedRequestException("user must be a manager to perform this action");
 		}
 
 	}
@@ -234,11 +235,12 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 			if (instance.getActive() == true) {
 				return instance;
 			} else {
-				throw new InstanceNotFoundException();
+				throw new EntityNotFoundException(
+						"no active instance with domain=" + instanceDomain + " and id=" + instanceId);
 			}
 
 		default:
-			throw new UnauthorizedUserException();
+			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
 		}
 
 	}
@@ -256,7 +258,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 			return instanceRepository.findAllByActive(true, PageRequest.of(page, size, Direction.ASC, "instanceId"))
 					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
-			throw new UnauthorizedUserException();
+			throw new UnauthorizedRequestException("user must be either a manager or a player to perform this action");
 		}
 
 	}
@@ -269,7 +271,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 		if (userRole == UserRole.ADMIN) {
 			instanceRepository.deleteAll();
 		} else {
-			throw new UnauthorizedUserException();
+			throw new UnauthorizedRequestException("user must be an admin to perform this action");
 		}
 
 	}

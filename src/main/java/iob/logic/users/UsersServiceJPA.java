@@ -1,26 +1,27 @@
 package iob.logic.users;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import iob.data.UserEntity;
 import iob.data.UserEntityId;
 import iob.data.UserRole;
-import iob.logic.BadRequestException;
 import iob.logic.ExtendedUsersService;
+import iob.logic.customExceptions.BadRequestException;
+import iob.logic.customExceptions.EntityNotFoundException;
+import iob.logic.customExceptions.UnauthorizedRequestException;
 import iob.logic.utility.ConfigProperties;
 import iob.mongo_repository.UserRepository;
 
 @Service
 public class UsersServiceJPA implements ExtendedUsersService {
-	private UserBoundary defaultUserBoundary;
 	private UserConverter userConverter;
 	private String domain;
 	private ConfigProperties configProperties;
@@ -90,7 +91,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 
 	@Override
 	public List<UserBoundary> getAllUsers() {
-		throw new RuntimeException("deprecated method - use getAllUsers with paginayion instead");
+		throw new RuntimeException("deprecated method - use getAllUsers with pagination instead");
 	}
 
 	@Override
@@ -110,7 +111,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 			UserEntity entity = op.get();
 			return entity;
 		} else {
-			throw new UserNotFoundException("could not find message by id: " + id);
+			throw new EntityNotFoundException("could not find User with id: " + id);
 		}
 	}
 
@@ -123,8 +124,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 					.map(this.userConverter::toBoundary) // Stream<Message>
 					.collect(Collectors.toList()); // List<Message>
 		} else {
-			// TODO: throw UNAUTHORIZED
-			return new ArrayList<>();
+			throw new UnauthorizedRequestException("user must be an admin to perform this action");
 		}
 	}
 

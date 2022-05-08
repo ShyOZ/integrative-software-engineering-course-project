@@ -47,8 +47,8 @@ test-objects:
 #    instanceId: &config_instanceId
 #      domain: *domain
 #      id: -1
-#    type: demo Type
-#    name: demo instance
+#    type: test Type
+#    name: test instance
 #    active: false
 #    createdTimestamp: &timestamp 1977-07-07 07:07:07+0007
 #    createdBy:
