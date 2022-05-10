@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,7 +43,10 @@ public class TestInstanceFunctionality {
 		testInstance = testProperties.getInstance();
 		restTemplate = new RestTemplate();
 		url = "http://localhost:" + port;
+	}
 
+	@BeforeEach
+	void setUp() {
 		player = restTemplate.postForObject(url + "/iob/users", testProperties.getNewPlayer(), UserBoundary.class);
 		manager = restTemplate.postForObject(url + "/iob/users", testProperties.getNewManager(), UserBoundary.class);
 		admin = restTemplate.postForObject(url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
@@ -52,10 +56,14 @@ public class TestInstanceFunctionality {
 	void tearDown() {
 		restTemplate.delete(url + "/iob/admin/instances?userDomain={domain}&userEmail={email}",
 				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+
+		restTemplate.delete(url + "/iob/admin/users?userDomain={domain}&userEmail={email}",
+				admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
 
 	@Test
 	void testInstanceCreationUpdateAndRetrieval() {
+
 		InstanceBoundary createdInstance = restTemplate.postForObject(url + "/iob/instances", testInstance,
 				InstanceBoundary.class);
 
@@ -109,6 +117,23 @@ public class TestInstanceFunctionality {
 						createdInstance.getInstanceId().getId(), admin.getUserId().getDomain(),
 						admin.getUserId().getEmail()))
 				.getMessage()).contains("user must be either a manager or a player to perform this action");
+	}
+
+	@Test
+	void ifUserIsNotManager_thenIstanceCreationThrowsBadRequestWithMwssage() {
+		InstanceBoundary instanceCreatedByAdmin = new InstanceBoundary(null, "test type", "test name", true, null,
+				Collections.singletonMap("userId", admin.getUserId()), null, null);
+		InstanceBoundary instanceCreatedByPlayer = new InstanceBoundary(null, "test type", "test name", true, null,
+				Collections.singletonMap("userId", player.getUserId()), null, null);
+
+		assertThat(assertThrows(BadRequest.class, () -> restTemplate.postForObject(url + "/iob/instances",
+				instanceCreatedByAdmin, InstanceBoundary.class)).getMessage())
+				.contains("userId must belong to a manager");
+
+		assertThat(assertThrows(BadRequest.class, () -> restTemplate.postForObject(url + "/iob/instances",
+				instanceCreatedByPlayer, InstanceBoundary.class)).getMessage())
+				.contains("userId must belong to a manager");
+
 	}
 
 	@Test
@@ -245,10 +270,15 @@ public class TestInstanceFunctionality {
 	}
 
 	void testSearchByNameWithPagination() {
-		IntStream.range(0, 10)
-				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances",
-						new InstanceBoundary(null, "", "first name", true, null, testInstance.getCreatedBy(), null, null),
-						InstanceBoundary.class))
+		IntStream
+				.range(0,
+						10)
+				.mapToObj(
+						i -> restTemplate
+								.postForObject(url + "/iob/instances",
+										new InstanceBoundary(null, "", "first name", true, null,
+												testInstance.getCreatedBy(), null, null),
+										InstanceBoundary.class))
 				.collect(Collectors.toList());
 
 		IntStream.range(0, 10)
@@ -275,27 +305,42 @@ public class TestInstanceFunctionality {
 
 		assertThat(assertThrows(Unauthorized.class, () -> restTemplate.getForObject(url
 				+ "/iob/instances/search/byName/{name}?userDomain={domain}&userEmail={email}&size={size}&page={page}",
-				InstanceBoundary[].class, "first name", admin.getUserId().getDomain(), admin.getUserId().getEmail(),
-				6, 1)).getMessage()).contains("user must be either a manager or a player to perform this action");
+				InstanceBoundary[].class, "first name", admin.getUserId().getDomain(), admin.getUserId().getEmail(), 6,
+				1)).getMessage()).contains("user must be either a manager or a player to perform this action");
 	}
 
 	void testSearchByTypeWithPagination() {
-		IntStream.range(0, 10)
-				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances",
-						new InstanceBoundary(null, "first type", "", true, null, testInstance.getCreatedBy(), null, null),
-						InstanceBoundary.class))
+		IntStream
+				.range(0,
+						10)
+				.mapToObj(
+						i -> restTemplate
+								.postForObject(url + "/iob/instances",
+										new InstanceBoundary(null, "first type", "", true, null,
+												testInstance.getCreatedBy(), null, null),
+										InstanceBoundary.class))
 				.collect(Collectors.toList());
 
-		IntStream.range(0, 10)
-				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances",
-						new InstanceBoundary(null, "first type", "", false, null, testInstance.getCreatedBy(), null, null),
-						InstanceBoundary.class))
+		IntStream
+				.range(0,
+						10)
+				.mapToObj(
+						i -> restTemplate
+								.postForObject(url + "/iob/instances",
+										new InstanceBoundary(null, "first type", "", false, null,
+												testInstance.getCreatedBy(), null, null),
+										InstanceBoundary.class))
 				.collect(Collectors.toList());
 
-		IntStream.range(0, 10)
-				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances",
-						new InstanceBoundary(null, "second type", "", true, null, testInstance.getCreatedBy(), null, null),
-						InstanceBoundary.class))
+		IntStream
+				.range(0,
+						10)
+				.mapToObj(
+						i -> restTemplate
+								.postForObject(url + "/iob/instances",
+										new InstanceBoundary(null, "second type", "", true, null,
+												testInstance.getCreatedBy(), null, null),
+										InstanceBoundary.class))
 				.collect(Collectors.toList());
 
 		assertThat(restTemplate.getForObject(url
@@ -320,7 +365,7 @@ public class TestInstanceFunctionality {
 				new InstanceBoundary(null, "", "", true, null, testInstance.getCreatedBy(), null, null),
 				InstanceBoundary.class);
 		IntStream.range(0, 4)
-		
+
 				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances",
 						new InstanceBoundary(null, "", "", false, null, testInstance.getCreatedBy(),
 								new Location(Math.cos(i * Math.PI), Math.sin(i * Math.PI)), null),

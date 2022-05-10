@@ -10,7 +10,8 @@ public class UserConverter {
 
 	public UserEntity toEntity(UserBoundary boundary) {
 		UserEntity entity = new UserEntity();
-		entity.setUserId(toEntity(boundary.getUserId()));
+		entity.setEmail(boundary.getUserId().getEmail());
+		entity.setDomain(boundary.getUserId().getDomain());
 		entity.setAvatar(boundary.getAvatar());
 		entity.setUserName(boundary.getUsername());
 		entity.setRole(boundary.getRole());
@@ -19,23 +20,10 @@ public class UserConverter {
 
 	public UserBoundary toBoundary(UserEntity entity) {
 		UserBoundary boundary = new UserBoundary();
-		boundary.setUserId(toBoundary(entity.getUserId()));
+		boundary.setUserId(new UserId(entity.getEmail(), entity.getDomain()));
 		boundary.setAvatar(entity.getAvatar());
 		boundary.setUsername(entity.getUserName());
 		boundary.setRole(entity.getRole());
 		return boundary;
-	}
-
-	public UserEntityId toEntity(UserId boundaryId) {
-		return new UserEntityId(boundaryId.getEmail(), boundaryId.getDomain());
-	}
-
-	public UserId toBoundary(UserEntityId entityId) {
-		return new UserId(entityId.getEmail(), entityId.getDomain());
-	}
-
-	public UserEntity toBoundary(UserBoundary userBoundary) {
-		return new UserEntity(toEntity(userBoundary.getUserId()), userBoundary.getRole(), userBoundary.getUsername(),
-				userBoundary.getAvatar());
 	}
 }

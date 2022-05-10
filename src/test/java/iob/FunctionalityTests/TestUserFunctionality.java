@@ -49,14 +49,12 @@ public class TestUserFunctionality {
 		newPlayer = testProperties.getNewPlayer();
 		restTemplate = new RestTemplate();
 		url = "http://localhost:" + port;
-
-		admin = restTemplate.postForObject(url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
-		player = restTemplate.postForObject(url + "/iob/users", testProperties.getNewPlayer(), UserBoundary.class);
-	}
+		}
 
 	@BeforeEach
 	void setUp() {
-		restTemplate.postForObject(url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
+		admin = restTemplate.postForObject(url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
+		player = restTemplate.postForObject(url + "/iob/users", testProperties.getNewPlayer(), UserBoundary.class);
 	}
 
 	@AfterEach
@@ -120,8 +118,8 @@ public class TestUserFunctionality {
 		restTemplate.put(url + "iob/users/{userDomain}/{userEmail}", updatedPlayer, player.getUserId().getDomain(),
 				player.getUserId().getEmail());
 
-		assertThat(userRepository.findById(userConverter.toEntity(player.getUserId()))).isPresent().get()
-				.usingRecursiveComparison().isEqualTo(userConverter.toEntity(updatedPlayer));
+		assertThat(userRepository.findByDomainAndEmail(player.getUserId().getDomain(), player.getUserId().getEmail()))
+				.isPresent().get().usingRecursiveComparison().isEqualTo(userConverter.toEntity(updatedPlayer));
 	}
 
 	@Test
@@ -142,14 +140,16 @@ public class TestUserFunctionality {
 	void testFindAllByVersion() {
 		IntStream.range(0, 5).mapToObj(i -> {
 			UserEntity userEntity = new UserEntity();
-			userEntity.setUserId(new UserEntityId("entity" + i + "@test", "test-domain"));
+			userEntity.setDomain("test-domain");
+			userEntity.setEmail("entity" + i + "@test");
 			userEntity.setVersion(1);
 			return userEntity;
 		}).map(userEntity -> userRepository.save(userEntity)).collect(Collectors.toList());
 
 		IntStream.range(5, 10).mapToObj(i -> {
 			UserEntity userEntity = new UserEntity();
-			userEntity.setUserId(new UserEntityId("entity" + i + "@test", "test-domain"));
+			userEntity.setDomain("test-domain");
+			userEntity.setEmail("entity" + i + "@test");
 			userEntity.setVersion(2);
 			return userEntity;
 		}).map(userEntity -> userRepository.save(userEntity)).collect(Collectors.toList());
@@ -163,7 +163,8 @@ public class TestUserFunctionality {
 	void testFindAllByVersionGreaterThan() {
 		IntStream.range(0, 10).mapToObj(i -> {
 			UserEntity userEntity = new UserEntity();
-			userEntity.setUserId(new UserEntityId("entity" + i + "@test", "test-domain"));
+			userEntity.setDomain("test-domain");
+			userEntity.setEmail("entity" + i + "@test");
 			userEntity.setVersion(i);
 			return userEntity;
 		}).map(userEntity -> userRepository.save(userEntity)).collect(Collectors.toList());
@@ -178,7 +179,8 @@ public class TestUserFunctionality {
 	void testFindAllByVersionBetween() {
 		IntStream.range(0, 10).mapToObj(i -> {
 			UserEntity userEntity = new UserEntity();
-			userEntity.setUserId(new UserEntityId("entity" + i + "@test", "test-domain"));
+			userEntity.setDomain("test-domain");
+			userEntity.setEmail("entity" + i + "@test");
 			userEntity.setVersion(i);
 			return userEntity;
 		}).map(userEntity -> userRepository.save(userEntity)).collect(Collectors.toList());

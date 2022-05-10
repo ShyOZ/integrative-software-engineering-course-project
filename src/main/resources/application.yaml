@@ -3,14 +3,8 @@ server.port: 8085
 
 logging.level.org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace
 logging.level.org.springframework.data.mongodb.core.MongoTemplate: DEBUG
-spring.jpa.hibernate.ddl-auto: create-drop #to be removed
-spring.jpa.show-sql: true #to be removed
-spring.jpa.properties.hibernate.format_sql: true #to be removed
-logging.level.org.hibernate.type.descriptor.sql: trace #to be removed
 server.error.include-message: always
    
 spring.data.mongodb:  
       uri: mongodb+srv://Duet:Duet2000@duetcluster.keglv.mongodb.net/duetDB?retryWrites=true&w=majority
       auto-index-creation: true
-      
-spring.mongodb.embedded.version: 3.4.5

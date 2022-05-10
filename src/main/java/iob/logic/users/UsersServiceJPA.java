@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.UserEntity;
-import iob.data.UserEntityId;
 import iob.data.UserRole;
 import iob.logic.ExtendedUsersService;
 import iob.logic.customExceptions.BadRequestException;
@@ -54,7 +53,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		UserBoundary userBoundary = new UserBoundary(new UserId(user.getEmail(), domain),
 				UserRole.valueOf(user.getRole()), user.getUsername(), user.getAvatar());
 
-		UserEntity entity = userConverter.toBoundary(userBoundary);
+		UserEntity entity = userConverter.toEntity(userBoundary);
 		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
 	}
@@ -62,14 +61,14 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional(readOnly = true)
 	public UserBoundary login(String userDomain, String userEmail) {
-		UserEntity logged = getUserEntityById(new UserEntityId(userEmail, userDomain));
+		UserEntity logged = getUserEntityByDomainAndEmail(userDomain, userEmail);
 		return this.userConverter.toBoundary(logged);
 	}
 
 	@Override
 	@Transactional
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
-		UserEntity entity = getUserEntityById(new UserEntityId(userEmail, userDomain));
+		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
 		if (update.getAvatar() != null) {
 			entity.setAvatar(update.getAvatar());
 		}
@@ -91,28 +90,29 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional
 	public void deleteAllUsers(String userDomain, String userEmail) {
-		UserEntity entity = getUserEntityById(new UserEntityId(userEmail, userDomain));
-		System.out.println(entity.toString());
+		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
+//		System.out.println(entity.toString());
 		if (entity.getRole().equals(UserRole.ADMIN)) {
 			this.userRepo.deleteAll();
-		}
+		} else
+			throw new UnauthorizedRequestException("user must be an admin to perform this action");
 	}
 
-	private UserEntity getUserEntityById(UserEntityId id) {
-		Optional<UserEntity> op = this.userRepo.findById(id);
+	private UserEntity getUserEntityByDomainAndEmail(String domain, String email) {
+		Optional<UserEntity> op = this.userRepo.findByDomainAndEmail(domain, email);
 
 		if (op.isPresent()) {
 			UserEntity entity = op.get();
 			return entity;
 		} else {
-			throw new EntityNotFoundException("could not find user with id: " + id);
+			throw new EntityNotFoundException("could not find user with domain=" + domain + " and email=" + email);
 		}
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers(int size, int page, String domain, String email) {
-		UserEntity entity = getUserEntityById(new UserEntityId(email, domain));
+		UserEntity entity = getUserEntityByDomainAndEmail(domain, email);
 		if (entity.getRole().equals(UserRole.ADMIN)) {
 			return this.userRepo.findAll(PageRequest.of(page, size, Direction.ASC, "userId")).stream() // Stream<MessageEntity>
 					.map(this.userConverter::toBoundary) // Stream<Message>

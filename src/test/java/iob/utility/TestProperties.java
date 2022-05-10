@@ -55,10 +55,6 @@ public class TestProperties {
 		this.instance = instance;
 	}
 
-	public String getTestDomain() {
-		return testDomain;
-	}
-
 	public void setTestDomain(String testDomain) {
 		this.testDomain = testDomain;
 	}
