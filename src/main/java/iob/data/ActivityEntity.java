@@ -10,6 +10,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 /* 
 ACTIVITIES_TABLE
 ---------------------------------------------------------------------
@@ -18,13 +21,13 @@ VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | TIMESTAMP   | CLOB
 <PK>
 */
 
-@Entity
-@Table(name = "ACTIVITIES_TABLE")
+@Document(collection = "activities")
 public class ActivityEntity {
-	private String activityId;
+	
+	private @Id String activityId;
 	private String type;
 	private String instance;
-	private Date createdTimestamp;
+	private @Indexed Date createdTimestamp;
 	private String invokedBy;
 	private String attributes;
 
@@ -42,7 +45,6 @@ public class ActivityEntity {
 		this.attributes = attributes;
 	}
 
-	@Id
 	public String getactivityId() {
 		return activityId;
 	}
@@ -51,13 +53,10 @@ public class ActivityEntity {
 		this.activityId = activityId;
 	}
 
-	@Column(name = "TYPE")
 	public String getType() {
 		return type;
 	}
 
-	@Lob
-	@Column(name = "INSTANCE")
 	public String getInstance() {
 		return instance;
 	}
@@ -66,8 +65,6 @@ public class ActivityEntity {
 		this.instance = instance;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "ACTIVITY_TS")
 	public Date getCreatedTimestamp() {
 		return createdTimestamp;
 	}
@@ -80,8 +77,6 @@ public class ActivityEntity {
 		this.type = type;
 	}
 
-	@Lob
-	@Column(name = "INVOKED_BY")
 	public String getInvokedBy() {
 		return invokedBy;
 	}
@@ -90,8 +85,6 @@ public class ActivityEntity {
 		this.invokedBy = invokedBy;
 	}
 
-	@Lob
-	@Column(name = "ATTRIBUTES")
 	public String getAttributes() {
 		return attributes;
 	}
