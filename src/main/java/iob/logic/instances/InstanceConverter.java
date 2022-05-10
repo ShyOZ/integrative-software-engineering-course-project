@@ -3,7 +3,6 @@ package iob.logic.instances;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.springframework.stereotype.Component;
 
 import iob.data.InstanceEntity;
@@ -15,45 +14,16 @@ public class InstanceConverter {
 
 	public InstanceEntity toEntity(InstanceBoundary boundary) {
 		InstanceEntity entity = new InstanceEntity();
-
-		entity.setInstanceId(toEntity(boundary.getInstanceId().get("domain"), boundary.getInstanceId().get("id")));
-
-		if (boundary.getType() != null) {
-			entity.setType(boundary.getType());
-		}
-
-		if (boundary.getName() != null) {
-			entity.setName(boundary.getName());
-		}
-
-		if (boundary.getActive() != null) {
-			entity.setActive(boundary.getActive());
-		}
-
+		entity.setInstanceId(toEntity(boundary.getInstanceId().getDomain(), boundary.getInstanceId().getId()));
+		entity.setType(boundary.getType());
+		entity.setName(boundary.getName());
+		entity.setActive(boundary.getActive());
 		entity.setCreatedTimestamp(boundary.getCreatedTimestamp());
-
-		if (boundary.getCreatedBy() != null) {
-			UserId userId = boundary.getCreatedBy().get("userId");
-			if (userId != null) {
-				String domain = userId.getDomain();
-				if (domain != null) {
-					entity.setCreatedByDomain(domain);
-				}
-	
-				String email = userId.getEmail();
-				if (email != null) {
-					entity.setCreatedByEmail(email);
-				}
-			}
-		}
-
-		if (boundary.getLocation() != null) {
-			entity.setLocation(toEntity(boundary.getLocation()));
-		}
-
-		if (boundary.getInstanceAttributes() != null) {
-			entity.setAttributes(boundary.getInstanceAttributes());
-		}
+		UserId userId = boundary.getCreatedBy().get("userId");
+		entity.setCreatedByDomain(userId.getDomain());
+		entity.setCreatedByEmail(userId.getEmail());
+		entity.setLocation(toEntity(boundary.getLocation()));
+		entity.setAttributes(boundary.getInstanceAttributes());
 
 		return entity;
 	}
@@ -65,7 +35,6 @@ public class InstanceConverter {
 	public String toEntity(String instanceDomain, String instanceId) {
 		return instanceDomain + "/" + instanceId;
 	}
-
 
 	public InstanceBoundary toBoundary(InstanceEntity entity) {
 		InstanceBoundary boundary = new InstanceBoundary();
@@ -80,10 +49,10 @@ public class InstanceConverter {
 		if (entity.getAttributes() != null) {
 			boundary.setInstanceAttributes(entity.getAttributes());
 		}
-		
+
 		return boundary;
 	}
-	
+
 	private Location toBoundary(double[] location) {
 		return new Location(location[0], location[1]);
 	}
@@ -91,18 +60,13 @@ public class InstanceConverter {
 	private Map<String, UserId> toBoundary(String createdByDomain, String createdByEmail) {
 		Map<String, UserId> userMap = new HashMap<String, UserId>();
 		userMap.put("userId", new UserId(createdByEmail, createdByDomain));
-		
+
 		return userMap;
 	}
 
-	public Map<String, String> toBoundary(String instanceId){
-		Map<String, String> instanceIdMap = new HashMap<String, String>();
-		
+	public InstanceId toBoundary(String instanceId) {
 		String[] domainId = instanceId.split("/");
-		instanceIdMap.put("domain", domainId[0]);
-		instanceIdMap.put("id", domainId[1]);
-		
-		return instanceIdMap;
+		return new InstanceId(domainId[0], domainId[1]);
 	}
 
 }

@@ -46,22 +46,22 @@ public class TestUserFunctionality {
 
 	@PostConstruct
 	public void init() {
-		admin = testProperties.getAdminUser();
-		player = testProperties.getPlayerUser();
 		newPlayer = testProperties.getNewPlayer();
-		this.restTemplate = new RestTemplate();
-		this.url = "http://localhost:" + this.port;
-		System.err.println(this.url);
+		restTemplate = new RestTemplate();
+		url = "http://localhost:" + port;
+
+		admin = restTemplate.postForObject(url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
+		player = restTemplate.postForObject(url + "/iob/users", testProperties.getNewPlayer(), UserBoundary.class);
 	}
 
 	@BeforeEach
 	void setUp() {
-		this.restTemplate.postForObject(this.url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
+		restTemplate.postForObject(url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
 	}
 
 	@AfterEach
 	void tearDown() {
-		this.restTemplate.delete(this.url + "/iob/admin/users?userDomain={domain}&userEmail={email}",
+		restTemplate.delete(url + "/iob/admin/users?userDomain={domain}&userEmail={email}",
 				admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
 
@@ -81,27 +81,29 @@ public class TestUserFunctionality {
 	}
 
 	@Test
-	void ifUserDoesNotExist_ThenLoginThrowsNotFoundWithCouldNotFindUserMessage() {
+	void ifUserDoesNotExist_thenLoginThrowsNotFoundWithCouldNotFindUserMessage() {
 		IntStream.range(0, 5).mapToObj(i -> {
 			NewUserBoundary newUser = new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
 					newPlayer.getUsername(), newPlayer.getAvatar());
 			return newUser;
-		}).map(newUser -> this.restTemplate.postForObject(this.url + "/iob/users", newUser, UserBoundary.class))
+		}).map(newUser -> restTemplate.postForObject(url + "/iob/users", newUser, UserBoundary.class))
 				.collect(Collectors.toList());
 
-		assertThat(assertThrows(NotFound.class,
-				() -> restTemplate.getForObject(this.url + "/iob/users/login/{userDomain}/{userEmail}",
-						UserBoundary.class, "test-domain", "entity" + 10 + "@test"))
-				.getMessage()).contains("could not find user");
+		assertThat(
+				assertThrows(NotFound.class,
+						() -> restTemplate.getForObject(url + "/iob/users/login/{userDomain}/{userEmail}",
+								UserBoundary.class, "test-domain", "entity" + 10 + "@test"))
+						.getMessage())
+				.contains("could not find user");
 	}
 
 	@Test
-	void ifUserDoesNotExist_ThenUpdateThrowsNotFoundWithCouldNotFindUserMessage() {
+	void ifUserDoesNotExist_thenUpdateThrowsNotFoundWithCouldNotFindUserMessage() {
 		IntStream.range(0, 5).mapToObj(i -> {
 			NewUserBoundary newUser = new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
 					newPlayer.getUsername(), newPlayer.getAvatar());
 			return newUser;
-		}).map(newUser -> this.restTemplate.postForObject(this.url + "/iob/users", newUser, UserBoundary.class))
+		}).map(newUser -> restTemplate.postForObject(url + "/iob/users", newUser, UserBoundary.class))
 				.collect(Collectors.toList());
 
 		assertThat(assertThrows(NotFound.class, () -> restTemplate.put(url + "/iob/users/{userDomain}/{userEmail}",
@@ -124,16 +126,16 @@ public class TestUserFunctionality {
 
 	@Test
 	void testGetAllUsers() {
-		IntStream.range(0, 5).mapToObj(i -> new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
-				newPlayer.getUsername() + i, newPlayer.getAvatar() + i)
-
-		).map(user -> restTemplate.postForObject(this.url + "/iob/users", user, UserBoundary.class))
+		IntStream.range(0, 5)
+				.mapToObj(i -> new NewUserBoundary("entity" + i + "@test", newPlayer.getRole(),
+						newPlayer.getUsername() + i, newPlayer.getAvatar() + i))
+				.map(user -> restTemplate.postForObject(url + "/iob/users", user, UserBoundary.class))
 				.collect(Collectors.toList());
 
-		UserEntity[] actual = restTemplate.getForObject(
+		UserBoundary[] actual = restTemplate.getForObject(
 				url + "/iob/admin/users?userDomain={userDomain}&userEmail={userEmail}&page={page}&size={size}",
-				UserEntity[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, 10);
-		assertThat(actual).hasSize(5 + 1); // 5 inserted users + admin
+				UserBoundary[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 0, 10);
+		assertThat(actual).hasSize(5 + 2); // 5 inserted users + admin + player
 	}
 
 	@Test
@@ -193,7 +195,7 @@ public class TestUserFunctionality {
 				newPlayer.getAvatar());
 
 		assertThat(assertThrows(BadRequest.class,
-				() -> this.restTemplate.postForObject(this.url + "/iob/users", playerWithoutEmail, UserBoundary.class))
+				() -> restTemplate.postForObject(url + "/iob/users", playerWithoutEmail, UserBoundary.class))
 				.getMessage()).contains("email is missing");
 	}
 
@@ -203,7 +205,7 @@ public class TestUserFunctionality {
 				newPlayer.getAvatar());
 
 		assertThat(assertThrows(BadRequest.class,
-				() -> this.restTemplate.postForObject(this.url + "/iob/users", playerWithoutRole, UserBoundary.class))
+				() -> restTemplate.postForObject(url + "/iob/users", playerWithoutRole, UserBoundary.class))
 				.getMessage()).contains("role is missing");
 	}
 
@@ -212,8 +214,9 @@ public class TestUserFunctionality {
 		NewUserBoundary playerWithoutUsername = new NewUserBoundary(newPlayer.getEmail(), newPlayer.getRole(), null,
 				newPlayer.getAvatar());
 
-		assertThat(assertThrows(BadRequest.class, () -> this.restTemplate.postForObject(this.url + "/iob/users",
-				playerWithoutUsername, UserBoundary.class)).getMessage()).contains("username is missing");
+		assertThat(assertThrows(BadRequest.class,
+				() -> restTemplate.postForObject(url + "/iob/users", playerWithoutUsername, UserBoundary.class))
+				.getMessage()).contains("username is missing");
 	}
 
 	@Test
@@ -222,7 +225,7 @@ public class TestUserFunctionality {
 				newPlayer.getUsername(), null);
 
 		assertThat(assertThrows(BadRequest.class,
-				() -> this.restTemplate.postForObject(this.url + "/iob/users", playerWithoutAvatar, UserBoundary.class))
+				() -> restTemplate.postForObject(url + "/iob/users", playerWithoutAvatar, UserBoundary.class))
 				.getMessage()).contains("avatar is missing");
 	}
 

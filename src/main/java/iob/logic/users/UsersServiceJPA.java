@@ -38,29 +38,23 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional
 	public UserBoundary createUser(NewUserBoundary user) {
-		UserEntity entity = new UserEntity();
-		entity.setUserId(this.userConverter.toEntity(user.getEmail(), this.domain));
 
-		if (user.getAvatar() != null)
-			entity.setAvatar(user.getAvatar());
-		else
-			throw new BadRequestException("avatar is missing");
-
-		if (user.getUsername() != null)
-			entity.setUserName(user.getUsername());
-		else
-			throw new BadRequestException("username is missing");
-
-		if (user.getRole() != null)
-			entity.setRole(UserRole.valueOf(user.getRole()));
-		else
-			throw new BadRequestException("role is missing");
-
-		if (user.getEmail() != null)
-			entity.setUserId(this.userConverter.toEntity(new UserId(user.getEmail(), this.domain)));
-		else
+		if (user.getEmail() == null)
 			throw new BadRequestException("email is missing");
 
+		if (user.getRole() == null)
+			throw new BadRequestException("role is missing");
+
+		if (user.getUsername() == null)
+			throw new BadRequestException("username is missing");
+
+		if (user.getAvatar() == null)
+			throw new BadRequestException("avatar is missing");
+
+		UserBoundary userBoundary = new UserBoundary(new UserId(user.getEmail(), domain),
+				UserRole.valueOf(user.getRole()), user.getUsername(), user.getAvatar());
+
+		UserEntity entity = userConverter.toBoundary(userBoundary);
 		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
 	}

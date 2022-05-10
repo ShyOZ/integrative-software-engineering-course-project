@@ -5,60 +5,38 @@ spring.mongodb.embedded.version: 3.4.5
 logging.level.org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 server.error.include-message: always
 
-  
 test-objects:
+  test-domain: *domain
   new-admin:
-    email : &admin-email admin-user@test-domain.com
-    role: ADMIN
-    username: &admin-username test-admin
-    avatar: &admin-avater TA
-  
-  admin-user:
-    userId:
-      domain : *domain
-      email : *admin-email
-    role: ADMIN
-    username: *admin-username
-    avatar: *admin-avater
-      
-  manager-user:
-    userId: 
-      domain : *domain
-      email : manager-user@test-domain.com
+    email: admin-user@test-domain.com       # required
+    role: ADMIN                             # required
+    username: test-admin                    # required
+    avatar: TA                              # required
+
+  new-manager:
+    email: &manager-email manager-user@test-domain.com
     role: MANAGER
     username: test-manager
     avatar: TM
-  
-  new-player:
-    email : &player-email player-user@test-domain.com
-    role: PLAYER
-    username: &player-username test-player
-    avatar: &player-avater TP
-  
-  player-user:
-    userId: 
-      domain : *domain
-      email : *player-email
-    role: PLAYER
-    username: *player-username
-    avatar: *player-avater
 
-  
-#  instance:
-#    instanceId: &config_instanceId
-#      domain: *domain
-#      id: -1
-#    type: test Type
-#    name: test instance
-#    active: false
-#    createdTimestamp: &timestamp 1977-07-07 07:07:07+0007
-#    createdBy:
-#      userId: 
-#        <<: *config_userId
-#    location:
-#      lat: 0
-#      lng: 0
-#      
+  new-player:
+    email: player-user@test-domain.com
+    role: PLAYER
+    username: test-player
+    avatar: TP
+
+  instance:
+    type: test Type                         # required
+    name: test instance                     # required
+    active: true                            # required
+    createdBy:                              # required
+      userId:                               # required
+        domain: *domain                     # required
+        email: *manager-email               # required
+      location:                             # not required
+        lat: 0
+        lng: 0
+
 #  activity:
 #    type: dummyType
 #    instance: 

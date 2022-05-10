@@ -30,11 +30,12 @@ public class UserConverter {
 		return new UserEntityId(boundaryId.getEmail(), boundaryId.getDomain());
 	}
 
-	public UserEntityId toEntity(String email, String domain) {
-		return new UserEntityId(email, domain);
-	}
-
 	public UserId toBoundary(UserEntityId entityId) {
 		return new UserId(entityId.getEmail(), entityId.getDomain());
+	}
+
+	public UserEntity toBoundary(UserBoundary userBoundary) {
+		return new UserEntity(toEntity(userBoundary.getUserId()), userBoundary.getRole(), userBoundary.getUsername(),
+				userBoundary.getAvatar());
 	}
 }

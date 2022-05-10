@@ -1,37 +1,38 @@
 package iob.logic.utility;
 
 public class Location {
-	
-		private Double lng;
-		private Double lat;
 
-		public Location() {
-		}
+	private Double lng;
+	private Double lat;
 
-		public Location(Double lng, Double lat) {
-			this.lng = lng;
-			this.lat = lat;
-		}
+	public Location() {
+		this(0., 0.);
+	}
 
-		public Double getLng() {
-			return lng;
-		}
+	public Location(Double lng, Double lat) {
+		this.lng = lng;
+		this.lat = lat;
+	}
 
-		public void setLng(Double lng) {
-			this.lng = lng;
-		}
+	public Double getLng() {
+		return lng;
+	}
 
-		public Double getLat() {
-			return lat;
-		}
+	public void setLng(Double lng) {
+		this.lng = lng;
+	}
 
-		public void setLat(Double lat) {
-			this.lat = lat;
-		}
+	public Double getLat() {
+		return lat;
+	}
 
-		@Override
-		public String toString() {
-			return "Location [lng=" + lng + ", lat=" + lat + "]";
-		}
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+
+	@Override
+	public String toString() {
+		return "Location [lng=" + lng + ", lat=" + lat + "]";
+	}
 
 }

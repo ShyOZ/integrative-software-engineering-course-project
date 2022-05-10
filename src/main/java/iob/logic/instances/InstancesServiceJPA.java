@@ -1,7 +1,6 @@
 package iob.logic.instances;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,10 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import iob.data.InstanceEntity;
 import iob.data.UserRole;
 import iob.logic.ExtendedInstancesService;
+import iob.logic.UsersService;
+import iob.logic.customExceptions.BadRequestException;
 import iob.logic.customExceptions.EntityNotFoundException;
 import iob.logic.customExceptions.UnauthorizedRequestException;
 import iob.logic.users.UserId;
 import iob.logic.utility.ConfigProperties;
+import iob.logic.utility.Location;
 import iob.mongo_repository.InstanceRepository;
 
 @Service
@@ -28,28 +30,49 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	private InstanceRepository instanceRepository;
 	private InstanceConverter instanceConverter;
 	private ConfigProperties configProperties;
+	private UsersService userService;
 
 	@Autowired
 	public InstancesServiceJPA(InstanceRepository instanceRepository, InstanceConverter instanceConverter,
-			ConfigProperties configProperties) {
+			ConfigProperties configProperties, UsersService userService) {
 		this.instanceRepository = instanceRepository;
 		this.instanceConverter = instanceConverter;
 		this.configProperties = configProperties;
+		this.userService = userService;
 	}
 
 	@Override
 	@Transactional
 	public InstanceBoundary createInstance(InstanceBoundary instance) {
+
+		if (instance.getType() == null)
+			throw new BadRequestException("type is missing");
+
+		if (instance.getName() == null)
+			throw new BadRequestException("name is missing");
+
+		if (instance.getCreatedBy() == null)
+			throw new BadRequestException("CreatedBy is missing");
+
+		if (instance.getCreatedBy().containsKey("userId") == false)
+			throw new BadRequestException("creator->userId is missing");
+
+		if (((UserId) instance.getCreatedBy().get("userId")).getEmail() == null)
+			throw new BadRequestException("creator->userId->email is missing");
+
+		if (((UserId) instance.getCreatedBy().get("userId")).getDomain() == null)
+			throw new BadRequestException("creator->userId->domain is missing");
+
+		if (instance.getLocation() == null)
+			instance.setLocation(new Location());
+
+		if (instance.getActive() == null)
+			instance.setActive(true);
+
 		instance.setCreatedTimestamp(new Date());
 
-		Map<String, String> instanceIdMap = new HashMap<String, String>();
-		instanceIdMap.put("domain", configProperties.getApplicationDomain());
-		instanceIdMap.put("id", UUID.randomUUID().toString());
-		instance.setInstanceId(instanceIdMap);
-
-		if (instance.getActive() == null) {
-			instance.setActive(true);
-		}
+		InstanceId instanceId = new InstanceId(configProperties.getApplicationDomain(), UUID.randomUUID().toString());
+		instance.setInstanceId(instanceId);
 
 		InstanceEntity entity = instanceConverter.toEntity(instance);
 		entity = instanceRepository.save(entity);
@@ -74,10 +97,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	private UserRole getUserRoleById(String userDomain, String userId) {
-		// UserBoundary user = userService.login(userDomain, userId);
-		// return user.getRole();
-
-		return UserRole.MANAGER;
+		return userService.login(userDomain, userId).getRole();
 	}
 
 	@Override
@@ -111,7 +131,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 					.findAllByNameAndActive(name, true, PageRequest.of(page, size, Direction.ASC, "name")).stream()
 					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
-			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
+			throw new UnauthorizedRequestException("user must be either a manager or a player to perform this action");
 		}
 	}
 
@@ -130,7 +150,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 					.findAllByTypeAndActive(type, true, PageRequest.of(page, size, Direction.DESC, "type")).stream()
 					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
-			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
+			throw new UnauthorizedRequestException("user must be either a manager or a player to perform this action");
 		}
 	}
 
@@ -152,7 +172,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 							PageRequest.of(page, size, Direction.ASC, "instanceId"))
 					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
-			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
+			throw new UnauthorizedRequestException("user must be either a manager or a player to perform this action");
 		}
 
 	}
@@ -225,24 +245,19 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 			String userEmail) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
 
+		if (userRole == UserRole.ADMIN)
+			throw new UnauthorizedRequestException("user must be either a manager or a player to perform this action");
+
 		InstanceBoundary instance = instanceConverter.toBoundary(getInstanceEntityById(instanceDomain, instanceId));
 
-		switch (userRole) {
-		case MANAGER:
+		if (userRole == UserRole.MANAGER)
 			return instance;
 
-		case PLAYER:
-			if (instance.getActive() == true) {
-				return instance;
-			} else {
-				throw new EntityNotFoundException(
-						"no active instance with domain=" + instanceDomain + " and id=" + instanceId);
-			}
-
-		default:
-			throw new UnauthorizedRequestException("user must be either a manager of a player to perform this action");
-		}
-
+		if (instance.getActive() == true)
+			return instance;
+		else
+			throw new EntityNotFoundException(
+					"no active instance with domain=" + instanceDomain + " and id=" + instanceId);
 	}
 
 	@Override
@@ -268,12 +283,10 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	public void deleteAllInstances(String userDomain, String userEmail) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
 
-		if (userRole == UserRole.ADMIN) {
+		if (userRole == UserRole.ADMIN)
 			instanceRepository.deleteAll();
-		} else {
+		else
 			throw new UnauthorizedRequestException("user must be an admin to perform this action");
-		}
 
 	}
-
 }

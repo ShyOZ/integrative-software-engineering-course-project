@@ -10,8 +10,9 @@ public class InstanceId {
 
 	}
 
-	public InstanceId(String email) {
-		this.id = email;
+	public InstanceId(String domain, String id) {
+		this.domain = domain;
+		this.id = id;
 	}
 
 	public String getDomain() {

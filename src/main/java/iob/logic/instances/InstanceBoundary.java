@@ -9,7 +9,7 @@ import iob.logic.utility.Location;
 
 public class InstanceBoundary {
 
-	private Map<String, String> instanceId;
+	private InstanceId instanceId;
 	private String type;
 	private String name;
 	private Boolean active;
@@ -24,7 +24,7 @@ public class InstanceBoundary {
 		this.instanceAttributes = new HashMap<>();
 	}
 
-	public InstanceBoundary(Map<String, String> instanceId, String type, String name, Boolean active,
+	public InstanceBoundary(InstanceId instanceId, String type, String name, Boolean active,
 			Date createdTimestamp, Map<String, UserId> createdBy, Location location,
 			Map<String, Object> instanceAttributes) {
 		this();
@@ -38,11 +38,11 @@ public class InstanceBoundary {
 		this.instanceAttributes = instanceAttributes;
 	}
 
-	public Map<String, String> getInstanceId() {
+	public InstanceId getInstanceId() {
 		return instanceId;
 	}
 
-	public void setInstanceId(Map<String, String> instanceId) {
+	public void setInstanceId(InstanceId instanceId) {
 		this.instanceId = instanceId;
 	}
 
