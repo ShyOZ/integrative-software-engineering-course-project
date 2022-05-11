@@ -16,6 +16,7 @@ import iob.data.ActivityEntity;
 import iob.data.UserRole;
 import iob.logic.ExtendedActivitiesService;
 import iob.logic.UsersService;
+import iob.logic.customExceptions.BadRequestException;
 import iob.logic.customExceptions.UnauthorizedRequestException;
 import iob.logic.utility.ConfigProperties;
 import iob.mongo_repository.ActivityRepository;
@@ -23,7 +24,6 @@ import iob.mongo_repository.ActivityRepository;
 @Service
 public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 
-	private ActivityBoundary defaultActivityBoundary;
 	private ActivityRepository activityRepository;
 	private ActivityConverter activityConverter;
 	private ConfigProperties configProperties;
@@ -56,22 +56,22 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 			if (activity.getType() != null)
 				entity.setType(activity.getType());
 			else
-				entity.setType(this.defaultActivityBoundary.getType());
+				throw new BadRequestException("type is missing");
 	
 			if (activity.getInstance() != null)
 				entity.setInstance(this.activityConverter.toEntity(activity.getInstance()));
 			else
-				entity.setInstance(this.activityConverter.toEntity(this.defaultActivityBoundary.getInstance()));
+				throw new BadRequestException("instance is missing");
 	
 			if (activity.getInvokedBy() != null)
 				entity.setInvokedBy(this.activityConverter.toEntity(activity.getInvokedBy()));
 			else
-				entity.setInvokedBy(this.activityConverter.toEntity(this.defaultActivityBoundary.getInvokedBy()));
+				throw new BadRequestException("invoked by is missing");
 	
 			if (activity.getActivityAttributes() != null)
 				entity.setAttributes(this.activityConverter.toEntity(activity.getActivityAttributes()));
 			else
-				entity.setAttributes(this.activityConverter.toEntity(this.defaultActivityBoundary.getActivityAttributes()));
+				throw new BadRequestException("attributes is missing");
 	
 			return this.activityRepository.save(entity);
 		}
