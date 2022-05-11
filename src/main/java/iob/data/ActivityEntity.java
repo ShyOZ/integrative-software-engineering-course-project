@@ -2,16 +2,11 @@ package iob.data;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import iob.logic.activities.ActivityId;
 
 /* 
 ACTIVITIES_TABLE
@@ -24,18 +19,19 @@ VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | TIMESTAMP   | CLOB
 @Document(collection = "activities")
 public class ActivityEntity {
 	
-	private @Id String activityId;
+	private @Id ActivityId activityId;
 	private String type;
 	private String instance;
 	private @Indexed Date createdTimestamp;
 	private String invokedBy;
 	private String attributes;
+	private @Indexed int version;
 
 	public ActivityEntity() {
 
 	}
 
-	public ActivityEntity(String activityId, String type, String instance, Date createdTimestamp, String invokedBy,
+	public ActivityEntity(ActivityId activityId, String type, String instance, Date createdTimestamp, String invokedBy,
 			String attributes) {
 		this.activityId = activityId;
 		this.type = type;
@@ -45,11 +41,11 @@ public class ActivityEntity {
 		this.attributes = attributes;
 	}
 
-	public String getactivityId() {
+	public ActivityId getactivityId() {
 		return activityId;
 	}
 
-	public void setactivityId(String activityId) {
+	public void setactivityId(ActivityId activityId) {
 		this.activityId = activityId;
 	}
 
@@ -91,6 +87,14 @@ public class ActivityEntity {
 
 	public void setAttributes(String attributes) {
 		this.attributes = attributes;
+	}
+	
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 }

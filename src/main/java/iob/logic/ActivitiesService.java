@@ -6,7 +6,8 @@ import iob.logic.activities.ActivityBoundary;
 
 public interface ActivitiesService {
 		
-	public Object invokeActivity(ActivityBoundary activity);
+	Object invokeActivity(ActivityBoundary activity, String domain, String email);
+	@Deprecated
 	public List<ActivityBoundary> getAllActivities();
 	public void deleteAllActivities();
 } 

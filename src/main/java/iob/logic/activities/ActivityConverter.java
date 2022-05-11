@@ -1,11 +1,9 @@
 package iob.logic.activities;
 
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iob.data.ActivityEntity;
@@ -44,11 +42,8 @@ public class ActivityConverter {
 		return boundary;
 	}
 
-	public ActivityId activityIdToBoundary(String activityId) {
-
-		String[] domainId = activityId.split("/");
-
-		return new ActivityId(domainId[0], domainId[1]);
+	public ActivityId activityIdToBoundary(ActivityId activityId) {
+		return activityId;
 	}
 
 	public ActivityInstance instanceToBoundary(String s) {

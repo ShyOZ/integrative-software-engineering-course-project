@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import iob.logic.ActivitiesService;
+import iob.logic.ExtendedActivitiesService;
 import iob.logic.ExtendedInstancesService;
 import iob.logic.ExtendedUsersService;
 import iob.logic.activities.ActivityBoundary;
@@ -17,14 +17,14 @@ import iob.logic.users.UserBoundary;
 public class AdminController {
 	private ExtendedInstancesService instanceService;
 	private ExtendedUsersService userService;
-	private ActivitiesService activitiesSrevice;
+	private ExtendedActivitiesService activitiesService;
 	
 	@Autowired
 	public void setInstanceService(ExtendedInstancesService instanceService, 
-			ExtendedUsersService userService, ActivitiesService activitiesSrevice ) {
+			ExtendedUsersService userService, ExtendedActivitiesService activitiesSrevice ) {
 		this.instanceService = instanceService;
 		this.userService = userService;
-		this.activitiesSrevice = activitiesSrevice;
+		this.activitiesService = activitiesSrevice;
 	}
 
 	@RequestMapping(
@@ -51,7 +51,7 @@ public class AdminController {
 	public void deleteAllActivities(
 			@RequestParam("userDomain") String domain,
 			@RequestParam("userEmail") String email) {
-		this.activitiesSrevice.deleteAllActivities();
+		this.activitiesService.deleteAllActivities();
 	}
 
 	@RequestMapping(
@@ -75,6 +75,6 @@ public class AdminController {
 			@RequestParam("userEmail") String email,
 			@RequestParam(name="size", required = false, defaultValue = "10") int size,
 			@RequestParam(name="page", required = false, defaultValue = "0") int page) {
-		return this.activitiesSrevice.getAllActivities();
+		return this.activitiesService.getAllActivities(size, page, domain, email);
 	}
 }
