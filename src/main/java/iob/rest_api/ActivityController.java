@@ -29,9 +29,7 @@ public class ActivityController {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	
 	public Object createActivityInstance(
-			@RequestBody ActivityBoundary boundary,
-			@RequestParam("domain") String domain,
-			@RequestParam("email") String email) {
-		return this.activitiesService.invokeActivity(boundary, domain, email);
+			@RequestBody ActivityBoundary boundary) {
+		return this.activitiesService.invokeActivity(boundary);
 	}
 }

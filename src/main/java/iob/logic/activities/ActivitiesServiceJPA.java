@@ -18,6 +18,7 @@ import iob.logic.ExtendedActivitiesService;
 import iob.logic.UsersService;
 import iob.logic.customExceptions.BadRequestException;
 import iob.logic.customExceptions.UnauthorizedRequestException;
+import iob.logic.users.UserId;
 import iob.logic.utility.ConfigProperties;
 import iob.mongo_repository.ActivityRepository;
 
@@ -44,9 +45,10 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	
 	@Override
 	@Transactional
-	public Object invokeActivity(ActivityBoundary activity, String domain, String email) {
+	public Object invokeActivity(ActivityBoundary activity) {
 		ActivityEntity entity = new ActivityEntity();
-		UserRole userRole = getUserRoleById(domain, email);
+		UserId userId = activity.getInvokedBy().getUserId();
+		UserRole userRole = getUserRoleById(userId.getDomain(), userId.getEmail());
 		
 		if (userRole.equals(UserRole.PLAYER))
 		{
