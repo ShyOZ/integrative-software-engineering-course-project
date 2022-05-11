@@ -20,11 +20,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import org.springframework.web.client.RestTemplate;
 
 import iob.data.UserEntity;
 import iob.data.UserEntityId;
 import iob.data.UserRole;
+import iob.logic.customExceptions.UnauthorizedRequestException;
 import iob.logic.users.NewUserBoundary;
 import iob.logic.users.UserBoundary;
 import iob.logic.users.UserConverter;
@@ -49,7 +51,7 @@ public class TestUserFunctionality {
 		newPlayer = testProperties.getNewPlayer();
 		restTemplate = new RestTemplate();
 		url = "http://localhost:" + port;
-		}
+	}
 
 	@BeforeEach
 	void setUp() {
@@ -231,4 +233,19 @@ public class TestUserFunctionality {
 				.getMessage()).contains("avatar is missing");
 	}
 
+	@Test
+	void ifUserIsNotAnAdmin_thenDeleteAllUsersThrowsUnauthorizedWithMessage() {
+		UserBoundary manager = restTemplate.postForObject(url + "/iob/users", testProperties.getNewManager(),
+				UserBoundary.class);
+
+		assertThat(assertThrows(Unauthorized.class,
+				() -> restTemplate.delete(url + "/iob/admin/users?userDomain={domain}&userEmail={email}",
+						player.getUserId().getDomain(), player.getUserId().getEmail()))
+				.getMessage()).contains("user must be an admin to perform this action");
+
+		assertThat(assertThrows(Unauthorized.class,
+				() -> restTemplate.delete(url + "/iob/admin/users?userDomain={domain}&userEmail={email}",
+						manager.getUserId().getDomain(), manager.getUserId().getEmail()))
+				.getMessage()).contains("user must be an admin to perform this action");
+	}
 }

@@ -52,18 +52,18 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 			throw new BadRequestException("name is missing");
 
 		if (instance.getCreatedBy() == null)
-			throw new BadRequestException("CreatedBy is missing");
+			throw new BadRequestException("createdBy is missing");
 
 		if (instance.getCreatedBy().containsKey("userId") == false)
-			throw new BadRequestException("creator->userId is missing");
+			throw new BadRequestException("createdBy.userId is missing");
 
 		UserId userId = instance.getCreatedBy().get("userId");
 
 		if (userId.getEmail() == null)
-			throw new BadRequestException("creator->userId->email is missing");
+			throw new BadRequestException("createdBy.userId.email is missing");
 
 		if (userId.getDomain() == null)
-			throw new BadRequestException("creator->userId->domain is missing");
+			throw new BadRequestException("createdBy.userId.domain is missing");
 
 		if (userService.login(userId.getDomain(), userId.getEmail()).getRole() != UserRole.MANAGER)
 			throw new BadRequestException("userId must belong to a manager");

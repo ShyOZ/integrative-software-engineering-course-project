@@ -1,73 +1,57 @@
 package iob.logic.activities;
 
-import java.util.Map;
-import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import iob.data.ActivityEntity;
+import iob.logic.instances.InstanceId;
+import iob.logic.users.UserId;
 
 @Component
 public class ActivityConverter {
-	private ObjectMapper jackson;
 
-	@PostConstruct
-	public void init() {
-		this.jackson = new ObjectMapper();
+	public ActivityEntity toEntity(ActivityBoundary boundary) {
+		ActivityEntity entity = new ActivityEntity();
+		entity.setActivityId(toEntity(boundary.getActivityId().getDomain(), boundary.getActivityId().getId()));
+		entity.setType(boundary.getType());
+		entity.setCreatedTimestamp(boundary.getCreatedTimestamp());
+		UserId userId = boundary.getInvokedBy().getUserId();
+
+		entity.setInvokedByDomain(userId.getDomain());
+		entity.setInvokedByEmail(userId.getEmail());
+		entity.setAttributes(boundary.getActivityAttributes());
+
+		return entity;
 	}
-//
-//	public String toEntity(String activityDomain, String activityId) {
-//		return activityDomain + "/" + activityId;
-//	}
 
-	public String toEntity(Object obj) {
-		try {
-			return this.jackson.writeValueAsString(obj);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	private String toEntity(String domain, String id) {
+		return domain + "/" + id;
 	}
 
 	public ActivityBoundary toBoundary(ActivityEntity entity) {
 		ActivityBoundary boundary = new ActivityBoundary();
-
-		boundary.setActivityId(activityIdToBoundary(entity.getactivityId()));
+		boundary.setActivityId(toActivityIdBoundary(entity.getActivityId()));
 		boundary.setType(entity.getType());
-		boundary.setInstance(instanceToBoundary(entity.getInstance()));
+		boundary.setInstance(toActivityInstanceBoundary(entity.getInstanceDomain(), entity.getInstanceDomain()));
 		boundary.setCreatedTimestamp(entity.getCreatedTimestamp());
-		boundary.setInvokedBy(invokedByToBoundary(entity.getInvokedBy()));
-		boundary.setActivityAttributes(attributesToBoundary(entity.getAttributes()));
-
+		boundary.setInvokedBy(toInvokedByBoundary(entity.getInvokedByDomain(), entity.getInvokedByEmail()));
+		boundary.setActivityAttributes(entity.getAttributes());
 		return boundary;
 	}
 
-	public ActivityId activityIdToBoundary(ActivityId activityId) {
+	private ActivityId toActivityIdBoundary(String activityId) {
+		String[] activityDomainAndId = activityId.split("/");
+		return new ActivityId(activityDomainAndId[0], activityDomainAndId[1]);
+	}
+
+	private ActivityInstance toActivityInstanceBoundary(String domain, String id) {
+		return new ActivityInstance(new InstanceId(domain, id));
+	}
+
+	public ActivityId toBoundary(ActivityId activityId) {
 		return activityId;
 	}
 
-	public ActivityInstance instanceToBoundary(String s) {
-		try {
-			return jackson.readValue(s, ActivityInstance.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public ActivityInvoker toInvokedByBoundary(String domain, String email) {
+		return new ActivityInvoker(new UserId(email, domain));
 	}
-
-	public ActivityInvoker invokedByToBoundary(String s) {
-		try {
-			return jackson.readValue(s, ActivityInvoker.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public Map<String, Object> attributesToBoundary(String s) {
-		try {
-			return (Map<String, Object>) jackson.readValue(s, Map.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 }

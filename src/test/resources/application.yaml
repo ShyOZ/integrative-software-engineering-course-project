@@ -34,13 +34,3 @@ test-objects:
       location:                             # not required
         lat: 0
         lng: 0
-
-#  activity:
-#    type: dummyType
-#    instance: 
-#      instanceId: 
-#        <<: *config_instanceId
-#    createdTimestamp: *timestamp
-#    invokedBy: 
-#      userId: 
-#        <<: *config_userId

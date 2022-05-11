@@ -3,7 +3,6 @@ package iob.logic.users;
 import org.springframework.stereotype.Component;
 
 import iob.data.UserEntity;
-import iob.data.UserEntityId;
 
 @Component
 public class UserConverter {

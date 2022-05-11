@@ -1,51 +1,33 @@
 package iob.data;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import iob.logic.activities.ActivityId;
-
-/* 
-ACTIVITIES_TABLE
----------------------------------------------------------------------
-ACTIVITY_ID  | TYPE         | INSTANCE     | ACTIVITY_TS | Attributes
-VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | TIMESTAMP   | CLOB
-<PK>
-*/
-
 @Document(collection = "activities")
 public class ActivityEntity {
-	
-	private @Id ActivityId activityId;
+
+	private @Id String activityId;
 	private String type;
-	private String instance;
+	private String instanceDomain;
+	private String instanceId;
 	private @Indexed Date createdTimestamp;
-	private String invokedBy;
-	private String attributes;
+	private String invokedByDomain;
+	private String invokedByEmail;
+	private Map<String, Object> attributes;
 	private @Indexed int version;
 
 	public ActivityEntity() {
-
 	}
 
-	public ActivityEntity(ActivityId activityId, String type, String instance, Date createdTimestamp, String invokedBy,
-			String attributes) {
-		this.activityId = activityId;
-		this.type = type;
-		this.instance = instance;
-		this.createdTimestamp = createdTimestamp;
-		this.invokedBy = invokedBy;
-		this.attributes = attributes;
-	}
-
-	public ActivityId getactivityId() {
+	public String getActivityId() {
 		return activityId;
 	}
 
-	public void setactivityId(ActivityId activityId) {
+	public void setActivityId(String activityId) {
 		this.activityId = activityId;
 	}
 
@@ -53,12 +35,24 @@ public class ActivityEntity {
 		return type;
 	}
 
-	public String getInstance() {
-		return instance;
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	public void setInstance(String instance) {
-		this.instance = instance;
+	public String getInstanceDomain() {
+		return instanceDomain;
+	}
+
+	public void setInstanceDomain(String instanceDomain) {
+		this.instanceDomain = instanceDomain;
+	}
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(String instanceId) {
+		this.instanceId = instanceId;
 	}
 
 	public Date getCreatedTimestamp() {
@@ -69,26 +63,30 @@ public class ActivityEntity {
 		this.createdTimestamp = createdTimestamp;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public String getInvokedByDomain() {
+		return invokedByDomain;
 	}
 
-	public String getInvokedBy() {
-		return invokedBy;
+	public void setInvokedByDomain(String invokedByDomain) {
+		this.invokedByDomain = invokedByDomain;
 	}
 
-	public void setInvokedBy(String invokedBy) {
-		this.invokedBy = invokedBy;
+	public String getInvokedByEmail() {
+		return invokedByEmail;
 	}
 
-	public String getAttributes() {
+	public void setInvokedByEmail(String invokedByEmail) {
+		this.invokedByEmail = invokedByEmail;
+	}
+
+	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(String attributes) {
+	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
+
 	public int getVersion() {
 		return version;
 	}
@@ -96,5 +94,4 @@ public class ActivityEntity {
 	public void setVersion(int version) {
 		this.version = version;
 	}
-
 }

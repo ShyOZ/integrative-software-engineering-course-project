@@ -51,7 +51,7 @@ public class AdminController {
 	public void deleteAllActivities(
 			@RequestParam("userDomain") String domain,
 			@RequestParam("userEmail") String email) {
-		this.activitiesService.deleteAllActivities();
+		this.activitiesService.deleteAllActivities(domain, email);
 	}
 
 	@RequestMapping(

@@ -120,7 +120,7 @@ public class TestInstanceFunctionality {
 	}
 
 	@Test
-	void ifUserIsNotManager_thenIstanceCreationThrowsBadRequestWithMwssage() {
+	void ifUserIsNotAManager_thenIstanceCreationThrowsBadRequestWithMwssage() {
 		InstanceBoundary instanceCreatedByAdmin = new InstanceBoundary(null, "test type", "test name", true, null,
 				Collections.singletonMap("userId", admin.getUserId()), null, null);
 		InstanceBoundary instanceCreatedByPlayer = new InstanceBoundary(null, "test type", "test name", true, null,
@@ -172,50 +172,29 @@ public class TestInstanceFunctionality {
 
 	@Test
 	void ifInstanceIsMissingCreatedBy_thenCreateInstanceThrowsBadRequestWithCreatedByIsMissingMessage() {
-		InstanceBoundary instanceWithoutCreatedBy = new InstanceBoundary(null, "", "", true, null, null, null, null);
+		InstanceBoundary instance = new InstanceBoundary(null, "", "", true, null, null, null, null);
 
-		assertThat(assertThrows(BadRequest.class, () -> restTemplate.postForObject(url + "/iob/instances",
-				instanceWithoutCreatedBy, InstanceBoundary.class)).getMessage()).contains("CreatedBy is missing");
-	}
+		assertThat(assertThrows(BadRequest.class,
+				() -> restTemplate.postForObject(url + "/iob/instances", instance, InstanceBoundary.class))
+				.getMessage()).contains("createdBy is missing");
 
-	@Test
-	void ifInstanceIsMissingCreatedByUserId_thenCreateInstanceThrowsBadRequestWithCreatedByUserIdIsMissingMessage() {
-		InstanceBoundary instanceWithoutCreatedByUserId = new InstanceBoundary(null, "", "", true, null,
-				new HashMap<String, UserId>(), null, null);
+		instance.setCreatedBy(new HashMap<String, UserId>());
 
-		assertThat(assertThrows(BadRequest.class, () -> restTemplate.postForObject(url + "/iob/instances",
-				instanceWithoutCreatedByUserId, InstanceBoundary.class)).getMessage())
-				.contains("creator->userId is missing");
-	}
+		assertThat(assertThrows(BadRequest.class,
+				() -> restTemplate.postForObject(url + "/iob/instances", instance, InstanceBoundary.class))
+				.getMessage()).contains("createdBy.userId is missing");
 
-	@Test
-	void ifInstanceIsMissingCreatedByUserIdEmail_thenCreateInstanceThrowsBadRequestWithCreatedByUserIdEmailIsMissingMessage() {
-		InstanceBoundary instanceWithoutCreatedByUserIdEmail = new InstanceBoundary(null, testInstance.getType(),
-				testInstance.getName(), true, null, null, null, null);
+		instance.getCreatedBy().put("userId", new UserId("test email", null));
 
-		Map<String, UserId> createdByWithoutUserIdEmail = new HashMap<String, UserId>();
-		createdByWithoutUserIdEmail.put("userId", new UserId(null, ""));
+		assertThat(assertThrows(BadRequest.class,
+				() -> restTemplate.postForObject(url + "/iob/instances", instance, InstanceBoundary.class))
+				.getMessage()).contains("createdBy.userId.domain is missing");
 
-		instanceWithoutCreatedByUserIdEmail.setCreatedBy(createdByWithoutUserIdEmail);
+		instance.getCreatedBy().put("userId", new UserId(null, "test domain"));
 
-		assertThat(assertThrows(BadRequest.class, () -> restTemplate.postForObject(url + "/iob/instances",
-				instanceWithoutCreatedByUserIdEmail, InstanceBoundary.class)).getMessage())
-				.contains("creator->userId->email is missing");
-	}
-
-	@Test
-	void ifInstanceIsMissingCreatedByUserIdDomain_thenCreateInstanceThrowsBadRequestWithCreatedByUserIdDomainIsMissingMessage() {
-		InstanceBoundary instanceWithoutCreatedByUserIdDomain = new InstanceBoundary(null, "", "", true, null, null,
-				null, null);
-
-		Map<String, UserId> createdByWithoutUserIdDomain = new HashMap<String, UserId>();
-		createdByWithoutUserIdDomain.put("userId", new UserId("", null));
-
-		instanceWithoutCreatedByUserIdDomain.setCreatedBy(createdByWithoutUserIdDomain);
-
-		assertThat(assertThrows(BadRequest.class, () -> restTemplate.postForObject(url + "/iob/instances",
-				instanceWithoutCreatedByUserIdDomain, InstanceBoundary.class)).getMessage())
-				.contains("creator->userId->domain is missing");
+		assertThat(assertThrows(BadRequest.class,
+				() -> restTemplate.postForObject(url + "/iob/instances", instance, InstanceBoundary.class))
+				.getMessage()).contains("createdBy.userId.email is missing");
 	}
 
 	@Test
@@ -253,7 +232,7 @@ public class TestInstanceFunctionality {
 	}
 
 	@Test
-	void ifUserIsPlayerOrManager_thenDeleteAllInstancesThrowsUnauthorizedWithMessage() {
+	void ifUserIsNotAnAdmin_thenDeleteAllInstancesThrowsUnauthorizedWithMessage() {
 		IntStream.range(0, 5)
 				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances", testInstance, InstanceBoundary.class))
 				.collect(Collectors.toList());
@@ -269,6 +248,7 @@ public class TestInstanceFunctionality {
 				.getMessage()).contains("user must be an admin to perform this action");
 	}
 
+	@Test
 	void testSearchByNameWithPagination() {
 		IntStream
 				.range(0,
@@ -281,16 +261,26 @@ public class TestInstanceFunctionality {
 										InstanceBoundary.class))
 				.collect(Collectors.toList());
 
-		IntStream.range(0, 10)
-				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances",
-						new InstanceBoundary(null, "", "first name", false, null, null, null, null),
-						InstanceBoundary.class))
+		IntStream
+				.range(0,
+						10)
+				.mapToObj(
+						i -> restTemplate
+								.postForObject(url + "/iob/instances",
+										new InstanceBoundary(null, "", "first name", false, null,
+												testInstance.getCreatedBy(), null, null),
+										InstanceBoundary.class))
 				.collect(Collectors.toList());
 
-		IntStream.range(0, 10)
-				.mapToObj(i -> restTemplate.postForObject(url + "/iob/instances",
-						new InstanceBoundary(null, "", "second name", true, null, null, null, null),
-						InstanceBoundary.class))
+		IntStream
+				.range(0,
+						10)
+				.mapToObj(
+						i -> restTemplate
+								.postForObject(url + "/iob/instances",
+										new InstanceBoundary(null, "", "second name", true, null,
+												testInstance.getCreatedBy(), null, null),
+										InstanceBoundary.class))
 				.collect(Collectors.toList());
 
 		assertThat(restTemplate.getForObject(url
@@ -309,6 +299,7 @@ public class TestInstanceFunctionality {
 				1)).getMessage()).contains("user must be either a manager or a player to perform this action");
 	}
 
+	@Test
 	void testSearchByTypeWithPagination() {
 		IntStream
 				.range(0,

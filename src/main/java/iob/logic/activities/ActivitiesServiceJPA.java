@@ -2,6 +2,7 @@ package iob.logic.activities;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import iob.logic.ExtendedActivitiesService;
 import iob.logic.UsersService;
 import iob.logic.customExceptions.BadRequestException;
 import iob.logic.customExceptions.UnauthorizedRequestException;
+import iob.logic.instances.InstanceId;
 import iob.logic.users.UserId;
 import iob.logic.utility.ConfigProperties;
 import iob.mongo_repository.ActivityRepository;
@@ -42,44 +44,56 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	private UserRole getUserRoleById(String userDomain, String userId) {
 		return userService.login(userDomain, userId).getRole();
 	}
-	
+
 	@Override
 	@Transactional
 	public Object invokeActivity(ActivityBoundary activity) {
-		ActivityEntity entity = new ActivityEntity();
-		UserId userId = activity.getInvokedBy().getUserId();
-		UserRole userRole = getUserRoleById(userId.getDomain(), userId.getEmail());
-		
-		if (userRole.equals(UserRole.PLAYER))
-		{
-			entity.setCreatedTimestamp(new Date());
-			entity.setactivityId(new ActivityId(configProperties.getApplicationDomain(), UUID.randomUUID().toString()));
-	
-			if (activity.getType() != null)
-				entity.setType(activity.getType());
-			else
-				throw new BadRequestException("type is missing");
-	
-			if (activity.getInstance() != null)
-				entity.setInstance(this.activityConverter.toEntity(activity.getInstance()));
-			else
-				throw new BadRequestException("instance is missing");
-	
-			if (activity.getInvokedBy() != null)
-				entity.setInvokedBy(this.activityConverter.toEntity(activity.getInvokedBy()));
-			else
-				throw new BadRequestException("invoked by is missing");
-	
-			if (activity.getActivityAttributes() != null)
-				entity.setAttributes(this.activityConverter.toEntity(activity.getActivityAttributes()));
-			else
-				throw new BadRequestException("attributes is missing");
-	
-			return this.activityRepository.save(entity);
-		}
-		else
-			throw new UnauthorizedRequestException("User must be a player to perform the action.");
+		if (activity.getType() == null)
+			throw new BadRequestException("type is missing");
 
+		if (activity.getInstance() == null)
+			throw new BadRequestException("instance is missing");
+
+		InstanceId instanceId = activity.getInstance().getInstanceId();
+
+		if (instanceId == null)
+			throw new BadRequestException("instance.instanceId is missing");
+
+		if (instanceId.getDomain() == null)
+			throw new BadRequestException("instance.instanceId.domain is missing");
+
+		if (instanceId.getId() == null)
+			throw new BadRequestException("instance.instanceId.id is missing");
+
+		if (activity.getInvokedBy() == null)
+			throw new BadRequestException("invokedBy is missing");
+
+		UserId userId = activity.getInvokedBy().getUserId();
+
+		if (userId == null)
+			throw new BadRequestException("invokedBy.userId is missing");
+
+		if (userId.getEmail() == null)
+			throw new BadRequestException("invokedBy.userId.email is missing");
+
+		if (userId.getDomain() == null)
+			throw new BadRequestException("invokedBy.userId.domain is missing");
+
+		UserRole userRole = getUserRoleById(userId.getDomain(), userId.getEmail());
+
+		if (userRole != UserRole.PLAYER)
+			throw new UnauthorizedRequestException("User must be a player to perform the action");
+
+		if (activity.getActivityAttributes() == null)
+			activity.setActivityAttributes(new HashMap<String, Object>());
+
+		activity.setCreatedTimestamp(new Date());
+
+		activity.setActivityId(new ActivityId(configProperties.getApplicationDomain(), UUID.randomUUID().toString()));
+
+		ActivityEntity entity = activityConverter.toEntity(activity);
+		entity = activityRepository.save(entity);
+		return activityConverter.toBoundary(entity);
 	}
 
 	@Override
@@ -96,29 +110,29 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	@Override
 	@Transactional
 	public void deleteAllActivities() {
-		this.activityRepository.deleteAll();
+		throw new RuntimeException("deprecated method - use deleteAllActivities with user info instead");
+	}
+
+	@Override
+	public void deleteAllActivities(String userDomain, String userEmail) {
+		UserRole userRole = getUserRoleById(userDomain, userEmail);
+
+		if (userRole != UserRole.ADMIN)
+			throw new UnauthorizedRequestException("user must be an admin to perform this action");
+
+		activityRepository.deleteAll();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ActivityBoundary> getAllActivities(int size, int page, String domain, String email) {
 		UserRole userRole = getUserRoleById(domain, email);
-		
+
 		if (userRole.equals(UserRole.ADMIN)) {
 			return this.activityRepository.findAll(PageRequest.of(page, size, Direction.ASC, "activityId")).stream()
-					.map(this.activityConverter::toBoundary)
-					.collect(Collectors.toList());
+					.map(this.activityConverter::toBoundary).collect(Collectors.toList());
+		} else {
+			throw new UnauthorizedRequestException("user must be an admin to perform this action");
 		}
-		else {
-			throw new UnauthorizedRequestException("User must be an admin to perform the action.");
-		}
-	}
-	
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<ActivityBoundary> getActivitiesByVersion(int version, int size, int page) {
-		return this.activityRepository.findAllByVersion(version, PageRequest.of(page, size, Direction.ASC, "activityId")).stream()
-				.map(this.activityConverter::toBoundary).collect(Collectors.toList());
 	}
 }

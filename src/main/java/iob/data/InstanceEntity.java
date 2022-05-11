@@ -8,13 +8,6 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-/*
- * INSTANCE_TABLE
- * 
- * INSTANCE_ID  | TYPE         | NAME         | ACTIVE  | CREATED_TS | CREATED_BY_DOMAIN | CREATED_BY_EMAIL | LOCATION | ATTRIBUTES  
- * VARCHAR(255) | VARCHAR(255) | VARCHAR(255) | boolean |            | VARCHAR(255)      | VARCHAR(255)     | CLOB     | CLOB
- * */
-
 @Document(collection = "instances")
 public class InstanceEntity {
 	private @Id String instanceId;
@@ -28,7 +21,6 @@ public class InstanceEntity {
 	private Map<String, Object> attributes;
 
 	public InstanceEntity() {
-
 	}
 
 	public String getInstanceId() {
@@ -70,7 +62,7 @@ public class InstanceEntity {
 	public void setCreatedTimestamp(Date createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
 	}
-	
+
 	public String getCreatedByDomain() {
 		return createdByDomain;
 	}
@@ -86,7 +78,7 @@ public class InstanceEntity {
 	public void setCreatedByEmail(String createdByEmail) {
 		this.createdByEmail = createdByEmail;
 	}
-	
+
 	public double[] getLocation() {
 		return location;
 	}

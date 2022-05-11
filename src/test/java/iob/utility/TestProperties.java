@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import iob.logic.instances.InstanceBoundary;
 import iob.logic.users.NewUserBoundary;
-import iob.logic.users.UserBoundary;
 
 @Component
 @ConfigurationProperties(prefix = "test-objects")
