@@ -39,8 +39,8 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Transactional
 	public UserBoundary createUser(NewUserBoundary user) {
 		try {
-			UserEntity entity = getUserEntityByDomainAndEmail(this.domain, user.getEmail());
-			return this.userConverter.toBoundary(entity);
+			getUserEntityByDomainAndEmail(this.domain, user.getEmail());
+			throw new BadRequestException("User already exists");
 		} catch (EntityNotFoundException e) {
 			if (user.getEmail() == null || !isValid(user.getEmail()))
 				throw new BadRequestException("email is missing");
