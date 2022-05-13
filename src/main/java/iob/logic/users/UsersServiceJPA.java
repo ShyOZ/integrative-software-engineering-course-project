@@ -37,25 +37,29 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Override
 	@Transactional
 	public UserBoundary createUser(NewUserBoundary user) {
+		try {
+			UserEntity entity = getUserEntityByDomainAndEmail(this.domain, user.getEmail());
+			return this.userConverter.toBoundary(entity);
+		} catch (EntityNotFoundException e) {
+			if (user.getEmail() == null)
+				throw new BadRequestException("email is missing");
 
-		if (user.getEmail() == null)
-			throw new BadRequestException("email is missing");
+			if (user.getRole() == null)
+				throw new BadRequestException("role is missing");
 
-		if (user.getRole() == null)
-			throw new BadRequestException("role is missing");
+			if (user.getUsername() == null)
+				throw new BadRequestException("username is missing");
 
-		if (user.getUsername() == null)
-			throw new BadRequestException("username is missing");
+			if (user.getAvatar() == null)
+				throw new BadRequestException("avatar is missing");
 
-		if (user.getAvatar() == null)
-			throw new BadRequestException("avatar is missing");
+			UserBoundary userBoundary = new UserBoundary(new UserId(user.getEmail(), domain),
+					UserRole.valueOf(user.getRole()), user.getUsername(), user.getAvatar());
 
-		UserBoundary userBoundary = new UserBoundary(new UserId(user.getEmail(), domain),
-				UserRole.valueOf(user.getRole()), user.getUsername(), user.getAvatar());
-
-		UserEntity entity = userConverter.toEntity(userBoundary);
-		entity = this.userRepo.save(entity);
-		return this.userConverter.toBoundary(entity);
+			UserEntity entity = userConverter.toEntity(userBoundary);
+			entity = this.userRepo.save(entity);
+			return this.userConverter.toBoundary(entity);
+		}
 	}
 
 	@Override
@@ -91,7 +95,6 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Transactional
 	public void deleteAllUsers(String userDomain, String userEmail) {
 		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
-//		System.out.println(entity.toString());
 		if (entity.getRole().equals(UserRole.ADMIN)) {
 			this.userRepo.deleteAll();
 		} else
