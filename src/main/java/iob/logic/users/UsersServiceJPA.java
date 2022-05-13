@@ -2,6 +2,7 @@ package iob.logic.users;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,16 +42,16 @@ public class UsersServiceJPA implements ExtendedUsersService {
 			UserEntity entity = getUserEntityByDomainAndEmail(this.domain, user.getEmail());
 			return this.userConverter.toBoundary(entity);
 		} catch (EntityNotFoundException e) {
-			if (user.getEmail() == null)
+			if (user.getEmail() == null && isValid(user.getEmail()))
 				throw new BadRequestException("email is missing");
 
 			if (user.getRole() == null)
 				throw new BadRequestException("role is missing");
 
-			if (user.getUsername() == null)
+			if (user.getUsername() == null && user.getUsername().length()!=0)
 				throw new BadRequestException("username is missing");
 
-			if (user.getAvatar() == null)
+			if (user.getAvatar() == null && user.getAvatar().length()!=0)
 				throw new BadRequestException("avatar is missing");
 
 			UserBoundary userBoundary = new UserBoundary(new UserId(user.getEmail(), domain),
@@ -131,4 +132,17 @@ public class UsersServiceJPA implements ExtendedUsersService {
 		return this.userRepo.findAllByVersion(version, PageRequest.of(page, size, Direction.ASC, "userId")).stream()
 				.map(this.userConverter::toBoundary).collect(Collectors.toList());
 	}
+	
+	public static boolean isValid(String email)
+    {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                            "[a-zA-Z0-9_+&*-]+)*@" +
+                            "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                            "A-Z]{2,7}$";
+                              
+        Pattern pat = Pattern.compile(emailRegex);
+        if (email == null)
+            return false;
+        return pat.matcher(email).matches();
+    }
 }
