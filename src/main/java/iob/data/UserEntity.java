@@ -1,5 +1,7 @@
 package iob.data;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @CompoundIndex(def = "{domain: 1, email: 1}", name = "user Id - domain and email", unique = true)
 public class UserEntity {
 
+	private @Id ObjectId id;
 	private String domain;
 	private String email;
 	private UserRole role;
@@ -19,12 +22,21 @@ public class UserEntity {
 
 	}
 
-	public UserEntity(String domain, String email, UserRole role, String username, String avatar) {
+	public UserEntity(ObjectId id, String domain, String email, UserRole role, String username, String avatar) {
+		this.id = id;
 		this.domain = domain;
 		this.email = email;
 		this.username = username;
 		this.role = role;
 		this.avatar = avatar;
+	}
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
 	}
 
 	public String getDomain() {
