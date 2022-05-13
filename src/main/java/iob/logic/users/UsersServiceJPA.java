@@ -42,16 +42,16 @@ public class UsersServiceJPA implements ExtendedUsersService {
 			UserEntity entity = getUserEntityByDomainAndEmail(this.domain, user.getEmail());
 			return this.userConverter.toBoundary(entity);
 		} catch (EntityNotFoundException e) {
-			if (user.getEmail() == null && isValid(user.getEmail()))
+			if (user.getEmail() == null || !isValid(user.getEmail()))
 				throw new BadRequestException("email is missing");
 
 			if (user.getRole() == null)
 				throw new BadRequestException("role is missing");
 
-			if (user.getUsername() == null && user.getUsername().length()!=0)
+			if (user.getUsername() == null || user.getUsername().length()==0)
 				throw new BadRequestException("username is missing");
 
-			if (user.getAvatar() == null && user.getAvatar().length()!=0)
+			if (user.getAvatar() == null || user.getAvatar().length()==0)
 				throw new BadRequestException("avatar is missing");
 
 			UserBoundary userBoundary = new UserBoundary(new UserId(user.getEmail(), domain),
