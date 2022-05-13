@@ -77,15 +77,16 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	@Transactional
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
 		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
-		if (update.getAvatar() != null) {
+		if (update.getAvatar() != null && update.getAvatar().length()!=0) {
 			entity.setAvatar(update.getAvatar());
 		}
-		if (update.getUsername() != null) {
+		if (update.getUsername() != null && update.getAvatar().length()!=0) {
 			entity.setUserName(update.getUsername());
 		}
 		if (update.getRole() != null) {
 			entity.setRole(update.getRole());
 		}
+		
 		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
 	}
