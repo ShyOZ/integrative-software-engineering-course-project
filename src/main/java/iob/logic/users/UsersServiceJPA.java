@@ -42,7 +42,7 @@ public class UsersServiceJPA implements ExtendedUsersService {
 			getUserEntityByDomainAndEmail(this.domain, user.getEmail());
 			throw new BadRequestException("User already exists");
 		} catch (EntityNotFoundException e) {
-			if (user.getEmail() == null || !isValid(user.getEmail()))
+			if (user.getEmail() == null || user.getEmail().length() ==0||!isValid(user.getEmail()))
 				throw new BadRequestException("email is missing");
 
 			if (user.getRole() == null)
