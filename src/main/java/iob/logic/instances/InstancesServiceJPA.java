@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.InstanceEntity;
 import iob.data.UserRole;
+import iob.log.LogMethod;
 import iob.logic.ExtendedInstancesService;
 import iob.logic.UsersService;
 import iob.logic.customExceptions.BadRequestException;
@@ -42,7 +43,8 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public InstanceBoundary createInstance(InstanceBoundary instance) {
 
 		if (instance.getType() == null)
@@ -116,13 +118,15 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public void deleteAllInstances() {
 		throw new RuntimeException("deprecated method - use deleteAllInstances with user info instead");
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<InstanceBoundary> getInstancesByName(String name, String userDomain, String userEmail, int size,
 			int page) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
@@ -141,7 +145,8 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<InstanceBoundary> getInstancesByType(String type, String userDomain, String userEmail, int size,
 			int page) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
@@ -160,7 +165,8 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<InstanceBoundary> getInstancesNear(double lat, double lng, double distance, String userDomain,
 			String userEmail, int size, int page) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
@@ -183,7 +189,8 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public InstanceBoundary updateInstance(String instanceDomain, String instanceId, InstanceBoundary update,
 			String userDomain, String userEmail) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
@@ -245,7 +252,8 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public InstanceBoundary getSpecificInstance(String instanceDomain, String instanceId, String userDomain,
 			String userEmail) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
@@ -266,7 +274,8 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<InstanceBoundary> getAllInstances(String userDomain, String userEmail, int size, int page) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
 
@@ -284,7 +293,8 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public void deleteAllInstances(String userDomain, String userEmail) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
 

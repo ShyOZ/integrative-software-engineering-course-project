@@ -69,5 +69,13 @@
             <version>3.4.5</version>
             <scope>test</scope>
         </dependency>
+        
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        
     </dependencies>
 </project>

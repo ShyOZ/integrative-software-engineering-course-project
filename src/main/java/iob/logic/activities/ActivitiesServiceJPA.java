@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.ActivityEntity;
 import iob.data.UserRole;
+import iob.log.LogMethod;
 import iob.logic.ExtendedActivitiesService;
 import iob.logic.UsersService;
 import iob.logic.customExceptions.BadRequestException;
@@ -46,7 +47,8 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public Object invokeActivity(ActivityBoundary activity) {
 		if (activity.getType() == null)
 			throw new BadRequestException("type is missing");
@@ -97,7 +99,8 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<ActivityBoundary> getAllActivities() {
 		Iterable<ActivityEntity> iter = this.activityRepository.findAll();
 		List<ActivityBoundary> rv = new ArrayList<>();
@@ -108,7 +111,8 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public void deleteAllActivities() {
 		throw new RuntimeException("deprecated method - use deleteAllActivities with user info instead");
 	}
@@ -124,7 +128,8 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<ActivityBoundary> getAllActivities(int size, int page, String domain, String email) {
 		UserRole userRole = getUserRoleById(domain, email);
 

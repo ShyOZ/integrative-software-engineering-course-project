@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.UserEntity;
 import iob.data.UserRole;
+import iob.log.LogMethod;
 import iob.logic.ExtendedUsersService;
 import iob.logic.customExceptions.BadRequestException;
 import iob.logic.customExceptions.EntityNotFoundException;
@@ -36,7 +37,8 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public UserBoundary createUser(NewUserBoundary user) {
 		try {
 			getUserEntityByDomainAndEmail(this.domain, user.getEmail());
@@ -67,14 +69,16 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public UserBoundary login(String userDomain, String userEmail) {
 		UserEntity logged = getUserEntityByDomainAndEmail(userDomain, userEmail);
 		return this.userConverter.toBoundary(logged);
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
 		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
 		if (update.getAvatar() != null && update.getAvatar().length()!=0) {
@@ -97,7 +101,8 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
+	@LogMethod
 	public void deleteAllUsers(String userDomain, String userEmail) {
 		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
 		if (entity.getRole().equals(UserRole.ADMIN)) {
@@ -118,7 +123,8 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<UserBoundary> getAllUsers(int size, int page, String domain, String email) {
 		UserEntity entity = getUserEntityByDomainAndEmail(domain, email);
 		if (entity.getRole().equals(UserRole.ADMIN)) {
@@ -131,7 +137,8 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
+	@LogMethod
 	public List<UserBoundary> getUsersByVersion(int version, int size, int page) {
 		return this.userRepo.findAllByVersion(version, PageRequest.of(page, size, Direction.ASC, "userId")).stream()
 				.map(this.userConverter::toBoundary).collect(Collectors.toList());
