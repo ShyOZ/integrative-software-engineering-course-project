@@ -11,7 +11,6 @@ public class Profile implements Instance {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private String password;
 	private Date birthDate;
 	private UserGender gender;
 	private UserGender interestedIn;
@@ -58,19 +57,6 @@ public class Profile implements Instance {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
-
-	public String getPassword() {
-		return password;
-	}
-
-
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 
 
 	public Date getBirthDate() {
@@ -163,7 +149,6 @@ public class Profile implements Instance {
 		attributes.put("first name", this.firstName);
 		attributes.put("last name", this.lastName);
 		attributes.put("email", this.email);
-		attributes.put("password", this.password);
 		attributes.put("birthday", this.birthDate);
 		attributes.put("gender", this.gender);
 		attributes.put("intrested in", this.interestedIn);
@@ -179,7 +164,7 @@ public class Profile implements Instance {
 	@Override
 	public String toString() {
 		return "Profile [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", password=" + password + ", birthDate=" + birthDate + ", gender=" + gender + ", interestedIn="
+				+ ", birthDate=" + birthDate + ", gender=" + gender + ", interestedIn="
 				+ interestedIn + ", phoneNum=" + phoneNum + ", address=" + address + ", musicalTaste=" + musicalTaste
 				+ ", chats=" + chats + "]";
 	}
