@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import iob.data.UserGender;
+import iob.logic.users.UserId;
 
 
 public class Profile implements Instance {
+	private UserId id;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -28,6 +30,11 @@ public class Profile implements Instance {
 		return firstName;
 	}
 
+
+
+	public UserId getId() {
+		return id;
+	}
 
 
 	public void setFirstName(String firstName) {

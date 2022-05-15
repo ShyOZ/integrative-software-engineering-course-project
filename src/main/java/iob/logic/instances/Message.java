@@ -3,34 +3,46 @@ package iob.logic.instances;
 import java.util.Map;
 import java.util.TreeMap;
 
+import iob.logic.users.User;
+
 public class Message implements Instance {
-	private Profile sender;
-	private Profile reciver;
+	private User sender;
+	private User reciver;
 	private String text;
+	private boolean isRead;
 
 	public Message() {
 
 	}
 
-	public Message(Profile sender, Profile reciver, String text) {
+	public Message(User sender, User reciver, String text, boolean isRead) {
 		this.sender = sender;
 		this.reciver = reciver;
 		this.text = text;
+		this.isRead = isRead;
 	}
 
-	public Profile getSender() {
+	public boolean isRead() {
+		return isRead;
+	}
+
+	public void setRead(boolean isRead) {
+		this.isRead = isRead;
+	}
+
+	public User getSender() {
 		return sender;
 	}
 
-	public void setSender(Profile sender) {
+	public void setSender(User sender) {
 		this.sender = sender;
 	}
 
-	public Profile getReciver() {
+	public User getReciver() {
 		return reciver;
 	}
 
-	public void setReciver(Profile reciver) {
+	public void setReciver(User reciver) {
 		this.reciver = reciver;
 	}
 
