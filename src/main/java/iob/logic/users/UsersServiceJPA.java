@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.UserEntity;
 import iob.data.UserRole;
@@ -37,26 +36,25 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public UserBoundary createUser(NewUserBoundary user) {
 		try {
 			getUserEntityByDomainAndEmail(this.domain, user.getEmail());
-			throw new BadRequestException("User already exists");
+			throw new BadRequestException("user already exists");
 		} catch (EntityNotFoundException e) {
-			if (user.getEmail() == null || user.getEmail().length() ==0)
+			if (user.getEmail() == null || user.getEmail().length() == 0)
 				throw new BadRequestException("email is missing");
-			
-			if(!isValid(user.getEmail()))
-				throw new BadRequestException("Incorrect email address");
+
+			if (!isValidEmail(user.getEmail()))
+				throw new BadRequestException("invalid email");
 
 			if (user.getRole() == null)
 				throw new BadRequestException("role is missing");
 
-			if (user.getUsername() == null || user.getUsername().length()==0)
+			if (user.getUsername() == null || user.getUsername().length() == 0)
 				throw new BadRequestException("username is missing");
 
-			if (user.getAvatar() == null || user.getAvatar().length()==0)
+			if (user.getAvatar() == null || user.getAvatar().length() == 0)
 				throw new BadRequestException("avatar is missing");
 
 			UserBoundary userBoundary = new UserBoundary(new UserId(user.getEmail(), domain),
@@ -69,7 +67,6 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public UserBoundary login(String userDomain, String userEmail) {
 		UserEntity logged = getUserEntityByDomainAndEmail(userDomain, userEmail);
@@ -77,20 +74,19 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public UserBoundary updateUser(String userDomain, String userEmail, UserBoundary update) {
 		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
-		if (update.getAvatar() != null && update.getAvatar().length()!=0) {
+		if (update.getAvatar() != null && update.getAvatar().length() != 0) {
 			entity.setAvatar(update.getAvatar());
 		}
-		if (update.getUsername() != null && update.getAvatar().length()!=0) {
+		if (update.getUsername() != null && update.getAvatar().length() != 0) {
 			entity.setUserName(update.getUsername());
 		}
 		if (update.getRole() != null) {
 			entity.setRole(update.getRole());
 		}
-		
+
 		entity = this.userRepo.save(entity);
 		return this.userConverter.toBoundary(entity);
 	}
@@ -101,7 +97,6 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public void deleteAllUsers(String userDomain, String userEmail) {
 		UserEntity entity = getUserEntityByDomainAndEmail(userDomain, userEmail);
@@ -123,7 +118,6 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<UserBoundary> getAllUsers(int size, int page, String domain, String email) {
 		UserEntity entity = getUserEntityByDomainAndEmail(domain, email);
@@ -137,23 +131,19 @@ public class UsersServiceJPA implements ExtendedUsersService {
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<UserBoundary> getUsersByVersion(int version, int size, int page) {
 		return this.userRepo.findAllByVersion(version, PageRequest.of(page, size, Direction.ASC, "userId")).stream()
 				.map(this.userConverter::toBoundary).collect(Collectors.toList());
 	}
-	
-	public static boolean isValid(String email)
-    {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
-                            "[a-zA-Z0-9_+&*-]+)*@" +
-                            "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
-                            "A-Z]{2,7}$";
-                              
-        Pattern pat = Pattern.compile(emailRegex);
-        if (email == null)
-            return false;
-        return pat.matcher(email).matches();
-    }
+
+	public boolean isValidEmail(String email) {
+		String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\." + "[a-zA-Z0-9_+&*-]+)*@" + "(?:[a-zA-Z0-9-]+\\.)+[a-z"
+				+ "A-Z]{2,7}$";
+
+		Pattern pat = Pattern.compile(emailRegex);
+		if (email == null)
+			return false;
+		return pat.matcher(email).matches();
+	}
 }
