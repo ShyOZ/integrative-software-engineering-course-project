@@ -10,8 +10,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.InstanceEntity;
 import iob.data.UserRole;
@@ -43,7 +44,6 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public InstanceBoundary createInstance(InstanceBoundary instance) {
 
@@ -118,14 +118,12 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public void deleteAllInstances() {
 		throw new RuntimeException("deprecated method - use deleteAllInstances with user info instead");
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<InstanceBoundary> getInstancesByName(String name, String userDomain, String userEmail, int size,
 			int page) {
@@ -133,19 +131,18 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 
 		switch (userRole) {
 		case MANAGER:
-			return instanceRepository.findAllByName(name, PageRequest.of(page, size, Direction.ASC, "name")).stream()
-					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
+			return instanceRepository.findAllByName(name, PageRequest.of(page, size, Direction.ASC, "instanceId"))
+					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		case PLAYER:
 			return instanceRepository
-					.findAllByNameAndActive(name, true, PageRequest.of(page, size, Direction.ASC, "name")).stream()
-					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
+					.findAllByNameAndActive(name, true, PageRequest.of(page, size, Direction.ASC, "instanceId"))
+					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
 			throw new UnauthorizedRequestException("user must be either a manager or a player to perform this action");
 		}
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<InstanceBoundary> getInstancesByType(String type, String userDomain, String userEmail, int size,
 			int page) {
@@ -153,33 +150,33 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 
 		switch (userRole) {
 		case MANAGER:
-			return instanceRepository.findAllByType(type, PageRequest.of(page, size, Direction.DESC, "type")).stream()
-					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
+			return instanceRepository.findAllByType(type, PageRequest.of(page, size, Direction.ASC, "instanceId"))
+					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		case PLAYER:
 			return instanceRepository
-					.findAllByTypeAndActive(type, true, PageRequest.of(page, size, Direction.DESC, "type")).stream()
-					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
+					.findAllByTypeAndActive(type, true, PageRequest.of(page, size, Direction.ASC, "instanceId"))
+					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
 			throw new UnauthorizedRequestException("user must be either a manager or a player to perform this action");
 		}
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<InstanceBoundary> getInstancesNear(double lat, double lng, double distance, String userDomain,
 			String userEmail, int size, int page) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
-		double[] location = new double[] { lat, lng };
+		Point location = new Point(lat, lng);
+		Distance dist = new Distance(distance);
 
 		switch (userRole) {
 		case MANAGER:
 			return instanceRepository
-					.findAllNear(location, distance, PageRequest.of(page, size, Direction.ASC, "instanceId")).stream()
-					.map(this.instanceConverter::toBoundary).collect(Collectors.toList());
+					.findAllByLocationNear(location, dist, PageRequest.of(page, size, Direction.ASC, "instanceId"))
+					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		case PLAYER:
 			return instanceRepository
-					.findAllNearAndActive(location, distance, true,
+					.findAllByLocationNearAndActive(location, dist, true,
 							PageRequest.of(page, size, Direction.ASC, "instanceId"))
 					.stream().map(this.instanceConverter::toBoundary).collect(Collectors.toList());
 		default:
@@ -189,7 +186,6 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public InstanceBoundary updateInstance(String instanceDomain, String instanceId, InstanceBoundary update,
 			String userDomain, String userEmail) {
@@ -252,7 +248,6 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public InstanceBoundary getSpecificInstance(String instanceDomain, String instanceId, String userDomain,
 			String userEmail) {
@@ -274,7 +269,6 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<InstanceBoundary> getAllInstances(String userDomain, String userEmail, int size, int page) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);
@@ -293,7 +287,6 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public void deleteAllInstances(String userDomain, String userEmail) {
 		UserRole userRole = getUserRoleById(userDomain, userEmail);

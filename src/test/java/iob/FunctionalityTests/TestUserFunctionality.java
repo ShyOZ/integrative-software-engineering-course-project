@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -16,13 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpClientErrorException.Unauthorized;
-import org.springframework.web.client.RestTemplate;
 
 import iob.data.UserEntity;
 import iob.data.UserRole;
@@ -31,7 +28,7 @@ import iob.logic.users.UserBoundary;
 import iob.logic.users.UserConverter;
 import iob.logic.users.UserId;
 import iob.mongo_repository.UserRepository;
-import iob.utility.ApiRequestHandler;
+import iob.utility.ApTestRequester;
 import iob.utility.TestProperties;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -42,7 +39,7 @@ public class TestUserFunctionality {
 	private UserBoundary admin, player;
 	private NewUserBoundary newPlayer;
 	private @Autowired UserRepository userRepository;
-	private @Autowired ApiRequestHandler requester;
+	private @Autowired ApTestRequester requester;
 
 	@PostConstruct
 	public void init() {
@@ -98,13 +95,12 @@ public class TestUserFunctionality {
 				() -> requester.putUser(new UserBoundary(), "test-domain", "entity" + 10 + "@test.com")).getMessage())
 				.contains("could not find user");
 	}
-	
+
 	@Test
 	void ifUserAlreadyExists_thenCreateThrowsBadRequestWithUserAlreadyExistsMessage() {
 		assertThat(assertThrows(BadRequest.class, () -> requester.postNewUserForUser(newPlayer)).getMessage())
 				.contains("user already exists");
 	}
-	
 
 	@Test
 	void testUpdateUser() {
@@ -200,11 +196,11 @@ public class TestUserFunctionality {
 		assertThat(assertThrows(BadRequest.class, () -> requester.postNewUserForUser(playerWithoutEmail)).getMessage())
 				.contains("email is missing");
 	}
-	
+
 	@Test
 	void ifNewUserHasInvalidEmailThenPostThrowsBadRequestWithIncorrectEmailAddressMessage() {
-		NewUserBoundary playerWithBadEmail = new NewUserBoundary("bad email", newPlayer.getRole(), newPlayer.getUsername(),
-				newPlayer.getAvatar());
+		NewUserBoundary playerWithBadEmail = new NewUserBoundary("bad email", newPlayer.getRole(),
+				newPlayer.getUsername(), newPlayer.getAvatar());
 
 		assertThat(assertThrows(BadRequest.class, () -> requester.postNewUserForUser(playerWithBadEmail)).getMessage())
 				.contains("invalid email");
@@ -250,7 +246,7 @@ public class TestUserFunctionality {
 				() -> requester.deleteAllUsers(manager.getUserId().getDomain(), manager.getUserId().getEmail()))
 				.getMessage()).contains("user must be an admin to perform this action");
 	}
-	
+
 	@Test
 	void ifUserIsNotAnAdmin_thenGetAllUsersThrowsUnauthorizedWithMessage() {
 		UserBoundary manager = requester.postNewUserForUser(testProperties.getNewManager());

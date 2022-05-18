@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,56 +14,45 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
-import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpClientErrorException.Unauthorized;
-import org.springframework.web.client.RestTemplate;
 
 import iob.logic.activities.ActivityBoundary;
+import iob.logic.activities.ActivityConverter;
 import iob.logic.activities.ActivityInstance;
 import iob.logic.activities.ActivityInvoker;
 import iob.logic.instances.InstanceBoundary;
 import iob.logic.instances.InstanceId;
 import iob.logic.users.UserBoundary;
 import iob.logic.users.UserId;
+import iob.utility.ApTestRequester;
 import iob.utility.TestProperties;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestActivityFunctionality {
 
-	private @LocalServerPort int port;
-	private String url;
-	private RestTemplate restTemplate;
 	private @Autowired TestProperties testProperties;
 	private UserBoundary admin, player, manager;
 	private InstanceBoundary testInstance;
-
-	@PostConstruct
-	public void init() {
-		restTemplate = new RestTemplate();
-		url = "http://localhost:" + port;
-	}
+	private @Autowired ApTestRequester requester;
+	private @Autowired ActivityConverter activityConverter;
+	private Comparator<ActivityBoundary> activityComparatorById;
 
 	@BeforeEach
 	void setUp() {
-		player = restTemplate.postForObject(url + "/iob/users", testProperties.getNewPlayer(), UserBoundary.class);
-		manager = restTemplate.postForObject(url + "/iob/users", testProperties.getNewManager(), UserBoundary.class);
-		admin = restTemplate.postForObject(url + "/iob/users", testProperties.getNewAdmin(), UserBoundary.class);
-		testInstance = restTemplate.postForObject(url + "/iob/instances", testProperties.getInstance(),
-				InstanceBoundary.class);
+		player = requester.postNewUserForUser(testProperties.getNewPlayer());
+		manager = requester.postNewUserForUser(testProperties.getNewManager());
+		admin = requester.postNewUserForUser(testProperties.getNewAdmin());
+		testInstance = requester.postInstanceForInstance(testProperties.getInstance());
+		
+		activityComparatorById = Comparator.comparing(ActivityBoundary::getActivityId,
+				(id1, id2) -> activityConverter.toEntity(id1.getDomain(), id1.getId())
+						.compareTo(activityConverter.toEntity(id2.getDomain(), id2.getId())));
 	}
 
 	@AfterEach
 	void tearDown() {
-		restTemplate.delete(url + "/iob/admin/activities?userDomain={domain}&userEmail={email}",
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
-
-		restTemplate.delete(url + "/iob/admin/instances?userDomain={domain}&userEmail={email}",
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
-
-		restTemplate.delete(url + "/iob/admin/users?userDomain={domain}&userEmail={email}",
-				admin.getUserId().getDomain(), admin.getUserId().getEmail());
+		requester.deleteAll(admin.getUserId().getDomain(), admin.getUserId().getEmail());
 	}
 
 	@Test
@@ -74,19 +62,14 @@ public class TestActivityFunctionality {
 				new ActivityInstance(testInstance.getInstanceId()), null, new ActivityInvoker(player.getUserId()),
 				null);
 
-		IntStream.range(0, 5)
-				.mapToObj(
-						i -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.collect(Collectors.toList());
+		IntStream.range(0, 5).mapToObj(i -> requester.postActivityForObject(testActivity)).collect(Collectors.toList());
 
 		assertThat(assertThrows(Unauthorized.class,
-				() -> restTemplate.delete(url + "/iob/admin/activities?userDomain={domain}&userEmail={email}",
-						player.getUserId().getDomain(), player.getUserId().getEmail()))
+				() -> requester.deleteAllActivities(player.getUserId().getDomain(), player.getUserId().getEmail()))
 				.getMessage()).contains("user must be an admin to perform this action");
 
 		assertThat(assertThrows(Unauthorized.class,
-				() -> restTemplate.delete(url + "/iob/admin/activities?userDomain={domain}&userEmail={email}",
-						manager.getUserId().getDomain(), manager.getUserId().getEmail()))
+				() -> requester.deleteAllActivities(manager.getUserId().getDomain(), manager.getUserId().getEmail()))
 				.getMessage()).contains("user must be an admin to perform this action");
 	}
 
@@ -97,19 +80,14 @@ public class TestActivityFunctionality {
 				new ActivityInstance(testInstance.getInstanceId()), null, new ActivityInvoker(player.getUserId()),
 				null);
 
-		IntStream.range(0, 5)
-				.mapToObj(
-						i -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.collect(Collectors.toList());
+		IntStream.range(0, 5).mapToObj(i -> requester.postActivityForObject(testActivity)).collect(Collectors.toList());
 
 		assertThat(assertThrows(Unauthorized.class,
-				() -> restTemplate.getForObject(url + "/iob/admin/activities?userDomain={domain}&userEmail={email}",
-						Object[].class, player.getUserId().getDomain(), player.getUserId().getEmail()))
+				() -> requester.getActivities(player.getUserId().getDomain(), player.getUserId().getEmail()))
 				.getMessage()).contains("user must be an admin to perform this action");
 
 		assertThat(assertThrows(Unauthorized.class,
-				() -> restTemplate.getForObject(url + "/iob/admin/activities?userDomain={domain}&userEmail={email}",
-						Object[].class, manager.getUserId().getDomain(), manager.getUserId().getEmail()))
+				() -> requester.getActivities(manager.getUserId().getDomain(), manager.getUserId().getEmail()))
 				.getMessage()).contains("user must be an admin to perform this action");
 	}
 
@@ -120,23 +98,20 @@ public class TestActivityFunctionality {
 				.mapToObj(
 						i -> new ActivityBoundary(null, "test type", new ActivityInstance(testInstance.getInstanceId()),
 								null, new ActivityInvoker(player.getUserId()), Collections.singletonMap("key", 1)))
-				.map(activity -> restTemplate.postForObject(url + "/iob/activities", activity, Object.class))
-				.collect(Collectors.toList());
+				.map(activity -> requester.postActivityForObject(activity)).collect(Collectors.toList());
 
-		assertThat(restTemplate.getForObject(url + "/iob/admin/activities?userDomain={domain}&userEmail={email}",
-				Object[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail())).hasSize(10);
+		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail())).isSortedAccordingTo(activityComparatorById);
 
-		assertThat(restTemplate.getForObject(
-				url + "/iob/admin/activities?userDomain={domain}&userEmail={email}&size={size}&page={page}",
-				Object[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 30, 0)).hasSize(20);
+		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail())).hasSize(10);
 
-		assertThat(restTemplate.getForObject(
-				url + "/iob/admin/activities?userDomain={domain}&userEmail={email}&size={size}&page={page}",
-				Object[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 6, 0)).hasSize(6);
+		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail(), 30, 0))
+				.hasSize(20);
 
-		assertThat(restTemplate.getForObject(
-				url + "/iob/admin/activities?userDomain={domain}&userEmail={email}&size={size}&page={page}",
-				Object[].class, admin.getUserId().getDomain(), admin.getUserId().getEmail(), 13, 1)).hasSize(7);
+		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail(), 6, 0))
+				.hasSize(6);
+
+		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail(), 13, 1))
+				.hasSize(7);
 	}
 
 	@Test
@@ -144,27 +119,33 @@ public class TestActivityFunctionality {
 		ActivityBoundary testActivity = new ActivityBoundary(null, "test type", null, null,
 				new ActivityInvoker(player.getUserId()), null);
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("instance is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("instance is missing");
 
 		testActivity.setInstance(new ActivityInstance(null));
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("instance.instanceId is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("instance.instanceId is missing");
 
 		testActivity.getInstance().setInstanceId(new InstanceId(null, "test id"));
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("instance.instanceId.domain is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("instance.instanceId.domain is missing");
+
+		testActivity.getInstance().setInstanceId(new InstanceId("", "test id"));
+
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("instance.instanceId.domain is missing");
 
 		testActivity.getInstance().setInstanceId(new InstanceId("test domain", null));
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("instance.instanceId.id is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("instance.instanceId.id is missing");
+
+		testActivity.getInstance().setInstanceId(new InstanceId("test domain", ""));
+
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("instance.instanceId.id is missing");
 	}
 
 	@Test
@@ -172,27 +153,33 @@ public class TestActivityFunctionality {
 		ActivityBoundary testActivity = new ActivityBoundary(null, "test type",
 				new ActivityInstance(testInstance.getInstanceId()), null, null, null);
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("invokedBy is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("invokedBy is missing");
 
 		testActivity.setInvokedBy(new ActivityInvoker(null));
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("invokedBy.userId is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("invokedBy.userId is missing");
 
-		testActivity.setInvokedBy(new ActivityInvoker(new UserId("test email", null)));
+		testActivity.setInvokedBy(new ActivityInvoker(new UserId("test@email.com", null)));
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("invokedBy.userId.domain is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("invokedBy.userId.domain is missing");
+
+		testActivity.setInvokedBy(new ActivityInvoker(new UserId("test@email.com", "")));
+
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("invokedBy.userId.domain is missing");
 
 		testActivity.setInvokedBy(new ActivityInvoker(new UserId(null, "test domain")));
 
-		assertThat(assertThrows(BadRequest.class,
-				() -> restTemplate.postForObject(url + "/iob/activities", testActivity, ActivityBoundary.class))
-				.getMessage()).contains("invokedBy.userId.email is missing");
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("invokedBy.userId.email is missing");
+
+		testActivity.setInvokedBy(new ActivityInvoker(new UserId("", "test domain")));
+
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("invokedBy.userId.email is missing");
 
 	}
 

@@ -12,12 +12,12 @@ import iob.logic.users.NewUserBoundary;
 import iob.logic.users.UserBoundary;
 
 @Component
-public class ApiRequestHandler {
+public class ApTestRequester {
 
 	private RestTemplate restTemplate;
 
 	@Autowired
-	public ApiRequestHandler(Environment environment) {
+	public ApTestRequester(Environment environment) {
 		LocalHostUriTemplateHandler localhostHandler = new LocalHostUriTemplateHandler(environment);
 		restTemplate = new RestTemplate();
 		restTemplate.setUriTemplateHandler(localhostHandler);
@@ -30,6 +30,12 @@ public class ApiRequestHandler {
 	public UserBoundary getUser(String userDomain, String userEmail) {
 		return restTemplate.getForObject("/iob/users/login/{userDomain}/{userEmail}", UserBoundary.class, userDomain,
 				userEmail);
+	}
+
+	public UserBoundary[] getUsers(String adminDomain, String adminEmail) {
+
+		return restTemplate.getForObject("/iob/admin/users?userDomain={userDomain}&userEmail={userEmail}",
+				UserBoundary[].class, adminDomain, adminEmail);
 	}
 
 	public UserBoundary[] getUsers(String adminDomain, String adminEmail, int size, int page) {
@@ -68,10 +74,20 @@ public class ApiRequestHandler {
 				InstanceBoundary[].class, userDomain, userEmail, size, page);
 	}
 
+	public InstanceBoundary[] getInstances(String userDomain, String userEmail) {
+		return restTemplate.getForObject("/iob/instances?userDomain={domain}&userEmail={email}",
+				InstanceBoundary[].class, userDomain, userEmail);
+	}
+
 	public InstanceBoundary[] getInstancesByName(String name, String userDomain, String userEmail, int size, int page) {
 		return restTemplate.getForObject(
 				"/iob/instances/search/byName/{name}?userDomain={domain}&userEmail={email}&size={size}&page={page}",
 				InstanceBoundary[].class, name, userDomain, userEmail, size, page);
+	}
+
+	public InstanceBoundary[] getInstancesByName(String name, String userDomain, String userEmail) {
+		return restTemplate.getForObject("/iob/instances/search/byName/{name}?userDomain={domain}&userEmail={email}",
+				InstanceBoundary[].class, name, userDomain, userEmail);
 	}
 
 	public InstanceBoundary[] getInstancesByType(String type, String userDomain, String userEmail, int size, int page) {
@@ -80,11 +96,23 @@ public class ApiRequestHandler {
 				InstanceBoundary[].class, type, userDomain, userEmail, size, page);
 	}
 
+	public InstanceBoundary[] getInstancesByType(String type, String userDomain, String userEmail) {
+		return restTemplate.getForObject("/iob/instances/search/byType/{type}?userDomain={domain}&userEmail={email}",
+				InstanceBoundary[].class, type, userDomain, userEmail);
+	}
+
 	public InstanceBoundary[] getInstancesByLocation(double lat, double lng, double distance, String userDomain,
 			String userEmail, int size, int page) {
 		return restTemplate.getForObject(
-				"/iob/instances/search/near/{lat}/{lng},{distance}?userDomain={domain}&userEmail={email}&size={size}&page={page}",
+				"/iob/instances/search/near/{lat}/{lng}/{distance}?userDomain={domain}&userEmail={email}&size={size}&page={page}",
 				InstanceBoundary[].class, lat, lng, distance, userDomain, userEmail, size, page);
+	}
+
+	public InstanceBoundary[] getInstancesByLocation(double lat, double lng, double distance, String userDomain,
+			String userEmail) {
+		return restTemplate.getForObject(
+				"/iob/instances/search/near/{lat}/{lng}/{distance}?userDomain={domain}&userEmail={email}",
+				InstanceBoundary[].class, lat, lng, distance, userDomain, userEmail);
 	}
 
 	public void deleteAllInstances(String adminDomain, String adminEmail) {
@@ -92,12 +120,19 @@ public class ApiRequestHandler {
 
 	}
 
-	public Object postActivityForObject() {
-		return null;
+	public Object postActivityForObject(ActivityBoundary activity) {
+		return restTemplate.postForObject("/iob/activities", activity, ActivityBoundary.class);
 	}
 
-	public ActivityBoundary[] getActivities() {
-		return null;
+	public ActivityBoundary[] getActivities(String adminDomain, String adminEmail, int size, int page) {
+		return restTemplate.getForObject(
+				"/iob/admin/activities?userDomain={userDomain}&userEmail={userEmail}&size={size}&page={page}",
+				ActivityBoundary[].class, adminDomain, adminEmail, size, page);
+	}
+
+	public ActivityBoundary[] getActivities(String adminDomain, String adminEmail) {
+		return restTemplate.getForObject("/iob/admin/activities?userDomain={userDomain}&userEmail={userEmail}",
+				ActivityBoundary[].class, adminDomain, adminEmail);
 	}
 
 	public void deleteAllActivities(String adminDomain, String adminEmail) {

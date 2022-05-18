@@ -23,7 +23,7 @@ public class ActivityConverter {
 		return entity;
 	}
 
-	private String toEntity(String domain, String id) {
+	public String toEntity(String domain, String id) {
 		return domain + "/" + id;
 	}
 

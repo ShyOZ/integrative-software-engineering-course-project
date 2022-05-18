@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import iob.data.ActivityEntity;
 import iob.data.UserRole;
@@ -47,7 +46,6 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public Object invokeActivity(ActivityBoundary activity) {
 		if (activity.getType() == null)
@@ -99,7 +97,6 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<ActivityBoundary> getAllActivities() {
 		Iterable<ActivityEntity> iter = this.activityRepository.findAll();
@@ -111,7 +108,6 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	//@Transactional
 	@LogMethod
 	public void deleteAllActivities() {
 		throw new RuntimeException("deprecated method - use deleteAllActivities with user info instead");
@@ -128,7 +124,6 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 
 	@Override
-	//@Transactional(readOnly = true)
 	@LogMethod
 	public List<ActivityBoundary> getAllActivities(int size, int page, String domain, String email) {
 		UserRole userRole = getUserRoleById(domain, email);
