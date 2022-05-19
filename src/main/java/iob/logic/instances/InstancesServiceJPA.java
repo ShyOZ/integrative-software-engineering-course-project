@@ -2,7 +2,6 @@ package iob.logic.instances;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,8 +48,14 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 
 		if (instance.getType() == null)
 			throw new BadRequestException("type is missing");
+		
+		if (instance.getType().isEmpty())
+			throw new BadRequestException("type is missing");
 
 		if (instance.getName() == null)
+			throw new BadRequestException("name is missing");
+		
+		if (instance.getName().isEmpty())
 			throw new BadRequestException("name is missing");
 
 		if (instance.getCreatedBy() == null)
@@ -71,7 +76,7 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 			throw new BadRequestException("userId must belong to a manager");
 
 		if (instance.getLocation() == null)
-			instance.setLocation(new Location());
+			instance.setLocation(new Location(0., 0.));
 
 		if (instance.getActive() == null)
 			instance.setActive(true);
@@ -214,24 +219,21 @@ public class InstancesServiceJPA implements ExtendedInstancesService {
 				// do nothing
 			}
 
-			Map<String, UserId> createdBy = update.getCreatedBy();
 			if (update.getCreatedBy() != null) {
-				UserId userId = createdBy.get("userId");
-				if (userId != null) {
-					String domain = userId.getDomain();
-					if (domain != null) {
-						entity.setCreatedByDomain(domain);
-					}
-
-					String email = userId.getEmail();
-					if (email != null) {
-						entity.setCreatedByEmail(email);
-					}
-				}
+				// do nothing
 			}
 
-			if (update.getLocation() != null) {
-				entity.setLocation(instanceConverter.toEntity(update.getLocation()));
+			Location newLocation = update.getLocation();
+			if (newLocation != null) {
+				double[] location = entity.getLocation();
+				Double lat = newLocation.getLat();
+				if (lat != null)
+					location[0] = lat;
+				Double lng = newLocation.getLng();
+				if (lng != null)
+					location[1] = lng;
+				
+				entity.setLocation(location);
 			}
 
 			if (update.getInstanceAttributes() != null) {

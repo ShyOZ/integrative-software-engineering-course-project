@@ -6,7 +6,6 @@ public class Location {
 	private Double lat;
 
 	public Location() {
-		this(0., 0.);
 	}
 
 	public Location(Double lng, Double lat) {
