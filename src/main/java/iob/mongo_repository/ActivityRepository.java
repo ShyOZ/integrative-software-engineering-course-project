@@ -22,4 +22,7 @@ public interface ActivityRepository extends MongoRepository<ActivityEntity, Acti
 			@Param("minVersion") int minVersion,
 			@Param("maxVersion") int maxVersion,
 			Pageable pageable);
+
+	public List<ActivityEntity> findAllByType(
+			String type);
 }

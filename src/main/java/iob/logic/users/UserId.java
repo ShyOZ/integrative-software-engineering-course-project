@@ -37,5 +37,15 @@ public class UserId {
 	public String toString() {
 		return "UserId [domain=" + domain + ", email=" + email + "]";
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		 if (o == this)
+			 return true;
+		 if (!(o instanceof UserId))
+			 return false;
+	    UserId userId = (UserId) o;
+	    return domain.equals(userId.domain) && email.equals(userId.email);
+	}
 
 }

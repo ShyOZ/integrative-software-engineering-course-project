@@ -1,4 +1,9 @@
 spring.application.name: &domain 2022b.Yaeli.Bar.Gimelshtei
+activity.like: likeTo
+activity.like.userId: userId
+user.property.domain: domain
+user.property.email: email
+like.match: match
 server.port: 8085
 
 logging.level.org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: trace

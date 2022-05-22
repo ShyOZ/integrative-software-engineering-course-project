@@ -66,4 +66,5 @@ public class User {
 	public String toString() {
 		return "User [userId=" + userId + ", role=" + role + ", username=" + username + ", avatar=" + avatar + "]";
 	}
+
 }
