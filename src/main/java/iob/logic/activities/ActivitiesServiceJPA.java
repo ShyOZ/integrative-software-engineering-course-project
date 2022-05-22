@@ -38,13 +38,13 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	private ActivityConverter activityConverter;
 	private ConfigProperties configProperties;
 	private UsersService userService;
-	private ExtendedInstanceService instanceService;
+	private ExtendedInstancesService instanceService;
 	private UserRepository userRepo;
 	private UserConverter userConverter;
 
 	@Autowired
 	public ActivitiesServiceJPA(ActivityRepository activityRepository, ActivityConverter activityConverter,
-			ConfigProperties configProperties, UsersService userService, ExtendedInstanceService instanceService, UserRepository userRepo, UserConverter userConverter) {
+			ConfigProperties configProperties, UsersService userService, ExtendedInstancesService instanceService, UserRepository userRepo, UserConverter userConverter) {
 		this.activityRepository = activityRepository;
 		this.activityConverter = activityConverter;
 		this.configProperties = configProperties;
@@ -97,7 +97,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 		if (userRole != UserRole.PLAYER)
 			throw new UnauthorizedRequestException("User must be a player to perform the action");
 		
-		InstanceBoundary instance = instancesService.getSpecificInstance(instanceId.getDomain(), instanceId.getId(), userId.getDomain(), userId.getEmail());
+		InstanceBoundary instance = instanceService.getSpecificInstance(instanceId.getDomain(), instanceId.getId(), userId.getDomain(), userId.getEmail());
 		
 		if (instance == null)
 			throw new BadRequestException("instance is missing in the database");
