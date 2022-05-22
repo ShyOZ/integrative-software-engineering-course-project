@@ -9,5 +9,5 @@ public interface ExtendedActivitiesService extends ActivitiesService{
 
 	public void deleteAllActivities(String userDomain, String userEmail);
 
-
+	
 }

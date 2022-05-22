@@ -16,9 +16,11 @@ import iob.data.ActivityEntity;
 import iob.data.UserRole;
 import iob.log.LogMethod;
 import iob.logic.ExtendedActivitiesService;
+import iob.logic.ExtendedInstancesService;
 import iob.logic.UsersService;
 import iob.logic.customExceptions.BadRequestException;
 import iob.logic.customExceptions.UnauthorizedRequestException;
+import iob.logic.instances.InstanceBoundary;
 import iob.logic.instances.InstanceId;
 import iob.logic.users.UserId;
 import iob.logic.utility.ConfigProperties;
@@ -31,14 +33,16 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	private ActivityConverter activityConverter;
 	private ConfigProperties configProperties;
 	private UsersService userService;
+	private ExtendedInstancesService instancesService;
 
 	@Autowired
 	public ActivitiesServiceJPA(ActivityRepository activityRepository, ActivityConverter activityConverter,
-			ConfigProperties configProperties, UsersService userService) {
+			ConfigProperties configProperties, UsersService userService, ExtendedInstancesService instancesService) {
 		this.activityRepository = activityRepository;
 		this.activityConverter = activityConverter;
 		this.configProperties = configProperties;
 		this.userService = userService;
+		this.instancesService = instancesService;
 	}
 
 	private UserRole getUserRoleById(String userDomain, String userId) {
@@ -48,7 +52,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	@Override
 	@LogMethod
 	public Object invokeActivity(ActivityBoundary activity) {
-		if (activity.getType() == null)
+		if (activity.getType() == null || activity.getType().isEmpty())
 			throw new BadRequestException("type is missing");
 
 		if (activity.getInstance() == null)
@@ -83,6 +87,14 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 
 		if (userRole != UserRole.PLAYER)
 			throw new UnauthorizedRequestException("User must be a player to perform the action");
+		
+		InstanceBoundary instance = instancesService.getSpecificInstance(instanceId.getDomain(), instanceId.getId(), userId.getDomain(), userId.getEmail());
+		
+		if (instance == null)
+			throw new BadRequestException("instance is missing in the database");
+		
+		if (!instance.getActive())
+			throw new BadRequestException("instance is not active");
 
 		if (activity.getActivityAttributes() == null)
 			activity.setActivityAttributes(new HashMap<String, Object>());
