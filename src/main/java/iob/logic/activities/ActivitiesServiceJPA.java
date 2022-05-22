@@ -18,9 +18,11 @@ import iob.data.ActivityEntity;
 import iob.data.UserRole;
 import iob.log.LogMethod;
 import iob.logic.ExtendedActivitiesService;
+import iob.logic.ExtendedInstancesService;
 import iob.logic.UsersService;
 import iob.logic.customExceptions.BadRequestException;
 import iob.logic.customExceptions.UnauthorizedRequestException;
+import iob.logic.instances.InstanceBoundary;
 import iob.logic.instances.InstanceId;
 import iob.logic.users.UserBoundary;
 import iob.logic.users.UserConverter;
@@ -36,16 +38,18 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	private ActivityConverter activityConverter;
 	private ConfigProperties configProperties;
 	private UsersService userService;
+	private ExtendedInstanceService instanceService;
 	private UserRepository userRepo;
 	private UserConverter userConverter;
 
 	@Autowired
 	public ActivitiesServiceJPA(ActivityRepository activityRepository, ActivityConverter activityConverter,
-			ConfigProperties configProperties, UsersService userService, UserRepository userRepo, UserConverter userConverter) {
+			ConfigProperties configProperties, UsersService userService, ExtendedInstanceService instanceService, UserRepository userRepo, UserConverter userConverter) {
 		this.activityRepository = activityRepository;
 		this.activityConverter = activityConverter;
 		this.configProperties = configProperties;
 		this.userService = userService;
+		this.instanceService = instanceService;
 		this.userRepo = userRepo;
 		this.userConverter = userConverter;
 	}
@@ -57,7 +61,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	@Override
 	@LogMethod
 	public Object invokeActivity(ActivityBoundary activity) {
-		if (activity.getType() == null)
+		if (activity.getType() == null || activity.getType().isEmpty())
 			throw new BadRequestException("type is missing");
 
 		if (activity.getInstance() == null)
@@ -92,6 +96,14 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 
 		if (userRole != UserRole.PLAYER)
 			throw new UnauthorizedRequestException("User must be a player to perform the action");
+		
+		InstanceBoundary instance = instancesService.getSpecificInstance(instanceId.getDomain(), instanceId.getId(), userId.getDomain(), userId.getEmail());
+		
+		if (instance == null)
+			throw new BadRequestException("instance is missing in the database");
+		
+		if (!instance.getActive())
+			throw new BadRequestException("instance is not active");
 
 		if (activity.getActivityAttributes() == null)
 			activity.setActivityAttributes(new HashMap<String, Object>());
