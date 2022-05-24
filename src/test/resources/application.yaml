@@ -4,6 +4,7 @@ spring.mongodb.embedded.version: 3.4.5
 logging.level.org.springframework.data.mongodb.core.MongoTemplate: trace
 logging.file.name: logs/test.log
 server.error.include-message: always
+spring.profiles.active: default,enableMethodLogging
 
 test-objects:
   new-admin:
@@ -35,3 +36,9 @@ test-objects:
       location:                             # not required
         lat: 0
         lng: 0
+        
+activity.like: likeTo
+activity.like.userId: userId
+user.property.domain: domain
+user.property.email: email
+like.match: match

@@ -44,7 +44,8 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 
 	@Autowired
 	public ActivitiesServiceJPA(ActivityRepository activityRepository, ActivityConverter activityConverter,
-			ConfigProperties configProperties, UsersService userService, ExtendedInstancesService instanceService, UserRepository userRepo, UserConverter userConverter) {
+			ConfigProperties configProperties, UsersService userService, ExtendedInstancesService instanceService,
+			UserRepository userRepo, UserConverter userConverter) {
 		this.activityRepository = activityRepository;
 		this.activityConverter = activityConverter;
 		this.configProperties = configProperties;
@@ -72,10 +73,10 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 		if (instanceId == null)
 			throw new BadRequestException("instance.instanceId is missing");
 
-		if (instanceId.getDomain() == null)
+		if (instanceId.getDomain() == null || instanceId.getDomain().isEmpty())
 			throw new BadRequestException("instance.instanceId.domain is missing");
 
-		if (instanceId.getId() == null)
+		if (instanceId.getId() == null || instanceId.getId().isEmpty())
 			throw new BadRequestException("instance.instanceId.id is missing");
 
 		if (activity.getInvokedBy() == null)
@@ -86,24 +87,19 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 		if (userId == null)
 			throw new BadRequestException("invokedBy.userId is missing");
 
-		if (userId.getEmail() == null)
+		if (userId.getEmail() == null || userId.getEmail().isEmpty())
 			throw new BadRequestException("invokedBy.userId.email is missing");
 
-		if (userId.getDomain() == null)
+		if (userId.getDomain() == null || userId.getDomain().isEmpty())
 			throw new BadRequestException("invokedBy.userId.domain is missing");
 
 		UserRole userRole = getUserRoleById(userId.getDomain(), userId.getEmail());
 
 		if (userRole != UserRole.PLAYER)
-			throw new UnauthorizedRequestException("User must be a player to perform the action");
-		
-		InstanceBoundary instance = instanceService.getSpecificInstance(instanceId.getDomain(), instanceId.getId(), userId.getDomain(), userId.getEmail());
-		
-		if (instance == null)
-			throw new BadRequestException("instance is missing in the database");
-		
-		if (!instance.getActive())
-			throw new BadRequestException("instance is not active");
+			throw new UnauthorizedRequestException("activity invoker must be a player");
+
+		InstanceBoundary instance = instanceService.getSpecificInstance(instanceId.getDomain(), instanceId.getId(),
+				userId.getDomain(), userId.getEmail());
 
 		if (activity.getActivityAttributes() == null)
 			activity.setActivityAttributes(new HashMap<String, Object>());
@@ -114,17 +110,17 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 
 		ActivityEntity entity = activityConverter.toEntity(activity);
 		entity = activityRepository.save(entity);
-		
+
 		try {
 			ActivityType type = ActivityType.valueOf(activity.getType().toUpperCase());
 			switch (type) {
 			case LIKE:
 				UserBoundary user1 = userService.login(userId.getDomain(), userId.getEmail());
 				UserBoundary user2 = getUserLikeTo(activity);
-				
+
 				List<ActivityBoundary> likeActivitiesByUser2 = activityRepository.findAllByType(activity.getType())
 						.stream().map(activityConverter::toBoundary).collect(Collectors.toList());
-				
+
 				boolean match = false;
 				for (ActivityBoundary act : likeActivitiesByUser2) {
 					if (act.getInvokedBy().getUserId().equals(user2.getUserId())) {
@@ -134,46 +130,45 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 						}
 					}
 				}
-				
+
 				HashMap<String, Object> likeInfo = new HashMap<String, Object>();
 				likeInfo.put(configProperties.getUserId(), user2.getUserId());
 				likeInfo.put(configProperties.getMatch(), match);
-				
+
 				return likeInfo;
-			
+
 			case MATCH:
 				int n = 5;
-				List<UserBoundary> users = userRepo.findAll().stream() 
-						.map(userConverter::toBoundary)
+				List<UserBoundary> users = userRepo.findAll().stream().map(userConverter::toBoundary)
 						.collect(Collectors.toList());
-				
-			    Collections.shuffle(users);
-			    if (users.size() < n) {
-			    	return users;
-			    }
-			    else {
-			    	 return users.subList(0, n);
-			    } 
-				
+
+				Collections.shuffle(users);
+				if (users.size() < n) {
+					return users;
+				} else {
+					return users.subList(0, n);
+				}
+
 			default:
 				break;
 			}
 		} catch (IllegalArgumentException e) {
-			
+
 		}
 		return activityConverter.toBoundary(entity);
 	}
-	
+
 	private UserBoundary getUserLikeTo(ActivityBoundary activity) {
-		if (!activity.getActivityAttributes().containsKey(configProperties.getlikedUser())){
+		if (!activity.getActivityAttributes().containsKey(configProperties.getlikedUser())) {
 			throw new BadRequestException("likeTo is missing");
 		}
-		HashMap<String, Object> likeTo =  (HashMap<String, Object>) activity.getActivityAttributes().get(configProperties.getlikedUser());
+		HashMap<String, Object> likeTo = (HashMap<String, Object>) activity.getActivityAttributes()
+				.get(configProperties.getlikedUser());
 		if (likeTo == null) {
 			throw new BadRequestException("likeTo is missing");
 		}
-		
-		if (!likeTo.containsKey(configProperties.getUserId())){
+
+		if (!likeTo.containsKey(configProperties.getUserId())) {
 			throw new BadRequestException("likeTo.userId is missing");
 
 		}
@@ -181,7 +176,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 		if (id == null) {
 			throw new BadRequestException("likeTo.userId is missing");
 		}
-		
+
 		if (!id.containsKey(configProperties.getUserDomain())) {
 			throw new BadRequestException("likeTo.userId.domain is missing");
 
@@ -190,7 +185,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 		if (userDomain == null) {
 			throw new BadRequestException("likeTo.userId.domain is missing");
 		}
-		
+
 		if (!id.containsKey(configProperties.userEmail)) {
 			throw new BadRequestException("likeTo.userId.email is missing");
 
@@ -199,7 +194,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 		if (userEmail == null) {
 			throw new BadRequestException("likeTo.userId.email is missing");
 		}
-		
+
 		return userService.login(userDomain, userEmail);
 	}
 

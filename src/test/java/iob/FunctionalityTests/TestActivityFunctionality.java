@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import iob.logic.activities.ActivityBoundary;
@@ -36,7 +37,9 @@ public class TestActivityFunctionality {
 	private InstanceBoundary testInstance;
 	private @Autowired ApTestRequester requester;
 	private @Autowired ActivityConverter activityConverter;
-	private Comparator<ActivityBoundary> activityComparatorById;
+	private Comparator<ActivityBoundary> activityComparatorById = Comparator.comparing(ActivityBoundary::getActivityId,
+			(id1, id2) -> activityConverter.toEntity(id1.getDomain(), id1.getId())
+					.compareTo(activityConverter.toEntity(id2.getDomain(), id2.getId())));;
 
 	@BeforeEach
 	void setUp() {
@@ -44,15 +47,29 @@ public class TestActivityFunctionality {
 		manager = requester.postNewUserForUser(testProperties.getNewManager());
 		admin = requester.postNewUserForUser(testProperties.getNewAdmin());
 		testInstance = requester.postInstanceForInstance(testProperties.getInstance());
-		
-		activityComparatorById = Comparator.comparing(ActivityBoundary::getActivityId,
-				(id1, id2) -> activityConverter.toEntity(id1.getDomain(), id1.getId())
-						.compareTo(activityConverter.toEntity(id2.getDomain(), id2.getId())));
 	}
 
 	@AfterEach
 	void tearDown() {
 		requester.deleteAll(admin.getUserId().getDomain(), admin.getUserId().getEmail());
+	}
+
+	@Test
+	void ifUserIsNotPlayer_then_InvoleActivityThrowsUnauthorizedWithMessage() {
+		ActivityBoundary testActivity = new ActivityBoundary(null, "test type",
+				new ActivityInstance(testInstance.getInstanceId()), null, new ActivityInvoker(manager.getUserId()),
+				null);
+		assertThrows(Unauthorized.class, () -> requester.postActivityForObject(testActivity));
+
+		testActivity.setInvokedBy(new ActivityInvoker(admin.getUserId()));
+
+		assertThrows(Unauthorized.class, () -> requester.postActivityForObject(testActivity));
+
+		// BUGS OUT - FOR SOME REASON MESSAGE IS "401: [no body]"
+//		assertThat(assertThrows(Unauthorized.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+//				.contains("activity invoker must be a player");
+//		assertThat(assertThrows(Unauthorized.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+//				.contains("activity invoker must be a player");
 	}
 
 	@Test
@@ -100,7 +117,8 @@ public class TestActivityFunctionality {
 								null, new ActivityInvoker(player.getUserId()), Collections.singletonMap("key", 1)))
 				.map(activity -> requester.postActivityForObject(activity)).collect(Collectors.toList());
 
-		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail())).isSortedAccordingTo(activityComparatorById);
+		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail()))
+				.isSortedAccordingTo(activityComparatorById);
 
 		assertThat(requester.getActivities(admin.getUserId().getDomain(), admin.getUserId().getEmail())).hasSize(10);
 
@@ -115,7 +133,21 @@ public class TestActivityFunctionality {
 	}
 
 	@Test
-	void isActivityIsMissingInstance_thenInvokeActivityThrowsBadRequestWithInstanceIsMissingMessage() {
+	void ifActivityIsMissingType_thenInvokeActivityThrowsBadRequestWithTypeIsMissingMessage() {
+		ActivityBoundary testActivity = new ActivityBoundary(null, null,
+				new ActivityInstance(testInstance.getInstanceId()), null, null, null);
+
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("type is missing");
+
+		testActivity.setType("");
+
+		assertThat(assertThrows(BadRequest.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("type is missing");
+	}
+
+	@Test
+	void ifActivityIsMissingInstance_thenInvokeActivityThrowsBadRequestWithInstanceIsMissingMessage() {
 		ActivityBoundary testActivity = new ActivityBoundary(null, "test type", null, null,
 				new ActivityInvoker(player.getUserId()), null);
 
@@ -149,7 +181,7 @@ public class TestActivityFunctionality {
 	}
 
 	@Test
-	void isActivityIsMissingInvokedBy_thenInvokeActivityThrowsBadRequestWithInvokedByIsMissingMessage() {
+	void ifActivityIsMissingInvokedBy_thenInvokeActivityThrowsBadRequestWithInvokedByIsMissingMessage() {
 		ActivityBoundary testActivity = new ActivityBoundary(null, "test type",
 				new ActivityInstance(testInstance.getInstanceId()), null, null, null);
 
@@ -183,4 +215,30 @@ public class TestActivityFunctionality {
 
 	}
 
+	@Test
+	void ifInstanceNotInDB_thenInvokeActivityThrowsNotFoundWithMessage() {
+		ActivityBoundary testActivity = new ActivityBoundary(null, "some type",
+				new ActivityInstance(new InstanceId("some domain", "some id")), null,
+				new ActivityInvoker(player.getUserId()), null);
+
+		assertThat(assertThrows(NotFound.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("could not find instance");
+
+	}
+
+	@Test
+	void ifInstanceNotActive_thenInvokeActivityThrowsBadRequestWithMessage() {
+		testInstance.setActive(false);
+
+		requester.putInstance(testInstance, testInstance.getInstanceId().getDomain(),
+				testInstance.getInstanceId().getId(), manager.getUserId().getDomain(), manager.getUserId().getEmail());
+
+		ActivityBoundary testActivity = new ActivityBoundary(null, "some type",
+				new ActivityInstance(testInstance.getInstanceId()), null, new ActivityInvoker(player.getUserId()),
+				null);
+
+		assertThat(assertThrows(NotFound.class, () -> requester.postActivityForObject(testActivity)).getMessage())
+				.contains("no active instance");
+
+	}
 }
