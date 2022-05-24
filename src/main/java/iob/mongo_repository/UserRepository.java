@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import iob.data.UserEntity;
+import iob.data.UserRole;
 
 @Repository
 public interface UserRepository extends MongoRepository<UserEntity, ObjectId> {
@@ -30,5 +31,8 @@ public interface UserRepository extends MongoRepository<UserEntity, ObjectId> {
 	public Optional<UserEntity> findByDomainAndEmail(
 			@Param("domain") String domain, 
 			@Param("email") String email);
+
+	public List<UserEntity> findAllByRole(
+			@Param("role") UserRole role);
 
 }

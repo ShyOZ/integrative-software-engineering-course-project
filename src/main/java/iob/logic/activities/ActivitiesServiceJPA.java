@@ -139,9 +139,10 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 
 			case MATCH:
 				int n = 5;
-				List<UserBoundary> users = userRepo.findAll().stream().map(userConverter::toBoundary)
+				List<UserBoundary> users = userRepo.findAllByRole(UserRole.PLAYER).stream().map(userConverter::toBoundary)
 						.collect(Collectors.toList());
-
+				UserBoundary user = userService.login(userId.getDomain(), userId.getEmail());
+				users.remove(user);
 				Collections.shuffle(users);
 				if (users.size() < n) {
 					return users;
