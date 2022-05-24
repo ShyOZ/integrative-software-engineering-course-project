@@ -116,7 +116,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 		entity = activityRepository.save(entity);
 		
 		try {
-			ActivityType type = ActivityType.valueOf(activity.getType());
+			ActivityType type = ActivityType.valueOf(activity.getType().toUpperCase());
 			switch (type) {
 			case LIKE:
 				UserBoundary user1 = userService.login(userId.getDomain(), userId.getEmail());
@@ -165,10 +165,40 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 	}
 	
 	private UserBoundary getUserLikeTo(ActivityBoundary activity) {
+		if (!activity.getActivityAttributes().containsKey(configProperties.getlikedUser())){
+			throw new BadRequestException("likeTo is missing");
+		}
 		HashMap<String, Object> likeTo =  (HashMap<String, Object>) activity.getActivityAttributes().get(configProperties.getlikedUser());
+		if (likeTo == null) {
+			throw new BadRequestException("likeTo is missing");
+		}
+		
+		if (!likeTo.containsKey(configProperties.getUserId())){
+			throw new BadRequestException("likeTo.userId is missing");
+
+		}
 		HashMap<String, String> id = (HashMap<String, String>) likeTo.get(configProperties.getUserId());
+		if (id == null) {
+			throw new BadRequestException("likeTo.userId is missing");
+		}
+		
+		if (!id.containsKey(configProperties.getUserDomain())) {
+			throw new BadRequestException("likeTo.userId.domain is missing");
+
+		}
 		String userDomain = id.get(configProperties.getUserDomain());
+		if (userDomain == null) {
+			throw new BadRequestException("likeTo.userId.domain is missing");
+		}
+		
+		if (!id.containsKey(configProperties.userEmail)) {
+			throw new BadRequestException("likeTo.userId.email is missing");
+
+		}
 		String userEmail = id.get(configProperties.getUserEmail());
+		if (userEmail == null) {
+			throw new BadRequestException("likeTo.userId.email is missing");
+		}
 		
 		return userService.login(userDomain, userEmail);
 	}
