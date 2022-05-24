@@ -75,11 +75,4 @@ public class ActivityBoundary {
 	public void setActivityAttributes(Map<String, Object> activityAttributes) {
 		this.activityAttributes = activityAttributes;
 	}
-
-	@Override
-	public String toString() {
-		return String.format(
-				"ActivityBoundary [activityId=%s, type=%s, instance=%s, createdTimestamp=%s, invokedBy=%s, activityAttributes=%s]",
-				activityId, type, instance, createdTimestamp, invokedBy, activityAttributes);
-	}
 }

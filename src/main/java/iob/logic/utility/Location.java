@@ -28,10 +28,4 @@ public class Location {
 	public void setLat(Double lat) {
 		this.lat = lat;
 	}
-
-	@Override
-	public String toString() {
-		return "Location [lng=" + lng + ", lat=" + lat + "]";
-	}
-
 }

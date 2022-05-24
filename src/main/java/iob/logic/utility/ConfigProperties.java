@@ -7,22 +7,22 @@ import org.springframework.context.annotation.Configuration;
 public class ConfigProperties {
 
 	@Value("${spring.application.name}")
-	public String applicationDomain;
+	private String applicationDomain;
 	
 	@Value("${activity.like}")
-	public String likedUser;
+	private String likedUser;
 	
 	@Value("${activity.like.userId}")
-	public String userId;
+	private String userId;
 	
 	@Value("${user.property.domain}")
-	public String userDomain;
+	private String userDomain;
 	
 	@Value("${user.property.email}")
-	public String userEmail;
+	private String userEmail;
 	
 	@Value("${like.match}")
-	public String match;
+	private String match;
 
 	public String getApplicationDomain() {
 		return applicationDomain;

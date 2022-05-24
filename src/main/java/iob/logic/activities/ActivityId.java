@@ -36,9 +36,4 @@ public class ActivityId {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	@Override
-	public String toString() {
-		return String.format("ActivityId [domain=%s, id=%s]", domain, id);
-	}
 }

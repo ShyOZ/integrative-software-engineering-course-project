@@ -22,15 +22,6 @@ public class UserEntity {
 
 	}
 
-	public UserEntity(ObjectId id, String domain, String email, UserRole role, String username, String avatar) {
-		this.id = id;
-		this.domain = domain;
-		this.email = email;
-		this.username = username;
-		this.role = role;
-		this.avatar = avatar;
-	}
-
 	public ObjectId getId() {
 		return id;
 	}

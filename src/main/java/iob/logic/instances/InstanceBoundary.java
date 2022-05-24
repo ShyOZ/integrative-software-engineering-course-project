@@ -101,12 +101,4 @@ public class InstanceBoundary {
 	public void setInstanceAttributes(Map<String, Object> instanceAttributes) {
 		this.instanceAttributes = instanceAttributes;
 	}
-
-	@Override
-	public String toString() {
-		return "InstanceBoundary [instanceId=" + instanceId + ", type=" + type + ", name=" + name + ", active=" + active
-				+ ", createdTimestamp=" + createdTimestamp + ", createdBy=" + createdBy + ", location=" + location
-				+ ", instanceAttributes=" + instanceAttributes + "]";
-	}
-
 }

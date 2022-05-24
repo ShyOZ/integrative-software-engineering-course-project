@@ -186,7 +186,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 			throw new BadRequestException("likeTo.userId.domain is missing");
 		}
 
-		if (!id.containsKey(configProperties.userEmail)) {
+		if (!id.containsKey(configProperties.getUserEmail())) {
 			throw new BadRequestException("likeTo.userId.email is missing");
 
 		}

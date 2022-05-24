@@ -20,9 +20,4 @@ public class ActivityInvoker {
 	public void setUserId(UserId userId) {
 		this.userId = userId;
 	}
-
-	@Override
-	public String toString() {
-		return "Invoker [userId=" + userId + "]";
-	}
 }
