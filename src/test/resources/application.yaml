@@ -2,7 +2,7 @@ spring.application.name: &domain test-domain
 spring.data.mongodb.auto-index-creation: true
 spring.mongodb.embedded.version: 3.4.5
 logging.level.org.springframework.data.mongodb.core.MongoTemplate: trace
-logging.file.name: logs/test.log
+logging.file.name: logs/test/test.log
 server.error.include-message: always
 spring.profiles.active: default,enableMethodLogging
 
