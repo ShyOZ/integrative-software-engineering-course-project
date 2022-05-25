@@ -118,16 +118,14 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 				UserBoundary user1 = userService.login(userId.getDomain(), userId.getEmail());
 				UserBoundary user2 = getUserLikeTo(activity);
 
-				List<ActivityBoundary> likeActivitiesByUser2 = activityRepository.findAllByType(activity.getType())
+				List<ActivityBoundary> likeActivitiesByUser2 = activityRepository.findAllByTypeAndInvokedByDomainAndInvokedByEmail(activity.getType(), user2.getUserId().getDomain(), user2.getUserId().getEmail())
 						.stream().map(activityConverter::toBoundary).collect(Collectors.toList());
-
+				
 				boolean match = false;
 				for (ActivityBoundary act : likeActivitiesByUser2) {
-					if (act.getInvokedBy().getUserId().equals(user2.getUserId())) {
-						if (getUserLikeTo(act).getUserId().equals(user1.getUserId())) {
-							match = true;
-							break;
-						}
+					if (getUserLikeTo(act).getUserId().equals(user1.getUserId())) {
+						match = true;
+						break;
 					}
 				}
 

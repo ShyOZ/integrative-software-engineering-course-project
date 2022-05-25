@@ -23,6 +23,8 @@ public interface ActivityRepository extends MongoRepository<ActivityEntity, Acti
 			@Param("maxVersion") int maxVersion,
 			Pageable pageable);
 
-	public List<ActivityEntity> findAllByType(
-			String type);
+	public List<ActivityEntity> findAllByTypeAndInvokedByDomainAndInvokedByEmail(
+			@Param("type") String type,
+			@Param("invokedByDomain") String domain,
+			@Param("invokedByEmail") String email);
 }

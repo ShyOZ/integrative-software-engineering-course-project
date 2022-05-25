@@ -32,4 +32,14 @@ public class UserId {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+	        return true;
+	    if (!(o instanceof UserId))
+	        return false;
+	    UserId other = (UserId) o;
+	    return domain.equals(other.domain) && email.equals(other.email);
+	}
 }
