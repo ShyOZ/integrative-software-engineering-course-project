@@ -50,4 +50,14 @@ public class UserBoundary {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == this)
+	        return true;
+	    if (!(o instanceof UserBoundary))
+	        return false;
+	    UserBoundary other = (UserBoundary) o;
+	    return other.getUserId().equals(userId);
+	}
 }

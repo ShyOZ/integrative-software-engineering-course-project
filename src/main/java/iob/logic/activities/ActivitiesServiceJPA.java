@@ -123,7 +123,7 @@ public class ActivitiesServiceJPA implements ExtendedActivitiesService {
 				
 				boolean match = false;
 				for (ActivityBoundary act : likeActivitiesByUser2) {
-					if (getUserLikeTo(act).getUserId().equals(user1.getUserId())) {
+					if (getUserLikeTo(act).equals(user1)) {
 						match = true;
 						break;
 					}
